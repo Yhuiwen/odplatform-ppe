@@ -37,3 +37,17 @@ phase-based log rather than claiming semantic-release completeness.
 - No business implementation.
 - No teacher asset copied.
 - Validation: pytest 99 passed; compileall passed.
+
+### Phase 1A Dataset Source & License Gate
+
+- Added `docs/10_DATA_SOURCE_EVIDENCE.md`.
+- Verified the original Roboflow Universe Construction Site Safety project,
+  CC BY 4.0 license, source class names, version 27 counts, split, and download
+  mechanism.
+- Added ADR-009 to freeze Roboflow CSS version 27 with the `yolov8` export.
+- Updated the dataset card to `SOURCE VERIFIED / NOT DOWNLOADED`.
+- Marked P1A `已经实现`; P1B through P1E remain `待实现`.
+- M-001 remains `待实现`.
+- No dataset, model weight, conversion, commit, or push.
+- Validation: pytest 110 passed; compileall passed; `git diff --check` passed;
+  charter diff empty.

@@ -2,12 +2,16 @@
 
 ## Current Phase
 
-Phase 0 — Foundation
+Phase 1 — Data Engineering
 
 ## Overall Status
 
-Phase 0 已完成。工程、治理文档、基础工具和 Gate 证据已建立，可以进入
-Phase 1；在本状态记录时尚未开始 Phase 1。
+Phase 1 实现中。P1A — Dataset Source & License Gate 已通过；P1B 尚未开始，
+M-001 仍为待实现。
+
+## Current Subphase
+
+P1A — Dataset Source & License Gate: COMPLETED
 
 ## Reference Intake
 
@@ -16,7 +20,7 @@ Reference Intake: COMPLETED
 - Teacher reference package registered as REF-001.
 - Teacher checkpoint registered as REF-002.
 - No teacher asset committed or copied into the repository.
-- No Phase 1 work started.
+- P1A reference-intake prerequisites reviewed.
 
 ## Current Environment
 
@@ -41,14 +45,22 @@ Reference Intake: COMPLETED
 - compileall 成功
 - git diff --check 成功
 - Pre-Phase 1 Reference Intake 文档与治理记录
+- Phase 1A 来源证据、许可核验和 RoBoflow CSS v27 冻结决策
+- G1A-1 至 G1A-11 全部 PASS
+- pytest 110 项测试通过
+- compileall 成功
+- git diff --check 成功
 
 ## In Progress
 
-无。Phase 0 已完成并冻结为可审计基线。
+Phase 1 — Data Engineering。P1A 已完成，P1B 尚未开始。
 
 ## Pending
 
-- Phase 1 数据工程
+- P1B 下载与原始快照
+- P1C 类别映射与转换
+- P1D 去重与数据质量验证
+- P1E 数据冻结与报告
 - 所有 M-001 至 M-026 业务能力
 - 所有 E-001 至 E-012 扩展能力
 
@@ -61,15 +73,21 @@ Reference Intake: COMPLETED
 - Teacher checkpoint 的五类名称与本项目锁定五类语义不同，映射保持
   `UNVERIFIED`。
 - 老师参考包包含 `history.db`，并可能包含凭据；不得复制或提交其中内容。
+- CSS 源项目存在版本漂移；V1 固定使用 Roboflow v27，不能使用移动的项目
+  级数量或未经证明对应的 Kaggle 镜像替代。
+- v27 含增强配置，后续重复检测和 split 泄漏检查不可跳过。
 
 ## Blockers
 
-无 Phase 0 阻塞项。
+无 P1A 阻塞项。P1B 仍需按 ADR-009 使用本地 `ROBOFLOW_API_KEY` 下载
+Roboflow CSS v27，并记录实际档案哈希。
 
 ## Next Allowed Step
 
-Phase 0 Gate 已全部 PASS。下一允许步骤是：
+P1A Gate 已全部 PASS。下一允许步骤是：
 
 ```text
-Phase 1 — Data Engineering
+P1B — Download & Raw Snapshot
 ```
+
+本轮不执行 P1B。M-001 保持 `待实现`，因为尚未完成下载、转换和 split 管理。

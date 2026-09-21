@@ -30,3 +30,22 @@
 
 Detailed gates are defined in each phase document. A later phase cannot begin
 until every gate in its immediate predecessor is PASS.
+
+## Phase 1A Gates
+
+| Gate | Requirement | Evidence | Status |
+| --- | --- | --- | --- |
+| G1A-1 | CSS 至少有一个可验证权威/可信来源 | Original Roboflow Universe project selected; Kaggle retained as secondary mirror evidence | PASS |
+| G1A-2 | 数据集许可证有直接证据 | Roboflow Construction Site Safety project page directly states `License: CC BY 4.0`; CC legal terms are recorded separately | PASS |
+| G1A-3 | 原始类别定义有直接证据 | Roboflow version 27 records 25 original class names and per-class box counts | PASS |
+| G1A-4 | 标注格式已确认 | Source annotation task is bounding-box object detection; selected export is Ultralytics YOLO / `yolov8`; target framework is YOLO11 | PASS |
+| G1A-5 | 数据规模有来源证据 | Version 27: 2,801 images; 2,605/114/82 split; 25 classes; total annotation count `UNVERIFIED / NOT FROZEN` | PASS |
+| G1A-6 | 下载方式已确认 | Roboflow Universe ZIP or Python SDK/REST; workspace, project, version, and format frozen | PASS |
+| G1A-7 | 重分发/引用义务已记录 | CC BY 4.0 share/adapt terms, attribution, license link, change notice, and no-endorsement rule recorded | PASS |
+| G1A-8 | 来源冲突已解析或明确标为 blocker | Version drift and mirror mismatch documented; V1 frozen to Roboflow version 27; mirror-correspondence remains explicitly unresolved but excluded | PASS |
+| G1A-9 | 未下载完整数据集 | No dataset archive, images, labels, or generated export retrieved | PASS |
+| G1A-10 | PROJECT_CHARTER 无修改 | `git diff charter-v1 -- docs/00_PROJECT_CHARTER.md` is empty | PASS |
+| G1A-11 | 未进入 Phase 1B | Dataset Card and Phase 1 document keep download status `NOT DOWNLOADED`; no processing artifacts | PASS |
+
+Phase 1A result: PASS. Phase 1 overall remains `实现中`; P1B is the next allowed
+step and was not started.

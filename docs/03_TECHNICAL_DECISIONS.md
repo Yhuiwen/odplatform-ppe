@@ -82,3 +82,41 @@ This file is an append-only ADR log. Historical entries must not be deleted.
   复现结果，且其训练数据类别语义尚未验证。
 - Consequences: M-004 仍必须完成本项目自主可复现 YOLO11 训练；模型对比和
   报告中必须明确区分 `Teacher Baseline` 与 `Project-trained Model`。
+
+## ADR-009
+
+- Date: 2026-09-21
+- Status: Accepted
+- Title: CSS is the V1 primary dataset source
+- Decision: V1 使用 Roboflow Universe 原始公开项目
+  `roboflow-universe-projects/construction-site-safety` 的冻结版本 `27`
+  作为 CSS 主数据源，下载格式确定为 `yolov8`。
+- Dataset license evidence:
+  https://universe.roboflow.com/roboflow-universe-projects/construction-site-safety
+  directly states `License: CC BY 4.0` for the dataset.
+- License legal terms: https://creativecommons.org/licenses/by/4.0/
+- Context: Construction Site Safety 项目页直接标记
+  `License: CC BY 4.0`；Creative Commons 页面仅作为该许可证法律条款证据。
+  原始项目元数据另外提供目标类别语义、2,801 张图像、2,605/114/82
+  split、25 个源类别和 YOLO 导出能力；可复现下载可通过 Roboflow Universe
+  UI 或 Python SDK/REST 机制完成。
+- Annotation scope: 源标注任务是 bounding-box object detection；Phase 1B
+  选择 `yolov8` 作为导出格式，目标训练框架为 YOLO11。不得把 YOLO11
+  写成数据集原始类标注格式。
+- Annotation total: 源元数据提供逐类别框数，但未发现可直接冻结的单一
+  总标注数字段；Phase 1B 下载前总标注数保持
+  `UNVERIFIED / NOT FROZEN`。
+- Why not the mirror: Kaggle 镜像只作为次级证据。其版本号来自 Kaggle，
+  不证明与任何 Roboflow 版本逐位对应，且其公开元数据报告十类，而 Roboflow
+  版本 27 报告 25 个源类别，因此镜像不进入 V1 下载基线。
+- License basis: 原始项目公开记录为 `CC BY 4.0`；允许分享、改编及商业使用，
+  但必须适当署名、链接许可证、说明修改，并不得暗示许可方背书。底层图像
+  的隐私/肖像来源限制仍由 RISK-013 监控。
+- Usage boundary: 原始数据集保留在仓库外；`ROBOFLOW_API_KEY` 只能来自本地
+  环境变量；不得将下载档案、图像或标签提交 Git；公开分发或再许可前复核
+  署名、修改说明和底层内容权利。
+- Phase 1B rule: 只允许按以下冻结标识下载：
+  `workspace=roboflow-universe-projects`,
+  `project=construction-site-safety`, `version=27`, `format=yolov8`。
+- Consequences: Phase 1B 必须记录实际下载档案哈希与来源；Phase 1C 只按
+  Charter 锁定五类做显式映射，不修改本 ADR 锁定的源版本。

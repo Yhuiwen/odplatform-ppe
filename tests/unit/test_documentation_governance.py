@@ -15,6 +15,7 @@ REQUIRED_DOCS = [
     "docs/07_OPEN_SOURCE_USAGE.md",
     "docs/08_RISK_REGISTER.md",
     "docs/09_REFERENCE_ASSETS.md",
+    "docs/10_DATA_SOURCE_EVIDENCE.md",
 ]
 
 PHASE_DOCS = [
