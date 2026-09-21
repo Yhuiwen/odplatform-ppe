@@ -1,0 +1,5 @@
+-- ODPlatform-PPE persistence schema.
+-- NOT IMPLEMENTED - FUTURE PHASE (Phase 7)
+--
+-- Event, evidence, and query tables will be designed and migrated in Phase 7.
+-- This Phase 0 file intentionally contains no operational schema.

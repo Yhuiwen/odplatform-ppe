@@ -1,0 +1,14 @@
+# Planned defaults only. Used in Phase 4, not by Phase 0.
+inference:
+  phase: 4
+  status: planned
+  model_path: null
+  imgsz: 640
+  conf_threshold: 0.25
+  iou_threshold: 0.45
+  device: auto
+  source:
+    image: null
+    video: null
+    camera: null
+    rtsp: null

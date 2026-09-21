@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "odplatform-ppe"
+version = "0.1.0"
+description = "YOLO11-based construction PPE compliance and alert platform"
+readme = "README.md"
+requires-python = ">=3.10"
+# Runtime dependencies are planned centrally in requirements.txt.
+dependencies = []
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["core*", "infra*", "services*", "utils*", "web*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-ra"

@@ -1,0 +1,16 @@
+dataset:
+  name: css
+  status: planned
+  phase: 1
+
+classes:
+  0: person
+  1: hardhat
+  2: no_hardhat
+  3: vest
+  4: no_vest
+
+split:
+  train: null
+  val: null
+  test: null

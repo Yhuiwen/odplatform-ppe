@@ -1,0 +1,13 @@
+# Planned defaults only. Used in Phase 2, not by Phase 0.
+train:
+  phase: 2
+  status: planned
+  model: yolo11n.pt
+  epochs: 100
+  imgsz: 640
+  batch: 16
+  device: auto
+  seed: 42
+  workers: 8
+  project: artifacts/runs/train
+  name: baseline

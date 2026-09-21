@@ -1,0 +1,1 @@
+"""Person-PPE association boundaries."""

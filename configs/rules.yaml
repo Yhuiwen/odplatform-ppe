@@ -1,0 +1,20 @@
+# Planned structure only. Rules are not implemented in Phase 0.
+rules:
+  phase: 6
+  status: planned
+  helmet:
+    enabled: true
+    required: true
+  vest:
+    enabled: true
+    required: true
+  temporal_confirmation:
+    enabled: true
+    min_consecutive_frames: 5
+    min_duration_seconds: 1.0
+  recovery:
+    enabled: true
+    compliant_frames: 5
+  cooldown:
+    enabled: true
+    seconds: 30

@@ -1,0 +1,14 @@
+project:
+  name: ODPlatform-PPE
+  environment: development
+  phase: 0
+
+paths:
+  artifacts: artifacts
+  data: data
+  models: models
+
+logging:
+  level: INFO
+  console: true
+  filename: odplatform.log
