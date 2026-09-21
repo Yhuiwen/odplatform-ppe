@@ -14,6 +14,7 @@ REQUIRED_DOCS = [
     "docs/06_DATASET_CARD.md",
     "docs/07_OPEN_SOURCE_USAGE.md",
     "docs/08_RISK_REGISTER.md",
+    "docs/09_REFERENCE_ASSETS.md",
 ]
 
 PHASE_DOCS = [

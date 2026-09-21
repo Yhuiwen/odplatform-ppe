@@ -9,6 +9,15 @@ Phase 0 — Foundation
 Phase 0 已完成。工程、治理文档、基础工具和 Gate 证据已建立，可以进入
 Phase 1；在本状态记录时尚未开始 Phase 1。
 
+## Reference Intake
+
+Reference Intake: COMPLETED
+
+- Teacher reference package registered as REF-001.
+- Teacher checkpoint registered as REF-002.
+- No teacher asset committed or copied into the repository.
+- No Phase 1 work started.
+
 ## Current Environment
 
 - OS: Windows NT 10.0.22631.0
@@ -28,9 +37,10 @@ Phase 1；在本状态记录时尚未开始 Phase 1。
 - Charter、Master Plan、ADR、Phase、Dataset、Open Source、Risk 文档
 - Phase 0 基础测试
 - G0-1 至 G0-13 全部 PASS
-- pytest 92 项测试通过
+- pytest 99 项测试通过
 - compileall 成功
 - git diff --check 成功
+- Pre-Phase 1 Reference Intake 文档与治理记录
 
 ## In Progress
 
@@ -48,6 +58,9 @@ Phase 1；在本状态记录时尚未开始 Phase 1。
 - `ppe_compliance_detection` 当前默认分支未发现 LICENSE 或 COPYING 文件，
   在任何代码复用前必须单独复核。
 - `ultralytics` 当前许可证为 AGPL-3.0；正式交付和分发前必须完成许可义务评估。
+- Teacher checkpoint 的五类名称与本项目锁定五类语义不同，映射保持
+  `UNVERIFIED`。
+- 老师参考包包含 `history.db`，并可能包含凭据；不得复制或提交其中内容。
 
 ## Blockers
 

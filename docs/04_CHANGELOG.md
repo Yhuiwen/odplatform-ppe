@@ -27,3 +27,13 @@ phase-based log rather than claiming semantic-release completeness.
 - G0-1 through G0-13: PASS.
 - Phase status updated to `已经实现`; all MUST and Extension business statuses
   remain `待实现`.
+
+### Pre-Phase 1 Reference Intake
+
+- Added `docs/09_REFERENCE_ASSETS.md`.
+- Added ADR-007 and ADR-008.
+- Added RISK-011 and RISK-012.
+- Updated AGENTS mandatory reading order.
+- No business implementation.
+- No teacher asset copied.
+- Validation: pytest 99 passed; compileall passed.

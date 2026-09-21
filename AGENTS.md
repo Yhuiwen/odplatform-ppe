@@ -15,7 +15,8 @@ Before any development work, read these files in order:
 6. `docs/05_TEST_GATES.md`
 7. `docs/06_DATASET_CARD.md`
 8. `docs/07_OPEN_SOURCE_USAGE.md`
-9. The current phase document under `docs/phases/`
+9. `docs/09_REFERENCE_ASSETS.md`
+10. The current phase document under `docs/phases/`
 
 After reading, output a PRE-READ REPORT before editing:
 

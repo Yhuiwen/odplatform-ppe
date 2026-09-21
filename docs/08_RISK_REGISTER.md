@@ -14,3 +14,5 @@ Status values: `OPEN`, `MITIGATED`, `MONITORING`, `CLOSED`.
 | RISK-008 | RTSP 不稳定 | High | Medium | 超时、重连、帧丢弃策略和可观察状态；不得伪造正常流 | OPEN |
 | RISK-009 | LLM API 不可用 | Medium | Medium | 本地模板降级、超时和错误状态；报告明确数据来源 | OPEN |
 | RISK-010 | 开源许可证误用 | Medium | High | 逐版本检查 LICENSE；默认不复制；复用前记录来源并复核义务 | OPEN |
+| RISK-011 | Teacher checkpoint class semantics are not fully verified | Medium | High | 不直接将 head 等同于 no_hardhat；不直接将 ordinary_clothes 等同于 no_vest；获取老师数据说明或通过受控实验验证；保持本项目五类定义不变 | OPEN |
+| RISK-012 | Teacher reference package contains credentials or non-project artifacts | Confirmed / High | High | teacher zip 不进入 Git；best.pt 不进入 Git；history.db 不进入 Git；API key 不复制；.env / secret management 后续独立实现；如发现真实有效 Key，视为已暴露，不使用 | OPEN |
