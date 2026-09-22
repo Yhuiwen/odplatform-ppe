@@ -2,7 +2,11 @@
 
 ## Current Phase
 
-Phase 1 — Data Engineering / Phase 2 Preparation
+P2-7 Training Result Freeze
+
+## EXP-001 Training
+
+COMPLETED
 
 ## GitHub Release Strategy
 
@@ -12,7 +16,16 @@ Phase 完成 → Gate PASS → Commit → Tag → Push
 
 ## Overall Status
 
-Phase 1 实现中。P1A 已通过；P1B 已完成并冻结 `CSS-PPE-10-V1`。P1C-0、
+Phase 2 的 EXP-001 baseline training 已完成并由
+`docs/reports/EXP-001_TRAINING_EXECUTION_REPORT.md` 归档。本次训练依据明确
+人工授权执行，95/100 epochs 后由 `patience: 20` 提前停止，最佳 epoch 为 75。
+验证结果为 precision `0.899`、recall `0.649`、mAP50 `0.767`、
+mAP50-95 `0.480`；权重、日志、resolved args、epoch metrics 和 run record
+均已生成。`best.pt` SHA256 为 `1c144eef...871f61`。M-004 已满足并标记
+`已经实现`。M-005 仍未实现，Phase 3 独立评估尚未开始。
+
+Phase 1 仍记为 `实现中`，但 P1A 至 P1E 的数据工程子阶段已经完成。P1A
+已通过；P1B 已完成并冻结 `CSS-PPE-10-V1`。P1C-0、
 P1C-1 和 P1C-2 已完成，Strategy C 的 7 类 training mapping 已冻结并生成
 7 类 processed dataset。P1D-0 已完成 observation-only quality validation
 设计与离线框架；P1D-1 已完成真实数据集质量验证并通过 G1D1-1 至
@@ -22,10 +35,10 @@ risk、class imbalance 和 empty-label observations，但未修改数据。P1E-0
 contract、experiment structure、配置模板和 G1E0-1 至 G1E0-7。随后已完成
 P1E-1 Baseline Training Preparation Review：数据契约、实验
 配置、环境、复现性清单和 EXP-001 runbook 均已审计，P1E1-G1 至 P1E1-G7
-全部 PASS。当前环境为 `NOT READY FOR TRAINING`，训练尚未开始；M-001
-仍为待实现，因为真实训练、权重、日志和可复现实验结果尚未产生。
+全部 PASS。M-001 保持 `待实现`，因为数据治理层仍有需要独立确认的五类/
+场景上下文边界和 perceptual split-leakage candidate 风险。
 
-Phase 2 仍为 `待实现`。P2-0 Training Environment Preparation 与 Dependency
+Phase 2 的 P2-0 Training Environment Preparation 与 Dependency
 Boundary Review 已完成：当前 Windows 主机没有 NVIDIA GPU，PyTorch 和
 Ultralytics 均未安装，训练环境仍为 `NOT READY FOR TRAINING`。P2-0 仅记录
 dependency strategy、version matrix 和 readiness boundary，未安装依赖、
@@ -34,8 +47,8 @@ dependency strategy、version matrix 和 readiness boundary，未安装依赖、
 P2-1 已完成环境架构决策和设置方案：选择 `D. Controlled Cloud GPU`，记录
 Python 3.11.16、PyTorch 2.11.0+cu128、CUDA 12.8、torchvision 0.26.0、
 Ultralytics 8.4.158 等 `PLANNED VERSION`，并定义安装顺序、验证、回滚和
-environment freeze 方案。当前仍未 provision cloud GPU、未安装依赖、未下载
-权重、未执行训练；`Dependency Freeze` 仍为 `PENDING`。
+environment freeze 方案。P2-1 完成时仍未 provision cloud GPU、未安装依赖、
+未下载权重、未执行训练；当时 `Dependency Freeze` 为 `PENDING`。
 
 P2-2 已完成训练执行授权审查：dependency freeze 仍为 `PENDING`；EXP-001
 数据集、mapping、模型、class count、输出、logging 和 metrics 已复核。
@@ -49,31 +62,134 @@ P2-4-G3 随后在用户提供的 AutoDL RTX 4090 实例上完成隔离环境 pro
 `CSS-PPE-10-V1` 传输到 AutoDL，并完成 5,604 个文件、2,799 张图片、
 2,799 个 label、7 类 mapping 和完整 SHA256 manifest 验证。P2-4 final
 provisioning gate 已完成：Environment READY，Dataset READY，Training
-PENDING AUTHORIZATION。训练授权保持 `NOT GRANTED`。
+PENDING AUTHORIZATION。该阶段完成时训练授权保持 `NOT GRANTED`。
+
+P2-5 已完成 EXP-001 training execution authorization review，当时结果因
+训练参数、权重二进制、完整环境 freeze 和人工授权未完成而记录为 `BLOCKED`。
+P2-5.1 随后完成 EXP-001 configuration freeze：模型实现版本、数据身份、
+class count、`imgsz`、epochs、batch、optimizer、LR strategy、seed、device、
+workers 和全部输出路径均已冻结并有 SHA256 记录。`execution_enabled` 仍为
+`false`，训练授权仍为 `NOT GRANTED`；本次冻结未下载权重或修改 dataset。
+
+P2-5.2 随后完成 EXP-001 weight registration：从 Ultralytics 官方 assets
+`v8.3.0` release 获取 `yolo11n.pt`，保存到 Git-ignored
+`models/pretrained/yolo11n.pt`，核对 HTTP content length，计算 SHA256 和
+MD5，并创建 `docs/weights/EXP-001_WEIGHT_MANIFEST.yaml`。该权重仅作为训练
+初始化权重；未启动训练，未修改 dataset、mapping 或 EXP-001 配置。
+
+P2-5.3 随后完成 EXP-001 dependency freeze：导出 `ppe-exp001` 的完整
+conda environment、conda explicit URLs 和 `pip freeze --all` lock，并记录
+RTX 4090 UUID、NVIDIA driver `560.35.03`、CUDA driver API `12.6`、PyTorch
+CUDA runtime `12.4`、Python `3.10.21`、PyTorch `2.5.1+cu124` 和
+Ultralytics `8.4.157`。导出结果与远端环境逐行匹配，`pip check` PASS；
+未训练、未安装新依赖、未修改 dataset、mapping 或 canonical config。
+
+P2-5.4 随后完成 EXP-001 remote weight transfer verification：将官方
+`yolo11n.pt` 初始化权重传输到 AutoDL
+`/root/autodl-tmp/models/pretrained/yolo11n.pt`，远端文件存在且大小为
+`5,613,764` bytes，远端 SHA256 与本地
+`0ebbc80d4a7680d14987a577cd21342b65ecfd94632bd9a8da63ae6417644ee1`
+一致。该阶段完成时未启动训练、未执行模型、未修改 dataset、mapping 或
+EXP-001 configuration；随后用户明确授权 EXP-001 单次训练，授权记录现已
+标记为 `CONSUMED`。
 
 ## Current Subphase
+
+P2-7 — EXP-001 Training Result Freeze
+
+实现状态：COMPLETED / TRAINING RESULT FROZEN
+
+Freeze report：`docs/reports/P2-7_TRAINING_RESULT_FREEZE_REPORT.md`
+
+Best model manifest：`docs/weights/EXP-001_BEST_MODEL_MANIFEST.yaml`
+
+本次仅冻结已有训练结果，未重新训练、未执行 evaluation、未进入 Phase 3。
+
+Experiment：`EXP-001`
+
+Authorization：GRANTED AND CONSUMED
+
+Run status：COMPLETED
+
+Epochs completed：`95` with early stopping; best epoch `75`
+
+Overall validation：precision `0.899`, recall `0.649`, mAP50 `0.767`,
+mAP50-95 `0.480`
+
+Best checkpoint：`models/checkpoints/EXP-001/best.pt`
+
+Best checkpoint SHA256：
+`1c144eef0dfa06b984dde760ea5501a11746b99c1f8a9ae581790241c3871f61`
+
+Execution report：`docs/reports/EXP-001_TRAINING_EXECUTION_REPORT.md`
+
+数据修改：NONE
+
+M-004：已经实现
+
+M-005：待实现
+
+Phase 3：NOT STARTED
+
+## Previous Subphases
+
+P2-5.5 — EXP-001 Baseline Training Execution
+
+实现状态：COMPLETED / TRAINING EXECUTED；95 epochs，best epoch 75。
+
+P2-5.4 — EXP-001 Remote Weight Transfer Verification
+
+实现状态：COMPLETED / REMOTE WEIGHT VERIFIED
+
+Local path：`models/pretrained/yolo11n.pt`
+
+Remote path：`/root/autodl-tmp/models/pretrained/yolo11n.pt`
+
+Local SHA256：`0ebbc80d4a7680d14987a577cd21342b65ecfd94632bd9a8da63ae6417644ee1`
+
+Remote SHA256：`0ebbc80d4a7680d14987a577cd21342b65ecfd94632bd9a8da63ae6417644ee1`
+
+Match result：PASS
+
+P2-5.3 — EXP-001 Dependency Freeze
+
+实现状态：COMPLETED / DEPENDENCY FROZEN
+
+Dependency locks：
+
+- `locks/EXP-001/conda-environment.yml`
+- `locks/EXP-001/conda-explicit.lock`
+- `locks/EXP-001/pip-freeze-all.txt`
+
+Runtime fingerprint：`locks/EXP-001/runtime-fingerprint.yaml`
+
+P2-5.2 — EXP-001 Weight Registration
+
+实现状态：COMPLETED / WEIGHT REGISTERED
+
+官方 `yolo11n.pt` 初始化权重已登记，来源、大小和 SHA256 已记录；二进制保持
+Git-ignored；该登记阶段完成时远端副本尚未传输，随后由 P2-5.4 验证。
+
+P2-5.1 — EXP-001 Configuration Freeze Review
+
+实现状态：COMPLETED / CONFIGURATION FREEZE COMPLETE
+
+canonical EXP-001 参数、augmentation 和输出路径已冻结；配置 SHA256 已记录，
+训练授权保持不变。
+
+P2-5 — EXP-001 Training Execution Authorization Review
+
+实现状态：COMPLETED / REVIEW RESULT BLOCKED
+
+该审查确认 dataset、mapping 和输出路径满足要求，但当时 EXP-001 参数、权重
+二进制、完整 dependency freeze 与人工授权尚未完成。该结果作为历史证据保留；
+P2-5.1 只解决配置参数冻结。
 
 P2-4 — AutoDL Training Environment Provisioning
 
 实现状态：COMPLETED / FINAL GATE PASS
 
-数据修改：NONE
-
-训练执行：NONE
-
-环境决策：SELECTED — D. Controlled Cloud GPU
-
-环境选择：PROVISIONED — AutoDL `bcb849a74f-38320766` / RTX 4090 24GB
-
-依赖状态：INSTALLED / VERIFIED / FROZEN FOR P2-4 — conda `ppe-exp001`
-
-训练授权：NOT GRANTED
-
-环境状态：READY — TRAINING PENDING AUTHORIZATION
-
-数据集状态：TRANSFERRED AND VERIFIED
-
-## Previous Subphases
+Environment 和 Dataset 已通过 P2-4 final gate；训练仍待独立授权。
 
 P2-3 — Cloud Provider Selection & Cost Review
 
@@ -140,10 +256,26 @@ Reference Intake: COMPLETED
 - Training Ultralytics: `8.4.157`
 - Remote dataset: `/root/autodl-tmp/datasets/css-ppe-10-v1/`
 - Remote dataset integrity: 5,604 files; processed manifest PASS
-- Dependency freeze: P2-4 VERIFIED; training authorization remains separate
-- Training authorization: NOT GRANTED
+- Initialization weight: `models/pretrained/yolo11n.pt`; registered; SHA256
+  `0ebbc80d...7644ee1`
+- Remote initialization weight:
+  `/root/autodl-tmp/models/pretrained/yolo11n.pt`; size and SHA256 verified
+- Dependency freeze: P2-5.3 FROZEN; training authorization remains separate
+- Dependency locks: `locks/EXP-001/conda-environment.yml`,
+  `conda-explicit.lock`, and `pip-freeze-all.txt`
+- Runtime fingerprint: `locks/EXP-001/runtime-fingerprint.yaml`
+- Training authorization: GRANTED AND CONSUMED for one EXP-001 run
+- Training status: COMPLETED on 2026-09-22
+- Best checkpoint:
+  `models/checkpoints/EXP-001/best.pt`; SHA256
+  `1c144eef0dfa06b984dde760ea5501a11746b99c1f8a9ae581790241c3871f61`
+- Execution report: `docs/reports/EXP-001_TRAINING_EXECUTION_REPORT.md`
 
 ## Completed
+
+- P2-7 完成 EXP-001 Training Result Freeze：冻结最佳权重身份、最终训练验证指标、
+  runtime fingerprint、训练时长和 29 项产物清单；source/processed checksum
+  manifest 与冻结身份均已只读校验，dataset、mapping 和 frozen config 未修改。
 
 - 最终工程目录和 Python package 边界
 - 六份 YAML 配置
@@ -236,6 +368,52 @@ Reference Intake: COMPLETED
   未修改 dataset 或 EXP-001 frozen identity
 - P2-3 验证：pytest `174 passed`；compileall 成功；`git diff --check` 成功；
   Charter diff 为空
+- P2-4-G3/G4 与 final provisioning gate 完成：AutoDL RTX 4090 runtime、
+  `ppe-exp001` dependencies、dataset transfer、7-class mapping 和 full
+  manifest integrity 均验证；Environment/Dataset READY
+- P2-5 完成 EXP-001 authorization review；结果为 `BLOCKED`，并记录配置参数、
+  权重二进制、环境 freeze 和人工授权缺失项
+- P2-5.1 完成 EXP-001 configuration freeze：记录 model、dataset、class count、
+  `imgsz`、epochs、batch、optimizer、LR strategy、seed、device、workers 和
+  output path；配置 SHA256 已记录，`execution_enabled: false` 保持不变
+- P2-5.1 未下载权重、未训练、未修改 dataset 或 mapping；weight binary
+  SHA256、完整 dependency freeze 和 explicit training authorization 仍待完成
+- P2-5.1 验证：pytest `175 passed`；compileall 成功；`git diff --check`
+  成功；Charter diff 为空
+- P2-5.2 从 Ultralytics assets `v8.3.0` 获取官方 `yolo11n.pt`，验证
+  `5,613,764` bytes、MD5 content header、ZIP/PyTorch 结构和 SHA256
+  `0ebbc80d...7644ee1`
+- P2-5.2 创建 `docs/weights/EXP-001_WEIGHT_MANIFEST.yaml` 和
+  `P2-5.2_WEIGHT_REGISTRATION_REPORT.md`；二进制保持 Git-ignored，未训练、
+  未修改 dataset、mapping 或 EXP-001 配置
+- P2-5.3 导出 `ppe-exp001` 的完整 conda environment、conda explicit URLs 和
+  pip freeze lock；记录 RTX 4090 UUID、driver、CUDA API/runtime、cuDNN、
+  Python、PyTorch 和 Ultralytics fingerprint
+- P2-5.3 三个 lock 与远端当前输出逐行匹配，`pip check` 为 PASS；生成
+  `P2-5.3_DEPENDENCY_FREEZE_REPORT.md` 和 `locks/EXP-001/runtime-fingerprint.yaml`
+- P2-5.4 将登记后的 `yolo11n.pt` 传输到
+  `/root/autodl-tmp/models/pretrained/yolo11n.pt`；传输前确认目标不存在，
+  未覆盖已有文件
+- P2-5.4 远端文件存在、大小为 `5,613,764` bytes，SHA256
+  `0ebbc80d...7644ee1` 与本地一致；生成
+  `docs/reports/EXP-001_REMOTE_WEIGHT_VERIFY.md`
+- P2-5.4 未启动训练、未执行模型、未修改 dataset、mapping 或 EXP-001
+  canonical configuration；training authorization 保持 `NOT GRANTED`
+- P2-5.4 验证：pytest `179 passed`；compileall 成功；`git diff --check`
+  成功；Charter diff 为空
+- P2-5.5 在明确人工授权后执行一次 EXP-001 YOLO11n baseline 训练；训练
+  于 `2026-09-22T08:00:02Z` 开始，`2026-09-22T08:19:29Z` 完成，95 个 epoch
+  后由 `patience: 20` 提前停止，最佳 epoch 为 75
+- P2-5.5 产生 `best.pt`、`last.pt`、training log、resolved args、
+  `results.csv`、confusion matrix、曲线、run record 和 frozen config
+  snapshot；全部运行产物保持 Git-ignored
+- P2-5.5 验证结果为 precision `0.899`、recall `0.649`、mAP50 `0.767`、
+  mAP50-95 `0.480`；最佳 checkpoint SHA256
+  `1c144eef0dfa06b984dde760ea5501a11746b99c1f8a9ae581790241c3871f61`
+- P2-5.5 生成 `docs/reports/EXP-001_TRAINING_EXECUTION_REPORT.md`；M-004
+  更新为 `已经实现`，M-005 保持 `待实现`
+- P2-5.5 完成且无训练进程、GPU 利用率为 `0 %` 后，已向 AutoDL 实例发出
+  shutdown；未删除远端 dataset、权重或训练产物
 
 ## In Progress
 
@@ -244,24 +422,23 @@ P1C-0、P1C-1 与 P1C-2 已完成。P1C-2 已从不可变 source 生成 7 类 pr
 dataset，人工审核结果为 PASS。P1D-0 已完成设计框架；P1D-1 已完成真实质量
 扫描并生成报告：payload hash 前后一致，structure PASS，10 个 P1D-1 gates
 全部 PASS。P1E-0 已完成设计门禁；P1E-1 已完成训练前审查并通过 G1E1 系列
-门禁。当前环境不满足训练执行条件，训练尚未开始。
+门禁。当前仍保留 M-001 的数据治理语义项和 P1D-1 perceptual leakage
+candidate 风险，因此 Phase 1 继续记为 `实现中`。
 
-Phase 2 仍处于准备状态：P2-0 设计与环境审计已完成，P2-1 环境架构与 setup
-方案已记录，P2-2 authorization review 已完成，P2-3 已选择 AutoDL +
-RTX 4090 24GB。P2-4-G3 已完成实例连接、`ppe-exp001` 创建、依赖安装和
-CUDA/Ultralytics import 验证；P2-4-G4 已完成 dataset transfer 和远端
-integrity verification。P2-4 final gate 已 PASS，Environment 和 Dataset
-均为 READY；training authorization 尚未完成。
+Phase 2 已完成 EXP-001 baseline 训练和实验归档。P2-0 至 P2-4 已完成环境
+准备与 provisioning；P2-5.1 至 P2-5.4 完成 configuration、dependency、
+weight 和 remote-copy freeze/verification；P2-5.5 使用一次性授权完成
+训练。授权记录现为 `CONSUMED`，不能用于第二次运行。
 
 ## Pending
 
-- model weight provenance
-- 全部 EXP-001 seed、hyperparameter、augmentation、device 和 weight 参数冻结
-- 独立的 EXP-001 training authorization
-- P2 训练执行：只有 P2-2 审核通过、环境实际 provision 与验证完成，并取得
-  独立执行授权后才允许启动
-- 所有 M-001 至 M-026 业务能力
+- Phase 3 模型评估、对照实验和 M-005 独立验收
+- M-001 的数据治理语义确认，以及 P1D-1 perceptual split-leakage
+  candidates 的解释或后续 dataset version 决策
+- 尚未实现的 MUST：M-001 至 M-003 的最终验收，以及 M-005 至 M-026
 - 所有 E-001 至 E-012 扩展能力
+- 任何新的训练运行；`EXP-001` 的一次性授权已经消费，第二次运行必须使用
+  新 experiment ID、新 authorization 和新的空输出目录
 
 ## Known Issues
 
@@ -285,13 +462,14 @@ integrity verification。P2-4 final gate 已 PASS，Environment 和 Dataset
   risk，以及最大/最小类别计数比约 `6.20`；后续训练评估必须保留 per-class
   metrics 和小目标关注。
 - P1D-1 检出 32 个空标签，按 image-without-object 保留，未删除。
-- P1E-1 后，model version、weights、image size、batch、epochs、optimizer、
-  learning rate、augmentation、seed、device 和 device strategy 仍是
-  `PENDING_DESIGN_REVIEW`；不得视为已冻结训练参数。
+- P1E-1 的 `PENDING_DESIGN_REVIEW` 状态已由 P2-5.1 configuration freeze
+  取代；canonical EXP-001 参数现已冻结。该 canonical 文件保持
+  `execution_enabled: false`，本次运行使用一次性 external authorization。
 - 本地 Windows 主机没有 PyTorch、Ultralytics 或可用 CUDA/NVIDIA GPU；
   AutoDL `ppe-exp001` 已具备 CUDA 12.4 和 RTX 4090，dataset 已传输并通过
-  integrity verification；P2-4 final gate 为 PASS。训练仍须等待 weight
-  provenance、参数冻结和独立 authorization。
+  integrity verification；P2-4 final gate 为 PASS。配置参数已由 P2-5.1
+  冻结；依赖已由 P2-5.3 锁定；远端权重副本已由 P2-5.4 验证；P2-5.5 已
+  完成一次授权训练。
 - P2-0 的版本矩阵仍将 Python、PyTorch、CUDA、Ultralytics 和 YOLO11
   权重来源标记为待验证；仓库中的 `ultralytics>=8.3,<9` 不是训练执行版本
   freeze。
@@ -303,13 +481,13 @@ integrity verification。P2-4 final gate 已 PASS，Environment 和 Dataset
   price、storage 和 retention 继续按 provider risk 管理。
 - P2-1 dependency specification 仍是 PLANNED VERSION；P2-4-G3 的实际
   Ultralytics 版本为 `8.4.157`，因此不能把 planned `8.4.158` 写成已安装
-  版本。P2-4 已记录并验证 resolved dependency fingerprint；训练授权仍需
-  独立审批。
+  版本。P2-4 已记录并验证 resolved dependency fingerprint；EXP-001
+  执行时使用该 resolved runtime。
 - Cloud GPU 将引入成本、数据上传、凭据、网络和实例保留风险；P2-2 必须先
   审核这些边界，且不得把凭据或数据写入 Git。
 - P2-3 已选择 AutoDL + RTX 4090 24GB；P2-4-G3 已在用户提供的实例上完成
   isolated dependency provisioning 和 CUDA 验证。live price、storage 和
-  retention 继续按 provider risk 管理，训练仍需独立授权。
+  retention 继续按 provider risk 管理；实例保留、停止或销毁需要人工决定。
 - P2-4-G4 已将 `data/processed/css-ppe-10-v1/` 原样传输到
   `/root/autodl-tmp/datasets/css-ppe-10-v1/`，未修改 labels、`data.yaml`、
   annotation、class mapping 或 EXP-001 configuration；远端 metadata manifest
@@ -317,19 +495,40 @@ integrity verification。P2-4 final gate 已 PASS，Environment 和 Dataset
 - P2-2 dependency freeze review 记录的是历史 `PENDING` 状态；P2-4-G3 已
   安装并验证实际依赖，P2-4-G2 已记录 runtime fingerprint，P2-4 final gate
   为 PASS。
-- EXP-001 execution review 仍不 ready：seed、image size、batch、epochs、
-  optimizer、learning rate、augmentation、device、device strategy、model
-  version 和 weights 均为 `PENDING_DESIGN_REVIEW`。
+- P2-5.1 已冻结 EXP-001 的 model、dataset、class count、image size、batch、
+  epochs、optimizer、learning rate/LR strategy、augmentation、seed、device、
+  workers 和 output paths；`execution_enabled` 仍为 `false`。
+- P2-5.2 已登记官方 Ultralytics `yolo11n.pt` 初始化权重，记录
+  `5,613,764` bytes、MD5 和 SHA256 `0ebbc80d...7644ee1`；二进制保持
+  Git-ignored。
+- P2-5.3 已冻结 conda/pip 依赖和 runtime fingerprint；`pip check` PASS，
+  lock 与远端环境逐行匹配。AutoDL 未通过实例接口暴露 immutable image
+  digest；raw pip lock 保留 pip 自身镜像构建机 origin，portable pip pin
+  以 conda lock 的 `pip=26.2.1` 为准。
+- P2-5.4 已将 `yolo11n.pt` 传输到
+  `/root/autodl-tmp/models/pretrained/yolo11n.pt`，远端存在性、文件大小和
+  SHA256 均与本地一致；远端校验报告为
+  `docs/reports/EXP-001_REMOTE_WEIGHT_VERIFY.md`。
+- P2-5.5 的训练日志披露 Ultralytics AMP 自检自动获取了 `yolo26n.pt`；日志
+  明确标记该文件仅用于 one-time AMP check，不是训练初始化权重，也未替代
+  冻结的 `yolo11n.pt`。
+- EXP-001 的 validation metrics 来自训练运行，可作为 M-004 实验归档证据，
+  但不能替代 Phase 3 的独立 M-005 evaluation。
+- Fast training produced a best epoch at 75 with overall recall `0.649` and
+  `no_hardhat` mAP50-95 `0.327`; Phase 3 must retain per-class analysis and
+  the P1D-1 small-object and perceptual-leakage risks.
 
 ## Blockers
 
-- P1E-1 review 无 execution blocker；训练执行仍有 environment readiness
-  blocker、未决训练参数和未获授权状态。
+- P1E-1 review 无 execution blocker；P2-5.1 已解除配置参数未决 blocker，
+  P2-5.3 已解除 dependency-freeze blocker，P2-5.4 已解除 remote weight
+  transfer blocker；P2-5.5 已完成一次授权训练。
 - P2-0 未解决的本地硬件和依赖 blocker 已由受控 AutoDL 路径规避；P2-4-G3
   已完成实际依赖安装和 CUDA verification。
 - P2-1/P2-3 的 architecture/provider selection blocker 已解除；P2-4
-  environment 和 dataset blockers 已解除。仍存在 weight provenance、参数
-  冻结和 authorization blockers。
+  environment 和 dataset blockers 已解除；P2-5.1 已解除参数冻结 blocker。
+  P2-5.2 已解除本地 weight binary provenance/hash blocker；P2-5.4 已解除
+  远端权重副本 blocker；P2-5.5 已消费单次 authorization。
 - 历史 CSS-V1 metadata mismatch 继续作为审计记录保留；ADR-012 已选择并以
   artifact fingerprint 冻结 `CSS-PPE-10-V1`，因此不再阻塞 conversion。
 - P1D-1 已完成 exact/perceptual duplicate、坏样本、坐标范围和 split 泄漏
@@ -337,9 +536,9 @@ integrity verification。P2-4 final gate 已 PASS，Environment 和 Dataset
 
 ## Next Allowed Step
 
-下一允许步骤是 `WAIT FOR HUMAN TRAINING AUTHORIZATION`。P2-4 final gate
-已 PASS，Environment 和 Dataset 均为 READY，但这不代表训练授权。下载
-模型权重、执行训练和修改 frozen dataset / mapping / EXP-001 identity 仍被
-禁止。不得把 P2-4 provisioning PASS 解释为 training authorization。
+当前停留在 P2-7 Training Result Freeze，结果冻结已完成，等待新的用户指令。
+本任务不授权进入 Phase 3、evaluation、第二次训练、dataset/mapping 修改或新 experiment。
 
-M-001 保持 `待实现`，因为可复现训练、权重、日志和验证结果尚未产生。
+M-004 已由 `docs/reports/EXP-001_TRAINING_EXECUTION_REPORT.md` 的证据满足并
+标记为 `已经实现`。M-005 保持 `待实现`；M-001 也保持 `待实现`，因为其
+最终治理边界仍需独立处理。

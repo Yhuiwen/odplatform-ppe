@@ -38,7 +38,6 @@ PLACEHOLDER_CALLS = [
     ("event-state", lambda: EventStateManager().update(None)),
     ("pipeline", lambda: InferencePipeline().run(None)),
     ("dataset-quality-validation", lambda: DatasetService().validate()),
-    ("train-service", lambda: TrainService().train({})),
     ("val-service", lambda: ValService().evaluate({})),
     ("image-service", lambda: InferenceService().infer_image(None)),
     ("video-service", lambda: InferenceService().infer_video(None)),

@@ -1,17 +1,22 @@
 # EXP-001 Training Runbook
 
-> STATUS: DESIGN ONLY
+> STATUS: CONFIGURATION FROZEN / EXECUTED
 >
-> TRAINING EXECUTION: NOT STARTED
+> TRAINING EXECUTION: COMPLETED
 >
-> This runbook does not authorize a training run.
+> The one-run authorization has been consumed. This runbook does not authorize
+> another training run.
 
 ## 1. Environment Requirements
 
 - Repository root must contain the frozen project source tree.
 - Python, PyTorch, and Ultralytics versions must be resolved and recorded.
+- P2-5.3 freezes the exact conda and pip environment under
+  `locks/EXP-001/`.
 - CUDA availability and device strategy must be verified before execution.
-- The current P1E-1 environment audit result is `NOT READY FOR TRAINING`.
+- P2-4 verified the AutoDL RTX 4090 environment and transferred dataset.
+- Training authorization was granted by explicit user instruction and consumed
+  by EXP-001.
 - Do not install dependencies or download weights as part of this runbook.
 - Phase 2 preparation and explicit user approval are required before execution.
 
@@ -43,27 +48,30 @@ Schema:
 configs/training/schema.yaml
 ```
 
-The config is currently `DESIGN_PLACEHOLDER` and
-`execution_enabled: false`. All unresolved values remain
-`PENDING_DESIGN_REVIEW`.
+The config is currently `CONFIGURATION_FROZEN` and
+`execution_enabled: false`. P2-5.1 freezes the baseline parameters while
+keeping execution disabled until explicit authorization.
 
 ## 4. Training Entry
 
-The future entry point is:
+The implemented entry point is:
 
 ```text
 scripts/train.py
 ```
 
-It currently raises `NotImplementedError` and is intentionally not executable.
-The planned invocation is design-only:
+The one authorized invocation was:
 
-```text
-python -m scripts.train --config configs/training/exp001_baseline.yaml
+```bash
+/root/miniconda3/envs/ppe-exp001/bin/python -m scripts.train \
+  --config configs/training/exp001_baseline.yaml \
+  --authorization configs/training/exp001_authorization.yaml \
+  --data-yaml /root/autodl-tmp/datasets/css-ppe-10-v1/data.yaml \
+  --weights /root/autodl-tmp/models/pretrained/yolo11n.pt
 ```
 
-This command must not be run until the Phase 2 implementation and
-training-execution authorization are complete.
+Executing this command again is not authorized. The authorization record is
+marked `CONSUMED`, and the populated output destinations reject a collision.
 
 ## 5. Output Directories
 
@@ -82,12 +90,13 @@ the repository ignore policy.
 1. Verify the dataset contract and all three fingerprints.
 2. Verify the processed dataset class order and image/label structure.
 3. Resolve and record Python, PyTorch, Ultralytics, CUDA, and device versions.
-4. Review and freeze every `PENDING_DESIGN_REVIEW` parameter.
+4. Verify the frozen configuration fingerprint and every parameter value.
 5. Store a copy of the canonical configuration in the run directory.
 6. Store the dataset fingerprint and environment record in the run directory.
-7. Execute only after Phase 2 authorization.
+7. Execute only after a new explicit authorization is recorded.
 8. Save logs, metrics, confusion matrix, speed, model size, and checkpoint.
-9. Re-run the same configuration and compare deterministic evidence.
+9. If a new comparison run is authorized, use a new experiment ID and
+   authorization record rather than overwriting `EXP-001`.
 
 ## 7. Stop Conditions
 
@@ -96,7 +105,9 @@ Stop before execution if any of the following is true:
 - dataset fingerprint mismatch;
 - class order mismatch;
 - output path collision;
-- unresolved hyperparameter, seed, or device strategy;
-- environment audit remains `NOT READY FOR TRAINING`;
+- configuration fingerprint mismatch;
+- missing explicit human training authorization;
+- dependency lock and weight provenance are not present and verified at the
+  remote execution host;
 - a weight download or external install would be required; or
 - the current instruction still prohibits training.

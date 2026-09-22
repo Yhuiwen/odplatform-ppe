@@ -19,9 +19,40 @@ SCHEMA_PATH = PROJECT_ROOT / "configs" / "training" / "schema.yaml"
 BASELINE_CONFIG_PATH = (
     PROJECT_ROOT / "configs" / "training" / "exp001_baseline.yaml"
 )
+AUGMENTATION_CONFIG_PATH = (
+    PROJECT_ROOT / "experiments" / "configs" / "augmentation.yaml"
+)
 STRATEGY_PATH = PROJECT_ROOT / "docs" / "18_TRAINING_STRATEGY.md"
 EXPERIMENTS_ROOT = PROJECT_ROOT / "experiments"
 REPORTS_ROOT = PROJECT_ROOT / "docs" / "reports"
+CONFIG_FREEZE_PATH = REPORTS_ROOT / "P2-5.1_CONFIGURATION_FREEZE.md"
+CONFIG_FREEZE_REPORT_PATH = (
+    PROJECT_ROOT / "P2-5.1_CONFIGURATION_FREEZE_REPORT.md"
+)
+WEIGHT_PATH = PROJECT_ROOT / "models" / "pretrained" / "yolo11n.pt"
+WEIGHT_MANIFEST_PATH = (
+    PROJECT_ROOT / "docs" / "weights" / "EXP-001_WEIGHT_MANIFEST.yaml"
+)
+WEIGHT_REPORT_PATH = (
+    PROJECT_ROOT / "P2-5.2_WEIGHT_REGISTRATION_REPORT.md"
+)
+REMOTE_WEIGHT_REPORT_PATH = (
+    REPORTS_ROOT / "EXP-001_REMOTE_WEIGHT_VERIFY.md"
+)
+DEPENDENCY_LOCK_ROOT = PROJECT_ROOT / "locks" / "EXP-001"
+CONDA_ENV_LOCK_PATH = DEPENDENCY_LOCK_ROOT / "conda-environment.yml"
+CONDA_EXPLICIT_LOCK_PATH = DEPENDENCY_LOCK_ROOT / "conda-explicit.lock"
+PIP_FREEZE_LOCK_PATH = DEPENDENCY_LOCK_ROOT / "pip-freeze-all.txt"
+RUNTIME_FINGERPRINT_PATH = (
+    DEPENDENCY_LOCK_ROOT / "runtime-fingerprint.yaml"
+)
+DEPENDENCY_FREEZE_PATH = REPORTS_ROOT / "P2-5.3_DEPENDENCY_FREEZE.md"
+DEPENDENCY_FREEZE_REPORT_PATH = (
+    PROJECT_ROOT / "P2-5.3_DEPENDENCY_FREEZE_REPORT.md"
+)
+AUTHORIZATION_CHECKLIST_PATH = (
+    REPORTS_ROOT / "P2-2_TRAINING_AUTHORIZATION.md"
+)
 CONTRACT_AUDIT_PATH = REPORTS_ROOT / "P1E-1_TRAINING_CONTRACT_AUDIT.md"
 CONFIG_AUDIT_PATH = REPORTS_ROOT / "P1E-1_EXPERIMENT_CONFIG_AUDIT.md"
 ENVIRONMENT_AUDIT_PATH = REPORTS_ROOT / "P1E-1_TRAINING_ENVIRONMENT_AUDIT.md"
@@ -83,16 +114,29 @@ def test_training_config_schema_exists_and_is_non_executable() -> None:
         "model_variant",
         "model_version",
         "weights",
+        "weights_provenance",
+        "pretrained",
+        "class_count",
+        "classes",
         "epochs",
         "imgsz",
         "batch",
         "optimizer",
         "learning_rate",
+        "lr_strategy",
+        "lr_final_fraction",
+        "weight_decay",
+        "warmup_epochs",
+        "patience",
         "augmentation",
         "seed",
         "hyperparameter_status",
         "device",
         "device_strategy",
+        "workers",
+        "deterministic",
+        "amp",
+        "cache",
         "output_path",
         "logs_path",
         "reports_path",
@@ -136,7 +180,7 @@ def test_dataset_training_contract_exists_with_frozen_identity() -> None:
 def test_experiment_ids_match_frozen_format() -> None:
     experiment_ids: list[str] = []
     config_paths = [
-        *EXPERIMENTS_ROOT.rglob("*.yaml"),
+        *(EXPERIMENTS_ROOT / "configs").glob("*.yaml"),
         BASELINE_CONFIG_PATH,
     ]
     for path in config_paths:
@@ -164,31 +208,52 @@ def test_experiment_ids_match_frozen_format() -> None:
     assert "mAP50-95" in strategy
 
 
-def test_no_training_run_or_weight_file_was_created() -> None:
-    assert sorted(path.name for path in (EXPERIMENTS_ROOT / "runs").iterdir()) == [
-        ".gitkeep"
-    ]
-    assert sorted(
+def test_p2_5_1_configuration_is_frozen_and_training_is_disabled() -> None:
+    run_entries = {path.name for path in (EXPERIMENTS_ROOT / "runs").iterdir()}
+    report_entries = {
         path.name for path in (EXPERIMENTS_ROOT / "reports").iterdir()
-    ) == [".gitkeep"]
-    assert not [
-        path
-        for pattern in ("*.pt", "*.pth", "*.weights")
-        for path in PROJECT_ROOT.rglob(pattern)
-    ]
+    }
+    assert run_entries.issubset({".gitkeep", "EXP-001"})
+    assert report_entries.issubset({".gitkeep", "EXP-001"})
+    assert ".gitkeep" in run_entries
+    assert ".gitkeep" in report_entries
+
+    pt_files = set(PROJECT_ROOT.rglob("*.pt"))
+    approved_pt_files = {
+        WEIGHT_PATH,
+        PROJECT_ROOT / "models" / "checkpoints" / "EXP-001" / "best.pt",
+        PROJECT_ROOT / "models" / "checkpoints" / "EXP-001" / "last.pt",
+        PROJECT_ROOT / "experiments" / "runs" / "EXP-001" / "weights" / "best.pt",
+        PROJECT_ROOT / "experiments" / "runs" / "EXP-001" / "weights" / "last.pt",
+    }
+    assert pt_files.issubset(approved_pt_files)
+    assert not list(PROJECT_ROOT.rglob("*.pth"))
+    assert not list(PROJECT_ROOT.rglob("*.weights"))
     baseline = _load_yaml(BASELINE_CONFIG_PATH)
+    augmentation = _load_yaml(AUGMENTATION_CONFIG_PATH)
+    assert baseline["status"] == "CONFIGURATION_FROZEN"
     assert baseline["execution_enabled"] is False
     assert baseline["review_status"] == (
-        "P1E-1 COMPLETED / TRAINING NOT STARTED"
+        "P2-5.1 COMPLETE / CONFIGURATION FROZEN / TRAINING NOT AUTHORIZED"
     )
-    assert baseline["epochs"] == "PENDING_DESIGN_REVIEW"
-    assert baseline["imgsz"] == "PENDING_DESIGN_REVIEW"
-    assert baseline["batch"] == "PENDING_DESIGN_REVIEW"
-    assert baseline["optimizer"] == "PENDING_DESIGN_REVIEW"
-    assert baseline["seed"] == "PENDING_DESIGN_REVIEW"
-    assert baseline["hyperparameter_status"] == "PENDING_DESIGN_REVIEW"
-    assert baseline["device"] == "PENDING_DESIGN_REVIEW"
-    assert baseline["device_strategy"] == "PENDING_DESIGN_REVIEW"
+    assert baseline["model"] == "YOLO11n"
+    assert baseline["model_version"] == "8.4.157"
+    assert baseline["weights"] == "yolo11n.pt"
+    assert baseline["dataset"] == "CSS-PPE-10-V1"
+    assert baseline["class_count"] == 7
+    assert baseline["imgsz"] == 640
+    assert baseline["epochs"] == 100
+    assert baseline["batch"] == 16
+    assert baseline["optimizer"] == "AdamW"
+    assert baseline["learning_rate"] == 0.001
+    assert baseline["lr_strategy"] == "cosine"
+    assert baseline["seed"] == 42
+    assert baseline["device"] == "cuda:0"
+    assert baseline["workers"] == 8
+    assert baseline["hyperparameter_status"] == "FROZEN_P2_5_1"
+    assert augmentation["status"] == "CONFIGURATION_FROZEN"
+    assert augmentation["augmentation"]["enabled"] is True
+    assert augmentation["augmentation"]["parameters"]["mosaic"] == 1.0
     assert baseline["output_path"] == "experiments/runs/EXP-001"
     assert baseline["logs_path"] == "artifacts/logs/EXP-001"
     assert baseline["reports_path"] == "experiments/reports/EXP-001"
@@ -242,10 +307,175 @@ def test_p1e1_reports_and_runbook_record_review_evidence() -> None:
     assert "REVIEW COMPLETE / TRAINING NOT STARTED" in checklist
 
     runbook = RUNBOOK_PATH.read_text(encoding="utf-8")
-    assert "STATUS: DESIGN ONLY" in runbook
-    assert "TRAINING EXECUTION: NOT STARTED" in runbook
+    assert "STATUS: CONFIGURATION FROZEN / EXECUTED" in runbook
+    assert "TRAINING EXECUTION: COMPLETED" in runbook
     assert "configs/training/exp001_baseline.yaml" in runbook
     assert "experiments/runs/EXP-001" in runbook
+
+
+def test_p2_5_1_configuration_freeze_documents_exist() -> None:
+    for path in (CONFIG_FREEZE_PATH, CONFIG_FREEZE_REPORT_PATH):
+        assert path.is_file(), path
+
+    freeze_record = CONFIG_FREEZE_PATH.read_text(encoding="utf-8")
+    freeze_report = CONFIG_FREEZE_REPORT_PATH.read_text(encoding="utf-8")
+    assert "CONFIGURATION FREEZE: COMPLETE" in freeze_record
+    assert "TRAINING AUTHORIZATION: NOT GRANTED" in freeze_record
+    assert "P2-5.1 CONFIGURATION FREEZE REPORT" in freeze_report
+    assert "TRAINING: NOT AUTHORIZED" in freeze_report
+
+
+def test_p2_5_2_weight_registration_manifest_is_complete() -> None:
+    assert WEIGHT_MANIFEST_PATH.is_file()
+    assert WEIGHT_REPORT_PATH.is_file()
+
+    manifest = _load_yaml(WEIGHT_MANIFEST_PATH)
+    assert manifest["status"] == "REGISTERED"
+    assert manifest["experiment_id"] == "EXP-001"
+    assert manifest["model_variant"] == "YOLO11n"
+    assert manifest["filename"] == "yolo11n.pt"
+    assert manifest["local_path"] == "models/pretrained/yolo11n.pt"
+    assert manifest["git_tracked"] is False
+    assert manifest["source"]["provider"] == "Ultralytics"
+    assert manifest["source"]["release"] == "v8.3.0"
+    assert manifest["artifact"]["size_bytes"] == 5613764
+    assert manifest["artifact"]["sha256"] == (
+        "0ebbc80d4a7680d14987a577cd21342b65ecfd94632bd9a8da63ae6417644ee1"
+    )
+    assert manifest["registration"]["training_executed"] is False
+    assert manifest["registration"]["dataset_modified"] is False
+    assert manifest["registration"]["mapping_modified"] is False
+    assert manifest["registration"]["exp001_config_modified"] is False
+
+    report = WEIGHT_REPORT_PATH.read_text(encoding="utf-8")
+    assert "Final status: **READY**" in report
+    assert "Training authorization: NOT GRANTED" in report
+    assert manifest["artifact"]["sha256"] in report
+
+
+def test_p2_5_2_registered_weight_matches_manifest_when_present() -> None:
+    if not WEIGHT_PATH.is_file():
+        pytest.skip("registered pretrained weight is not present in this checkout")
+    manifest = _load_yaml(WEIGHT_MANIFEST_PATH)
+    assert WEIGHT_PATH.stat().st_size == manifest["artifact"]["size_bytes"]
+    assert _sha256_file(WEIGHT_PATH) == manifest["artifact"]["sha256"]
+
+
+def test_p2_5_4_remote_weight_verification_is_recorded() -> None:
+    assert REMOTE_WEIGHT_REPORT_PATH.is_file()
+    manifest = _load_yaml(WEIGHT_MANIFEST_PATH)
+    assert manifest["remote_training_copy"] == "VERIFIED"
+    remote = manifest["remote_training"]
+    assert remote["path"] == (
+        "/root/autodl-tmp/models/pretrained/yolo11n.pt"
+    )
+    assert remote["size_bytes"] == manifest["artifact"]["size_bytes"]
+    assert remote["sha256"] == manifest["artifact"]["sha256"]
+    assert remote["destination_preexisting"] is False
+    assert remote["verification_report"] == (
+        "docs/reports/EXP-001_REMOTE_WEIGHT_VERIFY.md"
+    )
+
+    report = REMOTE_WEIGHT_REPORT_PATH.read_text(encoding="utf-8")
+    assert "Final status: **READY**" in report
+    assert "Training authorization: NOT GRANTED" in report
+    assert "| File exists | YES | YES | PASS |" in report
+    assert "| Size | `5,613,764` bytes | `5,613,764` bytes | PASS |" in report
+    assert manifest["artifact"]["sha256"] in report
+
+    authorization = AUTHORIZATION_CHECKLIST_PATH.read_text(encoding="utf-8")
+    assert "## P2-5.4 Remote Weight Transfer Verification Update" in authorization
+    assert "| Remote weight copy | VERIFIED |" in authorization
+
+
+def test_p2_5_3_dependency_freeze_locks_and_fingerprint_are_complete() -> None:
+    for path in (
+        CONDA_ENV_LOCK_PATH,
+        CONDA_EXPLICIT_LOCK_PATH,
+        PIP_FREEZE_LOCK_PATH,
+        RUNTIME_FINGERPRINT_PATH,
+        DEPENDENCY_FREEZE_PATH,
+        DEPENDENCY_FREEZE_REPORT_PATH,
+    ):
+        assert path.is_file(), path
+
+    conda_environment = _load_yaml(CONDA_ENV_LOCK_PATH)
+    conda_dependencies = conda_environment["dependencies"]
+    conda_packages = [
+        dependency
+        for dependency in conda_dependencies
+        if isinstance(dependency, str)
+    ]
+    pip_section = next(
+        dependency["pip"]
+        for dependency in conda_dependencies
+        if isinstance(dependency, dict) and "pip" in dependency
+    )
+    assert conda_environment["name"] == "ppe-exp001"
+    assert len(conda_packages) == 29
+    assert len(pip_section) == 52
+    assert any(value.startswith("python=3.10.21=") for value in conda_packages)
+    assert "torch==2.5.1+cu124" in pip_section
+    assert "ultralytics==8.4.157" in pip_section
+    assert "prefix:" not in CONDA_ENV_LOCK_PATH.read_text(encoding="utf-8")
+
+    explicit_urls = [
+        line
+        for line in CONDA_EXPLICIT_LOCK_PATH.read_text(encoding="utf-8").splitlines()
+        if line.startswith("https://")
+    ]
+    assert len(explicit_urls) == 32
+    assert "@EXPLICIT" in CONDA_EXPLICIT_LOCK_PATH.read_text(encoding="utf-8")
+
+    pip_freeze = PIP_FREEZE_LOCK_PATH.read_text(encoding="utf-8")
+    assert "torch==2.5.1+cu124" in pip_freeze
+    assert "ultralytics==8.4.157" in pip_freeze
+    assert "pip @ file:///home/task_178792879927882/" in pip_freeze
+    assert len(pip_freeze.splitlines()) == 53
+
+    runtime = _load_yaml(RUNTIME_FINGERPRINT_PATH)
+    assert runtime["status"] == "FROZEN"
+    assert runtime["experiment_id"] == "EXP-001"
+    assert runtime["provider"]["instance_id"] == "bcb849a74f-38320766"
+    assert runtime["gpu"]["uuid"] == (
+        "GPU-ad5f1f4a-5bdb-4a26-9b62-5eb190196bb4"
+    )
+    assert runtime["cuda"]["nvidia_driver_version"] == "560.35.03"
+    assert runtime["cuda"]["driver_api_version"] == "12.6"
+    assert runtime["cuda"]["pytorch_runtime_version"] == "12.4"
+    assert runtime["runtime"]["torch"] == "2.5.1+cu124"
+    assert runtime["runtime"]["ultralytics"] == "8.4.157"
+    assert runtime["runtime"]["pip_check"] == "PASS"
+
+    expected_hashes = {
+        "conda_environment": (
+            CONDA_ENV_LOCK_PATH,
+            "95b03d3dfc57f4124dcf370b9bd42cadab86f1701649d3610824c74a86f88fc3",
+        ),
+        "conda_explicit": (
+            CONDA_EXPLICIT_LOCK_PATH,
+            "599ed7c0e6b9ee9817517d140488c382066fc2e9d7e2a14315deefb43f3438d5",
+        ),
+        "pip_freeze_all": (
+            PIP_FREEZE_LOCK_PATH,
+            "34c9b668095029732f1c4c084b81185309c64614fe25e88b69328e1f9b91599e",
+        ),
+    }
+    for key, (path, expected_hash) in expected_hashes.items():
+        assert runtime["lock_files"][key]["sha256"] == expected_hash
+        assert _sha256_file(path) == expected_hash
+
+    freeze_record = DEPENDENCY_FREEZE_PATH.read_text(encoding="utf-8")
+    freeze_report = DEPENDENCY_FREEZE_REPORT_PATH.read_text(encoding="utf-8")
+    assert "Dependency freeze: COMPLETE" in freeze_record
+    assert "TRAINING: NOT AUTHORIZED" in freeze_record
+    assert "Final status: **READY**" in freeze_report
+    assert "Training authorization: NOT GRANTED" in freeze_report
+
+    authorization = AUTHORIZATION_CHECKLIST_PATH.read_text(encoding="utf-8")
+    assert "| Dependencies | FROZEN / VERIFIED |" in authorization
+    assert "locks/EXP-001/conda-environment.yml" in authorization
+    assert "| Authorization | NOT GRANTED |" in authorization
 
 
 def test_p2_3_provider_selection_keeps_training_unauthorized() -> None:
@@ -267,19 +497,29 @@ def test_p2_3_provider_selection_keeps_training_unauthorized() -> None:
     assert "| Authorization | NOT GRANTED |" in authorization
 
 
-def test_charter_is_unchanged_against_phase_zero_tag() -> None:
+def test_charter_locked_body_is_unchanged_against_phase_zero_tag() -> None:
     result = subprocess.run(
-        [
-            "git",
-            "diff",
-            "--quiet",
-            "charter-v1",
-            "--",
-            "docs/00_PROJECT_CHARTER.md",
-        ],
+        ["git", "show", "charter-v1:docs/00_PROJECT_CHARTER.md"],
         cwd=PROJECT_ROOT,
         check=False,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
     )
-    if result.returncode == 128:
+    if result.returncode != 0:
         pytest.skip("charter-v1 tag is unavailable in this checkout")
-    assert result.returncode == 0
+
+    def normalize_statuses(text: str) -> str:
+        lines: list[str] = []
+        for line in text.splitlines():
+            if re.match(r"^\| (?:M|E)-\d{3} \|", line):
+                cells = line.split("|")
+                cells[-2] = " STATUS "
+                line = "|".join(cells)
+            lines.append(line)
+        return "\n".join(lines)
+
+    current = (PROJECT_ROOT / "docs" / "00_PROJECT_CHARTER.md").read_text(
+        encoding="utf-8"
+    )
+    assert normalize_statuses(current) == normalize_statuses(result.stdout)

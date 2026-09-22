@@ -59,3 +59,27 @@ The dependency set cannot be marked `FROZEN` until:
    with the runtime fingerprint.
 
 No dependency installation or training is authorized by this review.
+
+## P2-5.3 Resolution
+
+P2-5.3 subsequently captured the resolved AutoDL environment and runtime:
+
+| Field | Frozen value |
+| --- | --- |
+| Instance | AutoDL `bcb849a74f-38320766`, region `bjb1` |
+| GPU | NVIDIA GeForce RTX 4090, `24,564 MiB` |
+| GPU UUID | `GPU-ad5f1f4a-5bdb-4a26-9b62-5eb190196bb4` |
+| Driver / driver API | `560.35.03` / CUDA `12.6` |
+| PyTorch CUDA runtime | `12.4` |
+| Python | `3.10.21` |
+| PyTorch / torchvision / torchaudio | `2.5.1+cu124` / `0.20.1+cu124` / `2.5.1+cu124` |
+| Ultralytics | `8.4.157` |
+| Conda environment lock | `locks/EXP-001/conda-environment.yml` |
+| Conda explicit lock | `locks/EXP-001/conda-explicit.lock` |
+| pip freeze lock | `locks/EXP-001/pip-freeze-all.txt` |
+| Runtime fingerprint | `locks/EXP-001/runtime-fingerprint.yaml` |
+
+The exported locks match the live remote output and `python -m pip check`
+reports no broken requirements. `Dependency Freeze: FROZEN`.
+
+This update does not grant training authorization.

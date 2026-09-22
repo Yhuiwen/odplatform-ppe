@@ -61,7 +61,7 @@ def test_all_phase_documents_have_required_sections() -> None:
         assert "【LOCKED】" in content
 
 
-def test_charter_contains_all_locked_must_items_as_pending() -> None:
+def test_charter_contains_all_locked_items_with_only_proven_status_changes() -> None:
     charter = (PROJECT_ROOT / "docs/00_PROJECT_CHARTER.md").read_text(
         encoding="utf-8"
     )
@@ -71,7 +71,12 @@ def test_charter_contains_all_locked_must_items_as_pending() -> None:
     for index in range(1, 13):
         item = f"E-{index:03d}"
         assert item in charter
-    assert charter.count("待实现") >= 38
+    assert charter.count("待实现") >= 37
+    assert (
+        "| M-004 | YOLO11n 至少完成一轮可复现训练 | "
+        "固定配置、数据和随机种子后至少完成一轮训练；产出权重、日志、配置快照"
+        "和复现实验命令 | 已经实现 |"
+    ) in charter
     assert "PROJECT CHARTER — LOCKED TARGET DOCUMENT" in charter
     assert "MUST 功能" in charter
     assert "明确不属于 V1 MUST" in charter
@@ -107,7 +112,10 @@ def test_local_markdown_links_do_not_point_to_missing_files() -> None:
             assert resolved.exists(), f"{markdown_file}: broken link {target}"
 
 
-def test_phase_zero_has_not_downloaded_large_assets() -> None:
+def test_phase_zero_has_not_downloaded_unregistered_large_assets() -> None:
+    expected_files = {
+        "models/pretrained": {".gitkeep", "yolo11n.pt"},
+    }
     for directory in (
         "data/external",
         "data/raw",
@@ -124,4 +132,4 @@ def test_phase_zero_has_not_downloaded_large_assets() -> None:
             for path in (PROJECT_ROOT / directory).iterdir()
             if path.is_file()
         ]
-        assert files == [".gitkeep"], directory
+        assert set(files) == expected_files.get(directory, {".gitkeep"}), directory

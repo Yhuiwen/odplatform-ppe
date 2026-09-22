@@ -1,18 +1,22 @@
 schema_version: training-config-v1
-status: DESIGN_PLACEHOLDER
+status: CONFIGURATION_FROZEN_ALIAS
 execution_enabled: false
 
 template_for: EXP-001
 canonical_config: configs/training/exp001_baseline.yaml
 dataset: CSS-PPE-10-V1
 model: YOLO11n
-epochs: PENDING_DESIGN_REVIEW
-imgsz: PENDING_DESIGN_REVIEW
-batch: PENDING_DESIGN_REVIEW
-optimizer: PENDING_DESIGN_REVIEW
-learning_rate: PENDING_DESIGN_REVIEW
-augmentation: PENDING_DESIGN_REVIEW
-seed: PENDING_DESIGN_REVIEW
+class_count: 7
+epochs: 100
+imgsz: 640
+batch: 16
+optimizer: AdamW
+learning_rate: 0.001
+lr_strategy: cosine
+augmentation: experiments/configs/augmentation.yaml
+seed: 42
+device: "cuda:0"
+workers: 8
 
 metrics:
   - mAP50

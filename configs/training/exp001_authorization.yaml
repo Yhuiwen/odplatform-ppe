@@ -1,0 +1,35 @@
+schema_version: training-authorization-v1
+status: CONSUMED
+experiment_id: EXP-001
+authorization_source: explicit user instruction
+authorization_reference: Codex task message dated 2026-09-22
+scope: single_run
+training_execution_enabled: false
+authorization_status_at_execution: GRANTED
+authorization_consumed: true
+consumed_at_utc: "2026-09-22T08:19:29Z"
+execution_report: docs/reports/EXP-001_TRAINING_EXECUTION_REPORT.md
+
+configuration_path: configs/training/exp001_baseline.yaml
+configuration_sha256: df6c55ae6deb4697493a2c1e49ac171bff5c38edfd73ad968aa5e1e2cacff989
+
+dataset_id: CSS-PPE-10-V1
+data_yaml_path: /root/autodl-tmp/datasets/css-ppe-10-v1/data.yaml
+
+weight_path: /root/autodl-tmp/models/pretrained/yolo11n.pt
+weight_sha256: 0ebbc80d4a7680d14987a577cd21342b65ecfd94632bd9a8da63ae6417644ee1
+
+runtime:
+  provider: AutoDL
+  instance_id: bcb849a74f-38320766
+  conda_environment: /root/miniconda3/envs/ppe-exp001
+
+run:
+  remote_project_root: /root/autodl-tmp/odplatform-ppe
+  execute_once: true
+  allow_additional_runs: false
+
+notes:
+  - The frozen configuration remains execution_enabled: false.
+  - This one-run external gate was granted, consumed, and closed by EXP-001.
+  - Training must stop if any identity hash or dataset class order differs.

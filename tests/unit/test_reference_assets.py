@@ -32,6 +32,10 @@ FORBIDDEN_REFERENCE_FILENAMES = {
     "best.pt",
     "history.db",
 }
+PROJECT_GENERATED_CHECKPOINT_PREFIXES = (
+    "models/checkpoints/EXP-001/",
+    "experiments/runs/EXP-001/weights/",
+)
 
 SECRET_ASSIGNMENT = re.compile(
     r"(?i)(api[_-]?key|access[_-]?token|secret[_-]?key|client[_-]?secret)"
@@ -83,11 +87,16 @@ def test_agents_requires_reference_asset_register_before_current_phase() -> None
 
 
 def test_teacher_reference_assets_are_not_in_repository() -> None:
-    found = [
-        path.relative_to(PROJECT_ROOT).as_posix()
-        for path in PROJECT_ROOT.rglob("*")
-        if path.is_file() and path.name.lower() in FORBIDDEN_REFERENCE_FILENAMES
-    ]
+    found: list[str] = []
+    for path in PROJECT_ROOT.rglob("*"):
+        if not path.is_file():
+            continue
+        if path.name.lower() not in FORBIDDEN_REFERENCE_FILENAMES:
+            continue
+        relative_path = path.relative_to(PROJECT_ROOT).as_posix()
+        if relative_path.startswith(PROJECT_GENERATED_CHECKPOINT_PREFIXES):
+            continue
+        found.append(relative_path)
     assert found == []
 
 

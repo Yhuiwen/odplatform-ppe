@@ -335,3 +335,119 @@ authorization.
 
 P2-4 final result: `PASS`. Environment and dataset provisioning is complete;
 training remains `NOT STARTED` pending explicit authorization.
+
+## Phase 2-5 Training Authorization Review Gates
+
+| Gate | Requirement | Evidence | Status |
+| --- | --- | --- | --- |
+| P2-5-G1 | Authorization report exists | `P2-5_TRAINING_AUTHORIZATION_REPORT.md` records the review scope and result | PASS |
+| P2-5-G2 | Configuration completeness reviewed | Canonical EXP-001 fields and unresolved execution values are listed | PASS |
+| P2-5-G3 | Output paths reviewed | Run, log, report, and checkpoint paths match the schema | PASS |
+| P2-5-G4 | Runtime fingerprint reviewed | P2-4 AutoDL, GPU, CUDA, Python, PyTorch, and Ultralytics evidence is recorded | PASS |
+| P2-5-G5 | Reproducibility requirements reviewed | Dataset, mapping, fingerprints, metrics, and missing execution evidence are recorded | PASS |
+| P2-5-G6 | Protected state preserved | No training, weight download, dataset, mapping, or configuration change occurred | PASS |
+
+P2-5 review result: `BLOCKED`. The review itself completed, but training was
+not authorized because unresolved parameters, weight-binary provenance,
+complete environment freeze, and explicit human authorization remained
+outstanding. P2-5.1 addresses only the configuration-parameter blocker.
+
+## Phase 2-5.1 Configuration Freeze Gates
+
+| Gate | Requirement | Evidence | Status |
+| --- | --- | --- | --- |
+| P2-5.1-G1 | Canonical configuration frozen | `configs/training/exp001_baseline.yaml` records model, dataset, class count, image size, epochs, batch, optimizer, LR strategy, seed, device, workers, and output paths | PASS |
+| P2-5.1-G2 | Augmentation frozen | `experiments/configs/augmentation.yaml` records enabled values and no longer contains pending placeholders | PASS |
+| P2-5.1-G3 | Schema aligned | `configs/training/schema.yaml` declares the frozen values and additional execution controls | PASS |
+| P2-5.1-G4 | Freeze record created | `docs/reports/P2-5.1_CONFIGURATION_FREEZE.md` records parameters, dataset identity, hashes, and immutability rules | PASS |
+| P2-5.1-G5 | Final report created | `P2-5.1_CONFIGURATION_FREEZE_REPORT.md` records required values and safety boundaries | PASS |
+| P2-5.1-G6 | Execution remains disabled | Canonical config and schema keep `execution_enabled: false` and authorization `NOT GRANTED` | PASS |
+| P2-5.1-G7 | No protected-state mutation | No training, weight download, dataset modification, or mapping modification occurred | PASS |
+| P2-5.1-G8 | Charter unchanged | `git diff charter-v1 -- docs/00_PROJECT_CHARTER.md` is empty | PASS |
+
+P2-5.1 result: `CONFIGURATION FREEZE COMPLETE`. Training remains
+`NOT AUTHORIZED`.
+
+## Phase 2-5.2 Weight Registration Gates
+
+| Gate | Requirement | Evidence | Status |
+| --- | --- | --- | --- |
+| P2-5.2-G1 | Official initialization checkpoint acquired | Ultralytics `assets` release `v8.3.0` provides `yolo11n.pt` | PASS |
+| P2-5.2-G2 | Binary identity verified | `5,613,764` bytes; SHA256 `0ebbc80d...7644ee1`; response MD5 matches the file | PASS |
+| P2-5.2-G3 | Checkpoint structure verified | File is a PyTorch checkpoint ZIP with 507 members and `data.pkl` | PASS |
+| P2-5.2-G4 | Weight manifest created | `docs/weights/EXP-001_WEIGHT_MANIFEST.yaml` records source, path, size, hashes, and initialization-only role | PASS |
+| P2-5.2-G5 | Binary excluded from Git | `.gitignore` rule `*.pt` covers `models/pretrained/yolo11n.pt`; the file is untracked | PASS |
+| P2-5.2-G6 | Authorization checklist updated | `docs/reports/P2-2_TRAINING_AUTHORIZATION.md` records Weights `REGISTERED`, remote copy `NOT TRANSFERRED`, and Authorization `NOT GRANTED` | PASS |
+| P2-5.2-G7 | Protected state preserved | No training, dataset modification, mapping modification, or EXP-001 configuration modification occurred | PASS |
+| P2-5.2-G8 | Execution remains disabled | `execution_enabled: false`; training authorization remains `NOT GRANTED` | PASS |
+| P2-5.2-G9 | Charter unchanged | `git diff charter-v1 -- docs/00_PROJECT_CHARTER.md` is empty | PASS |
+
+P2-5.2 result: `READY` for initialization-weight registration only. The
+registered binary does not authorize training and has not been transferred to
+the remote training environment.
+
+## Phase 2-5.3 Dependency Freeze Gates
+
+| Gate | Requirement | Evidence | Status |
+| --- | --- | --- | --- |
+| P2-5.3-G1 | Conda environment lock exported | `locks/EXP-001/conda-environment.yml` records `ppe-exp001` with exact build strings and no environment prefix | PASS |
+| P2-5.3-G2 | Pip freeze lock exported | `locks/EXP-001/pip-freeze-all.txt` contains 53 exact package records | PASS |
+| P2-5.3-G3 | Conda explicit URL lock exported | `locks/EXP-001/conda-explicit.lock` contains 32 explicit package URLs | PASS |
+| P2-5.3-G4 | Runtime fingerprint recorded | `locks/EXP-001/runtime-fingerprint.yaml` records instance, machine ID, OS, kernel, GPU, driver, CUDA, cuDNN, and runtime versions | PASS |
+| P2-5.3-G5 | Exported locks match remote environment | Conda environment, conda explicit, and pip freeze outputs match the live `ppe-exp001` environment line-for-line | PASS |
+| P2-5.3-G6 | Runtime dependency consistency verified | `python -m pip check` reports no broken requirements | PASS |
+| P2-5.3-G7 | Authorization checklist updated | `docs/reports/P2-2_TRAINING_AUTHORIZATION.md` records Dependencies `FROZEN / VERIFIED` and lock paths | PASS |
+| P2-5.3-G8 | Protected state preserved | No training, package installation, dataset modification, mapping modification, or canonical configuration modification occurred | PASS |
+| P2-5.3-G9 | Execution remains disabled | `execution_enabled: false`; training authorization remains `NOT GRANTED` | PASS |
+| P2-5.3-G10 | Charter unchanged | `git diff charter-v1 -- docs/00_PROJECT_CHARTER.md` is empty | PASS |
+
+P2-5.3 result: `READY`. The dependency-freeze blocker is resolved. Remote
+weight transfer and explicit human training authorization remain outstanding.
+
+## Phase 2-5.4 Remote Weight Transfer Verification Gates
+
+| Gate | Requirement | Evidence | Status |
+| --- | --- | --- | --- |
+| P2-5.4-G1 | Remote destination checked before transfer | `/root/autodl-tmp/models/pretrained/yolo11n.pt` was absent; no existing file was overwritten | PASS |
+| P2-5.4-G2 | Registered weight transferred | SCP transferred `models/pretrained/yolo11n.pt` to the AutoDL training environment | PASS |
+| P2-5.4-G3 | Remote file exists | `docs/reports/EXP-001_REMOTE_WEIGHT_VERIFY.md` records remote existence and resolved path | PASS |
+| P2-5.4-G4 | File size matches | Local and remote sizes are both `5,613,764` bytes | PASS |
+| P2-5.4-G5 | SHA256 matches | Local and remote SHA256 are both `0ebbc80d...7644ee1` | PASS |
+| P2-5.4-G6 | Machine-readable state updated | `docs/weights/EXP-001_WEIGHT_MANIFEST.yaml` records `remote_training_copy: VERIFIED` and the remote path/hash | PASS |
+| P2-5.4-G7 | Authorization checklist updated | `docs/reports/P2-2_TRAINING_AUTHORIZATION.md` records the remote weight copy as `VERIFIED` | PASS |
+| P2-5.4-G8 | No protected-state mutation | No training, model execution, dataset modification, mapping modification, or EXP-001 canonical configuration modification occurred | PASS |
+| P2-5.4-G9 | Execution remains disabled | `execution_enabled: false`; training authorization remains `NOT GRANTED` | PASS |
+| P2-5.4-G10 | Charter unchanged | `git diff charter-v1 -- docs/00_PROJECT_CHARTER.md` is empty | PASS |
+
+P2-5.4 result: `READY`. The remote initialization-weight copy is verified.
+At that historical point, explicit human training authorization remained the
+only outstanding blocker; P2-5.5 subsequently consumed that authorization.
+
+## Phase 2-5.5 EXP-001 Training Execution Gates
+
+| Gate | Requirement | Evidence | Status |
+| --- | --- | --- | --- |
+| P2-5.5-G1 | Explicit one-run authorization recorded | The user authorized EXP-001 training, and `configs/training/exp001_authorization.yaml` records the consumed single-run gate | PASS |
+| P2-5.5-G2 | Frozen inputs verified before execution | The run recorded canonical config SHA256 `df6c55ae...cacff989`, processed data SHA256 `45cc2717...d2878a`, and weight SHA256 `0ebbc80d...7644ee1` | PASS |
+| P2-5.5-G3 | Training completed | 95/100 epochs completed; early stopping selected epoch 75 | PASS |
+| P2-5.5-G4 | Checkpoints produced | Best and last checkpoints are `5,479,891` bytes each; best SHA256 is `1c144eef...871f61` | PASS |
+| P2-5.5-G5 | Metrics and run record produced | Overall validation: precision `0.899`, recall `0.649`, mAP50 `0.767`, mAP50-95 `0.480`; per-class metrics and speed are recorded | PASS |
+| P2-5.5-G6 | Artifacts are locatable and Git-ignored | Run directory, logs, report, args, results, plots, and checkpoints are recorded in `docs/reports/EXP-001_TRAINING_EXECUTION_REPORT.md` and remain ignored | PASS |
+| P2-5.5-G7 | Frozen dataset, mapping, and config unchanged | No dataset, label, mapping, fingerprint, or canonical configuration change occurred | PASS |
+| P2-5.5-G8 | M-004 status updated without claiming M-005 | Charter M-004 is `已经实现`; M-005 remains `待实现` and Phase 3 has not started | PASS |
+| P2-5.5-G9 | Another run is not authorized | The authorization record is `CONSUMED`; rerunning EXP-001 in populated output paths is rejected | PASS |
+
+P2-5.5 result: `COMPLETED`. The Phase 2 phase goal and P2-G1 through P2-G3
+are satisfied by the M-004 experiment archive. Phase 3 evaluation remains
+not started and requires a new explicit instruction.
+
+## Phase 2-7 Training Result Freeze Gates
+
+| Gate | Requirement | Evidence | Status |
+| --- | --- | --- | --- |
+| P2-7-G1 | Result identity frozen | Freeze report and best-model manifest record all required identities, metrics, runtime and duration | PASS |
+| P2-7-G2 | Artifacts verified | 29 existing files hashed; execution-report hashes and config snapshot matched; binaries remain ignored | PASS |
+| P2-7-G3 | Dataset integrity preserved | Source 5,601 entries and processed 5,602 entries match frozen manifests | PASS |
+| P2-7-G4 | Mapping and frozen config preserved | Class order and frozen hashes match; task-entry comparison recorded in freeze report | PASS |
+| P2-7-G5 | Phase boundary preserved | No training/evaluation; Phase 3 NOT STARTED; authorization remains CONSUMED | PASS |
+| P2-7-G6 | Verification and Charter review | See final verification results in P2-7 freeze report; existing M-004 status-only diff retained | PASS |

@@ -144,6 +144,117 @@ phase-based log rather than claiming semantic-release completeness.
 - Validation: pytest `174 passed`; compileall passed; `git diff --check`
   passed; Charter diff empty.
 
+### P2-5 EXP-001 Training Execution Authorization Review
+
+- Added `P2-5_TRAINING_AUTHORIZATION_REPORT.md` with a `BLOCKED` result.
+- Recorded that the dataset, mapping, fingerprints, output paths, and runtime
+  fingerprint were present, while unresolved training parameters, weight
+  binary provenance, complete environment freeze, and explicit human
+  authorization still prevented execution.
+- No training, weight download, dataset modification, mapping modification, or
+  configuration modification was performed.
+
+### P2-5.1 EXP-001 Configuration Freeze Review
+
+- Added `docs/reports/P2-5.1_CONFIGURATION_FREEZE.md` and
+  `P2-5.1_CONFIGURATION_FREEZE_REPORT.md`.
+- Froze model `YOLO11n`, Ultralytics `8.4.157`, starting weight reference
+  `yolo11n.pt`, dataset `CSS-PPE-10-V1`, seven classes, `imgsz: 640`,
+  `epochs: 100`, `batch: 16`, `optimizer: AdamW`, learning rate `0.001` with
+  cosine schedule, `seed: 42`, single-GPU `cuda:0`, `workers: 8`, and the
+  canonical output/log/report/checkpoint paths.
+- Froze the EXP-001 augmentation configuration and recorded SHA256 hashes for
+  the canonical configuration, schema, augmentation file, and alias template.
+- Kept `execution_enabled: false` and training authorization `NOT GRANTED`.
+- No model weight was downloaded, no training was executed, and no dataset or
+  mapping was modified.
+- Validation: pytest `175 passed`; compileall passed; `git diff --check`
+  passed; Charter diff empty.
+
+### P2-5.2 EXP-001 Weight Registration
+
+- Registered the official Ultralytics `yolo11n.pt` initialization checkpoint
+  from the `ultralytics/assets` `v8.3.0` release at
+  `models/pretrained/yolo11n.pt`.
+- Verified the `5,613,764` byte content length, MD5
+  `261474e91b15f5ef14a63c21ce6c0cbb`, PyTorch checkpoint ZIP structure, and
+  SHA256 `0ebbc80d4a7680d14987a577cd21342b65ecfd94632bd9a8da63ae6417644ee1`.
+- Added `docs/weights/EXP-001_WEIGHT_MANIFEST.yaml` and
+  `P2-5.2_WEIGHT_REGISTRATION_REPORT.md`.
+- Updated the P2-2 authorization checklist, configuration-freeze record,
+  training strategy, README, current-status record, and focused tests to
+  distinguish the registered initialization weight from a training result.
+- The weight remains Git-ignored and has not been transferred to the remote
+  training environment. No training was executed, and no dataset, mapping, or
+  EXP-001 configuration was modified.
+- Validation: pytest `177 passed`; compileall passed; `git diff --check`
+  passed; Charter diff empty.
+
+### P2-5.3 EXP-001 Dependency Freeze
+
+- Exported `ppe-exp001` to `locks/EXP-001/conda-environment.yml` with exact
+  conda build strings and to `locks/EXP-001/pip-freeze-all.txt` with the
+  complete resolved pip package set.
+- Added `locks/EXP-001/conda-explicit.lock` and
+  `locks/EXP-001/runtime-fingerprint.yaml`.
+- Recorded AutoDL instance `bcb849a74f-38320766`, RTX 4090 UUID, `24,564 MiB`
+  VRAM, compute capability `8.9`, NVIDIA driver `560.35.03`, CUDA driver API
+  `12.6`, PyTorch CUDA runtime `12.4`, cuDNN `90100`, Python `3.10.21`,
+  PyTorch `2.5.1+cu124`, and Ultralytics `8.4.157`.
+- Verified all exported locks against the current remote output and confirmed
+  `python -m pip check` reports no broken requirements.
+- Added `docs/reports/P2-5.3_DEPENDENCY_FREEZE.md` and
+  `P2-5.3_DEPENDENCY_FREEZE_REPORT.md`; updated the training authorization
+  checklist to mark dependencies `FROZEN / VERIFIED`.
+- No training was executed; no dependency was installed; no dataset, mapping,
+  weight, or EXP-001 canonical configuration was modified.
+- Validation: pytest `178 passed`; compileall passed; `git diff --check`
+  passed; Charter diff empty.
+
+### P2-5.4 EXP-001 Remote Weight Transfer Verification
+
+- Transferred the registered `yolo11n.pt` initialization checkpoint to
+  `/root/autodl-tmp/models/pretrained/yolo11n.pt` after confirming that the
+  remote destination did not already exist.
+- Verified the remote file exists and matches the local artifact at
+  `5,613,764` bytes and SHA256
+  `0ebbc80d4a7680d14987a577cd21342b65ecfd94632bd9a8da63ae6417644ee1`.
+- Added `docs/reports/EXP-001_REMOTE_WEIGHT_VERIFY.md` with local path, remote
+  path, size, SHA256 evidence, match result, and the `READY` decision.
+- Updated `docs/weights/EXP-001_WEIGHT_MANIFEST.yaml` and the P2-2
+  authorization checklist to record the remote copy as `VERIFIED`.
+- No training or model execution occurred; no dataset, mapping, fingerprint,
+  or EXP-001 canonical configuration was modified; no commit or push was
+  performed.
+- Validation: pytest `179 passed`; compileall passed; `git diff --check`
+  passed; Charter diff empty.
+
+### P2-5.5 EXP-001 Baseline Training Execution
+
+- Executed the explicitly authorized YOLO11n baseline on AutoDL instance
+  `bcb849a74f-38320766` using the frozen `CSS-PPE-10-V1` dataset, canonical
+  EXP-001 configuration, and registered `yolo11n.pt` initialization weight.
+- Training ran from `2026-09-22T08:00:02Z` to `2026-09-22T08:19:29Z`,
+  completed 95 of 100 epochs, achieved the best validation result at epoch
+  75, and stopped early after 20 epochs without improvement.
+- Overall validation result: precision `0.899`, recall `0.649`, mAP50
+  `0.767`, and mAP50-95 `0.480`; per-class metrics were also produced.
+- Produced Git-ignored best and last checkpoints, training log, resolved
+  arguments, epoch metrics, confusion matrices, PR/F1 curves, validation
+  plots, run record, and frozen configuration snapshot.
+- Best checkpoint: `5,479,891` bytes; SHA256
+  `1c144eef0dfa06b984dde760ea5501a11746b99c1f8a9ae581790241c3871f61`.
+- Added `docs/reports/EXP-001_TRAINING_EXECUTION_REPORT.md` and marked M-004
+  `已经实现`. M-005 remains `待实现`; Phase 3 has not started.
+- Recorded that Ultralytics downloaded `yolo26n.pt` only for its one-time AMP
+  compatibility check. The log states that it was not used for training and
+  it did not replace the frozen YOLO11n initialization weight.
+- The one-run authorization record is now `CONSUMED`; no dataset, mapping,
+  fingerprint, or canonical configuration was modified, and no second run is
+  authorized.
+- Verified the host was idle and issued an AutoDL shutdown after archiving the
+  evidence; no remote dataset, weight, or run artifact was deleted.
+
 ## 2026-09-21
 
 ### Phase 0 Foundation initialized
@@ -416,3 +527,13 @@ phase-based log rather than claiming semantic-release completeness.
   step is P2 Training Execution Preparation; training remains prohibited
   pending a new instruction.
 - M-001 remains `待实现`.
+
+### P2-7 EXP-001 Training Result Freeze
+
+- Added the result freeze report and machine-readable best-model manifest with
+  dataset/config/weight identity, best epoch, final training-validation metrics,
+  runtime fingerprint, command/epoch-loop durations and 29 hashed artifacts.
+- Verified both dataset manifests and preserved dataset, mapping, frozen config,
+  checkpoints, dependency locks and the existing Charter status change.
+- Current Phase is `P2-7 Training Result Freeze`; EXP-001 Training is `COMPLETED`.
+- No training, evaluation, Phase 3 work, commit or push was performed.

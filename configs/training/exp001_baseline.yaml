@@ -1,7 +1,7 @@
 schema_version: training-config-v1
-status: DESIGN_PLACEHOLDER
+status: CONFIGURATION_FROZEN
 execution_enabled: false
-review_status: P1E-1 COMPLETED / TRAINING NOT STARTED
+review_status: P2-5.1 COMPLETE / CONFIGURATION FROZEN / TRAINING NOT AUTHORIZED
 
 experiment_id: EXP-001
 dataset: CSS-PPE-10-V1
@@ -10,18 +10,38 @@ processed_dataset: data/processed/css-ppe-10-v1/
 model: YOLO11n
 model_family: YOLO11
 model_variant: YOLO11n
-model_version: PENDING_DESIGN_REVIEW
-weights: PENDING_DESIGN_REVIEW
-epochs: PENDING_DESIGN_REVIEW
-imgsz: PENDING_DESIGN_REVIEW
-batch: PENDING_DESIGN_REVIEW
-optimizer: PENDING_DESIGN_REVIEW
-learning_rate: PENDING_DESIGN_REVIEW
+model_version: "8.4.157"
+weights: yolo11n.pt
+weights_provenance: Ultralytics official pretrained YOLO11n checkpoint
+pretrained: true
+class_count: 7
+classes:
+  - person
+  - hardhat
+  - no_hardhat
+  - vest
+  - no_vest
+  - machinery
+  - vehicle
+epochs: 100
+imgsz: 640
+batch: 16
+optimizer: AdamW
+learning_rate: 0.001
+lr_strategy: cosine
+lr_final_fraction: 0.01
+weight_decay: 0.0005
+warmup_epochs: 3.0
+patience: 20
 augmentation: experiments/configs/augmentation.yaml
-seed: PENDING_DESIGN_REVIEW
-hyperparameter_status: PENDING_DESIGN_REVIEW
-device: PENDING_DESIGN_REVIEW
-device_strategy: PENDING_DESIGN_REVIEW
+seed: 42
+hyperparameter_status: FROZEN_P2_5_1
+device: "cuda:0"
+device_strategy: single_gpu_autodl_rtx4090_24gb
+workers: 8
+deterministic: true
+amp: true
+cache: false
 
 output_path: experiments/runs/EXP-001
 logs_path: artifacts/logs/EXP-001
@@ -39,11 +59,11 @@ metrics:
   - model size
 
 record_fields:
-  date: PENDING_REVIEW
+  date: PENDING_RUN_DATE
   dataset_id: CSS-PPE-10-V1
-  model_version: PENDING_DESIGN_REVIEW
-  weights: PENDING_DESIGN_REVIEW
-  hyperparameters: PENDING_DESIGN_REVIEW
-  hardware: PENDING_PHASE_2_ENVIRONMENT_REVIEW
-  notes: PENDING_REVIEW
-  checkpoint: PENDING_DESIGN_REVIEW
+  model_version: "8.4.157"
+  weights: yolo11n.pt
+  hyperparameters: FROZEN_P2_5_1
+  hardware: AutoDL bcb849a74f-38320766 / RTX 4090 24GB / Ubuntu 20.04.5
+  notes: CONFIGURATION FROZEN / TRAINING NOT AUTHORIZED
+  checkpoint: TO_BE_PRODUCED

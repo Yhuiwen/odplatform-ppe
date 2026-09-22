@@ -1,0 +1,59 @@
+manifest_schema_version: weight-manifest-v1
+status: REGISTERED
+experiment_id: EXP-001
+registered_at_utc: "2026-09-22T07:18:15Z"
+
+role: training_initialization_weights
+model_family: YOLO11
+model_variant: YOLO11n
+filename: yolo11n.pt
+local_path: models/pretrained/yolo11n.pt
+git_tracked: false
+gitignore_rule: "*.pt"
+remote_training_copy: VERIFIED
+
+source:
+  provider: Ultralytics
+  repository: https://github.com/ultralytics/assets
+  release: v8.3.0
+  asset_url: https://github.com/ultralytics/assets/releases/download/v8.3.0/yolo11n.pt
+  redirect_host: release-assets.githubusercontent.com
+  content_length_bytes: 5613764
+  etag: "0x8DCE25172EA253A"
+  last_modified_utc: "2024-10-01T19:44:22Z"
+  upstream_license: AGPL-3.0
+  license_reference: docs/07_OPEN_SOURCE_USAGE.md
+
+artifact:
+  size_bytes: 5613764
+  sha256: 0ebbc80d4a7680d14987a577cd21342b65ecfd94632bd9a8da63ae6417644ee1
+  md5: 261474e91b15f5ef14a63c21ce6c0cbb
+  md5_base64: JhR06RsV9e8UpjwhzmwMuw==
+  content_md5_matches_response_header: true
+  file_type: PyTorch checkpoint ZIP archive
+  zip_member_count: 507
+  contains_data_pkl: true
+
+remote_training:
+  path: /root/autodl-tmp/models/pretrained/yolo11n.pt
+  size_bytes: 5613764
+  sha256: 0ebbc80d4a7680d14987a577cd21342b65ecfd94632bd9a8da63ae6417644ee1
+  transfer_method: SCP
+  destination_preexisting: false
+  verified_at_utc: "2026-09-22T07:38:52Z"
+  verification_report: docs/reports/EXP-001_REMOTE_WEIGHT_VERIFY.md
+
+registration:
+  initialization_only: true
+  training_output: false
+  teacher_checkpoint: false
+  training_executed: false
+  dataset_modified: false
+  mapping_modified: false
+  exp001_config_modified: false
+
+notes:
+  - The binary is stored outside Git under the existing models/pretrained ignore rule.
+  - The source release identifies the official Ultralytics YOLO11n asset.
+  - The remote training copy was transferred after registration and independently re-verified by size and SHA256.
+  - Registration does not grant training authorization.

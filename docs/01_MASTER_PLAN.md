@@ -10,7 +10,7 @@
 | --- | --- | --- | --- |
 | P0 | Foundation | 工程、文档、环境、配置体系建立 | 已经实现 |
 | P1 | Data | 数据获取、格式统一、质量检查、数据报告 | 实现中 |
-| P2 | Training | YOLO11 baseline 训练与实验归档 | 待实现 |
+| P2 | Training | YOLO11 baseline 训练与实验归档 | 已经实现 |
 | P3 | Evaluation | 模型评估、对照实验、模型选择 | 待实现 |
 | P4 | Inference | 图片、视频、Camera/RTSP 推理流水线 | 待实现 |
 | P5 | Tracking & Association | ByteTrack + Person-PPE Association | 待实现 |

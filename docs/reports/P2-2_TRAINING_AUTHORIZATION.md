@@ -67,5 +67,85 @@ host. The corresponding current states are:
 
 Next Allowed Step: `WAIT FOR HUMAN TRAINING AUTHORIZATION`
 
-No training, `YOLO(...).train(...)`, weight download, dataset mutation, class
-mapping mutation, or frozen experiment identity change is permitted.
+Under the P2-4 update, no training, `YOLO(...).train(...)`, weight download,
+dataset mutation, class mapping mutation, or frozen experiment identity change
+was permitted. P2-5.2 separately registers the initialization weight; training
+and all other prohibited operations remain blocked.
+
+## P2-5.2 Weight Registration Update
+
+P2-5.2 registered the official Ultralytics YOLO11n initialization checkpoint.
+The binary remains Git-ignored; the version-controlled manifest records its
+provenance and checksum.
+
+| Area | Status | Evidence |
+| --- | --- | --- |
+| Configuration | FROZEN | P2-5.1 config freeze; canonical config SHA256 `df6c55ae...cacff989` |
+| Weights | REGISTERED | `docs/weights/EXP-001_WEIGHT_MANIFEST.yaml`; `models/pretrained/yolo11n.pt`; SHA256 `0ebbc80d4a7680d14987a577cd21342b65ecfd94632bd9a8da63ae6417644ee1` |
+| Weight size | VERIFIED | `5,613,764` bytes |
+| Weight source | VERIFIED | Ultralytics assets release `v8.3.0` |
+| Remote training copy | NOT TRANSFERRED | The binary is registered locally and remains ignored by Git |
+| Authorization | NOT GRANTED | Environment freeze and explicit human authorization remain outstanding |
+
+Updated blocking conditions:
+
+1. Approve the complete dependency lock/environment freeze.
+2. Transfer the registered weight to the selected remote training environment
+   under a separately authorized execution step.
+3. Obtain explicit human training authorization.
+
+Next Allowed Step: `WAIT FOR HUMAN TRAINING AUTHORIZATION`.
+
+## P2-5.3 Dependency Freeze Update
+
+P2-5.3 exported the resolved conda and pip environment and recorded the GPU,
+driver, CUDA, and runtime fingerprint. The dependency-freeze blocker is now
+resolved.
+
+| Area | Status | Evidence |
+| --- | --- | --- |
+| Dependencies | FROZEN / VERIFIED | `locks/EXP-001/conda-environment.yml`, `conda-explicit.lock`, and `pip-freeze-all.txt`; `python -m pip check` PASS |
+| Runtime | FROZEN / VERIFIED | `locks/EXP-001/runtime-fingerprint.yaml`; RTX 4090 UUID `GPU-ad5f1f4a...`; driver `560.35.03`; PyTorch CUDA runtime `12.4` |
+| Weight | REGISTERED / REMOTE COPY NOT TRANSFERRED | P2-5.2 manifest remains unchanged |
+| Authorization | NOT GRANTED | Remote weight transfer and explicit human authorization remain outstanding |
+
+Updated blocking conditions:
+
+1. Transfer and re-verify the registered `yolo11n.pt` in the remote training
+   environment under separate authorization.
+2. Obtain explicit human training authorization.
+
+Next Allowed Step: `WAIT FOR HUMAN TRAINING AUTHORIZATION`.
+
+## P2-5.4 Remote Weight Transfer Verification Update
+
+The registered Ultralytics initialization weight was transferred to the
+selected AutoDL environment and independently verified without executing the
+checkpoint or starting training.
+
+| Area | Status | Evidence |
+| --- | --- | --- |
+| Remote weight copy | VERIFIED | `docs/reports/EXP-001_REMOTE_WEIGHT_VERIFY.md`; `/root/autodl-tmp/models/pretrained/yolo11n.pt` |
+| Remote weight size | VERIFIED | `5,613,764` bytes, matching the local artifact |
+| Remote weight SHA256 | VERIFIED | `0ebbc80d4a7680d14987a577cd21342b65ecfd94632bd9a8da63ae6417644ee1`, matching locally |
+| Authorization | NOT GRANTED | Explicit human training authorization remains outstanding |
+
+Updated blocking conditions:
+
+1. Obtain explicit human training authorization.
+
+Next Allowed Step: `WAIT FOR HUMAN TRAINING AUTHORIZATION`.
+
+## P2-5.5 EXP-001 Training Execution Update
+
+The user subsequently granted explicit one-run authorization for EXP-001.
+Training completed and the authorization record was consumed.
+
+| Area | Status | Evidence |
+| --- | --- | --- |
+| Authorization | GRANTED AND CONSUMED | `configs/training/exp001_authorization.yaml` |
+| Training | COMPLETED | `docs/reports/EXP-001_TRAINING_EXECUTION_REPORT.md` |
+| Best checkpoint | PRODUCED / GIT-IGNORED | `models/checkpoints/EXP-001/best.pt`; SHA256 `1c144eef...871f61` |
+| Second run | NOT AUTHORIZED | The one-run record is `CONSUMED` |
+
+Next Allowed Step: `WAIT FOR PHASE 3 EVALUATION AUTHORIZATION`.

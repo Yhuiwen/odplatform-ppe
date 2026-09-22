@@ -18,6 +18,11 @@ CANDIDATE_EVALUATION = (
     PROJECT_ROOT / "docs" / "11_DATASET_CANDIDATE_EVALUATION.md"
 )
 FREEZE_DECISION = PROJECT_ROOT / "docs" / "12_DATASET_FREEZE_DECISION.md"
+REGISTERED_WEIGHT = "models/pretrained/yolo11n.pt"
+APPROVED_TRAINING_ARTIFACT_PREFIXES = (
+    "models/checkpoints/EXP-001/",
+    "experiments/runs/EXP-001/weights/",
+)
 
 
 def _read(path: Path) -> str:
@@ -303,7 +308,7 @@ def test_phase_1a_is_complete_and_phase_1b_needs_freeze_correction() -> None:
 
     status = _read(CURRENT_STATUS)
     assert "Phase 1 — Data Engineering" in status
-    assert "Phase 1 实现中" in status
+    assert "Phase 1 仍记为 `实现中`" in status
     assert "P1D-1 已完成真实数据集质量验证" in status
     assert "P1C-2 已从不可变 source 生成 7 类 processed" in status
     assert "P1E-1 — Baseline Training Preparation Review" in status
@@ -388,7 +393,7 @@ def test_snapshot_summary_records_immutable_failed_validation() -> None:
         assert fragment in content, fragment
 
 
-def test_no_phase_1b_dataset_artifacts_exist() -> None:
+def test_no_unregistered_phase_1b_dataset_or_model_artifacts_exist() -> None:
     forbidden_suffixes = {".zip", ".tar", ".7z", ".pt", ".pth", ".db"}
     findings: list[str] = []
     for path in PROJECT_ROOT.rglob("*"):
@@ -397,9 +402,14 @@ def test_no_phase_1b_dataset_artifacts_exist() -> None:
         relative_parts = path.relative_to(PROJECT_ROOT).parts
         if any(
             part in {".git", ".pytest_cache", "__pycache__"}
-            for part in relative_parts
-        ):
-            continue
-        if path.suffix.lower() in forbidden_suffixes:
-            findings.append(path.relative_to(PROJECT_ROOT).as_posix())
+                for part in relative_parts
+            ):
+                continue
+        relative_path = path.relative_to(PROJECT_ROOT).as_posix()
+        approved_training_artifact = (
+            relative_path == REGISTERED_WEIGHT
+            or relative_path.startswith(APPROVED_TRAINING_ARTIFACT_PREFIXES)
+        )
+        if path.suffix.lower() in forbidden_suffixes and not approved_training_artifact:
+            findings.append(relative_path)
     assert findings == []

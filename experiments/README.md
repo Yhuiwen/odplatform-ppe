@@ -1,11 +1,11 @@
 # Training Experiment Management
 
-> Status: DESIGN ONLY / EXECUTION DISABLED
+> Status: EXP-001 EXECUTED / CONFIGURATION FROZEN
 
 This directory is the single home for reproducible training experiment
 definitions, run artifacts, reports, and review evidence. P1E-0 creates the
-structure and configuration contracts only. It does not download weights,
-start training, tune hyperparameters, or modify the frozen dataset.
+structure and configuration contracts. EXP-001 subsequently completed one
+authorized training run without modifying the frozen dataset.
 
 ## Layout
 
@@ -69,7 +69,9 @@ on an untracked command history.
   EXP-001; the canonical experiment definition remains
   `configs/training/exp001_baseline.yaml`.
 - `configs/augmentation.yaml` is the augmentation design template.
-- Both are placeholders until the P1E-1 review approves exact values.
+- Both are frozen for EXP-001 by P2-5.1. EXP-001 was executed through a
+  separate one-run authorization record, now marked `CONSUMED`; the canonical
+  configuration still keeps `execution_enabled: false`.
 - `configs/training/exp001_baseline.yaml` is the canonical experiment
   definition template.
 - The JSON-compatible schema contract is
@@ -77,7 +79,6 @@ on an untracked command history.
 
 ## Execution Boundary
 
-P1E-0 must not execute training. The next allowed step is P1E-1 Baseline
-Training Preparation Review; it must not run training either. Phase 2 training
-remains prohibited until Phase 1 release gates and the Phase 1 to Phase 2
-entry conditions are both approved.
+The executed run and its evidence are recorded in
+`docs/reports/EXP-001_TRAINING_EXECUTION_REPORT.md`. Another training run is
+not authorized by the consumed EXP-001 gate.

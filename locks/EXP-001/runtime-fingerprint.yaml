@@ -1,0 +1,81 @@
+schema_version: exp001-runtime-fingerprint-v1
+status: FROZEN
+experiment_id: EXP-001
+captured_at_utc: "2026-09-22T07:27:17Z"
+
+provider:
+  name: AutoDL
+  region: bjb1
+  instance_id: bcb849a74f-38320766
+  hostname: autodl-container-bcb849a74f-38320766
+  machine_id: 08dfa3464dbc42b1afb9de0b5f908acb
+  image_digest: NOT_EXPOSED_BY_PROVIDER
+
+operating_system:
+  name: Ubuntu
+  version: 20.04.5 LTS
+  kernel: Linux 5.15.0-97-generic x86_64 GNU/Linux
+
+gpu:
+  count: 1
+  name: NVIDIA GeForce RTX 4090
+  uuid: GPU-ad5f1f4a-5bdb-4a26-9b62-5eb190196bb4
+  memory_total_mib: 24564
+  compute_capability: "8.9"
+
+cuda:
+  nvidia_driver_version: 560.35.03
+  driver_api_version: "12.6"
+  pytorch_runtime_version: "12.4"
+  cudnn_version: 90100
+  torch_cuda_available: true
+  nvcc: NOT_FOUND
+
+runtime:
+  conda_version: 4.10.3
+  conda_environment: ppe-exp001
+  conda_prefix: /root/miniconda3/envs/ppe-exp001
+  python: 3.10.21
+  pip: 26.2.1
+  torch: 2.5.1+cu124
+  torchvision: 0.20.1+cu124
+  torchaudio: 2.5.1+cu124
+  ultralytics: 8.4.157
+  opencv_python: 5.0.0.93
+  numpy: 2.2.6
+  pip_check: PASS
+
+lock_files:
+  conda_environment:
+    path: locks/EXP-001/conda-environment.yml
+    size_bytes: 2582
+    lines: 89
+    sha256: 95b03d3dfc57f4124dcf370b9bd42cadab86f1701649d3610824c74a86f88fc3
+  conda_explicit:
+    path: locks/EXP-001/conda-explicit.lock
+    size_bytes: 3005
+    lines: 36
+    sha256: 599ed7c0e6b9ee9817517d140488c382066fc2e9d7e2a14315deefb43f3438d5
+  pip_freeze_all:
+    path: locks/EXP-001/pip-freeze-all.txt
+    size_bytes: 1210
+    lines: 53
+    sha256: 34c9b668095029732f1c4c084b81185309c64614fe25e88b69328e1f9b91599e
+
+verification:
+  conda_environment_remote_match: true
+  conda_explicit_remote_match: true
+  pip_freeze_remote_match: true
+  pip_check: PASS
+
+safety:
+  training_started: false
+  dataset_modified: false
+  mapping_modified: false
+  exp001_canonical_config_modified: false
+  training_authorization: NOT_GRANTED
+
+notes:
+  - The conda lock excludes the environment prefix.
+  - The pip freeze lock preserves pip's local build-wheel origin; conda's pip=26.2.1 is the portable lock entry.
+  - AutoDL does not expose an immutable image digest through the instance interface.

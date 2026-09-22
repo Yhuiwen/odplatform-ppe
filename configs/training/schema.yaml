@@ -13,16 +13,29 @@ required_fields:
   - model_variant
   - model_version
   - weights
+  - weights_provenance
+  - pretrained
+  - class_count
+  - classes
   - epochs
   - imgsz
   - batch
   - optimizer
   - learning_rate
+  - lr_strategy
+  - lr_final_fraction
+  - weight_decay
+  - warmup_epochs
+  - patience
   - augmentation
   - seed
   - hyperparameter_status
   - device
   - device_strategy
+  - workers
+  - deterministic
+  - amp
+  - cache
   - output_path
   - logs_path
   - reports_path
@@ -60,40 +73,108 @@ constraints:
       - YOLO11s
   model_version:
     type: string
-    state: PENDING_DESIGN_REVIEW
+    state: FROZEN
+    frozen: "8.4.157"
   weights:
     type: string
-    state: PENDING_DESIGN_REVIEW
+    state: FROZEN_REFERENCE
+    frozen: yolo11n.pt
+    binary_sha256: PENDING_PRE_RUN_ACQUISITION
+  weights_provenance:
+    type: string
+    frozen: Ultralytics official pretrained YOLO11n checkpoint
+  pretrained:
+    type: boolean
+    frozen: true
+  class_count:
+    type: integer
+    frozen: 7
+  classes:
+    type: list
+    frozen:
+      - person
+      - hardhat
+      - no_hardhat
+      - vest
+      - no_vest
+      - machinery
+      - vehicle
   epochs:
     type: integer
-    state: PENDING_DESIGN_REVIEW
+    state: FROZEN
+    frozen: 100
   imgsz:
     type: integer
-    state: PENDING_DESIGN_REVIEW
+    state: FROZEN
+    frozen: 640
   batch:
     type: integer
-    state: PENDING_DESIGN_REVIEW
+    state: FROZEN
+    frozen: 16
   optimizer:
     type: string
-    state: PENDING_DESIGN_REVIEW
+    state: FROZEN
+    frozen: AdamW
   learning_rate:
     type: number
-    state: PENDING_DESIGN_REVIEW
+    state: FROZEN
+    frozen: 0.001
+  lr_strategy:
+    type: string
+    state: FROZEN
+    frozen: cosine
+  lr_final_fraction:
+    type: number
+    state: FROZEN
+    frozen: 0.01
+  weight_decay:
+    type: number
+    state: FROZEN
+    frozen: 0.0005
+  warmup_epochs:
+    type: number
+    state: FROZEN
+    frozen: 3.0
+  patience:
+    type: integer
+    state: FROZEN
+    frozen: 20
   augmentation:
     type: mapping-or-reference
-    state: PENDING_DESIGN_REVIEW
+    state: FROZEN
+    frozen: experiments/configs/augmentation.yaml
   seed:
     type: integer
-    state: PENDING_DESIGN_REVIEW
+    state: FROZEN
+    frozen: 42
   hyperparameter_status:
     type: string
-    state: PENDING_DESIGN_REVIEW
+    state: FROZEN
+    frozen: FROZEN_P2_5_1
   device:
     type: string
-    state: PENDING_DESIGN_REVIEW
+    state: FROZEN
+    frozen: "cuda:0"
   device_strategy:
     type: string
-    state: PENDING_DESIGN_REVIEW
+    state: FROZEN
+    frozen: single_gpu_autodl_rtx4090_24gb
+  workers:
+    type: integer
+    state: FROZEN
+    frozen: 8
+  deterministic:
+    type: boolean
+    state: FROZEN
+    frozen: true
+  amp:
+    type: boolean
+    state: FROZEN
+    frozen: true
+  cache:
+    type: boolean
+    state: FROZEN
+    frozen: false
   output_path:
     type: string
     frozen: experiments/runs/EXP-001
@@ -131,4 +212,4 @@ record_required:
 
 training_execution:
   allowed: false
-  reason: P1E-1 review is complete, but training remains prohibited until Phase 2 preparation and explicit user approval.
+  reason: This schema does not grant execution. EXP-001 used a separate one-run authorization record, which is now consumed; another run requires new explicit authorization.

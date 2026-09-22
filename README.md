@@ -18,14 +18,33 @@ LLM 安全分析报告和基础 Agent。
 
 ## 当前开发状态
 
-- 当前 Phase：Phase 0 — Foundation
-- Phase 状态：已经实现（G0-1 至 G0-13 全部 PASS）
-- 当前成果：工程骨架、配置体系、文档治理、日志/路径/系统信息基础能力与测试
-- 尚未完成：YOLO 模型训练、PPE 检测、跟踪关联、合规判断、事件告警、
-  Web 业务页面、LLM 报告和 Agent
+- 当前 Phase：Phase 2 — Training
+- Phase 状态：EXP-001 COMPLETED / M-004 已经实现
+- Dataset：READY
+- Environment：READY
+- EXP-001 Configuration：FROZEN / P2-5.1 COMPLETE
+- YOLO11n Initialization Weight：REGISTERED / P2-5.2 COMPLETE
+- Dependency Lock：FROZEN / P2-5.3 COMPLETE
+- Remote Weight Copy：VERIFIED / P2-5.4 COMPLETE
+- Training：COMPLETED / P2-5.5
+- Best checkpoint：`models/checkpoints/EXP-001/best.pt`
+- 已完成准备：Phase 0 工程基线、Phase 1 数据工程，以及 P2-4 AutoDL
+  runtime、依赖和数据集完整性验证
 
-当前没有训练 YOLO 模型，也没有可用的 PPE 检测业务功能。任何未来阶段占位
-接口都会明确抛出 `NotImplementedError`，不会返回伪造业务结果。
+EXP-001 已完成一轮授权 YOLO11n baseline 训练：95/100 epochs，
+best epoch 75，validation precision `0.899`、recall `0.649`、mAP50
+`0.767`、mAP50-95 `0.480`。`best.pt` 和 `last.pt` 为 `5,479,891`
+bytes；最佳 checkpoint SHA256 为
+`1c144eef0dfa06b984dde760ea5501a11746b99c1f8a9ae581790241c3871f61`。
+完整训练证据见 `docs/reports/EXP-001_TRAINING_EXECUTION_REPORT.md`。
+
+当前没有 PPE 检测业务能力。图片/视频/RTSP 检测、人员跟踪、Person-PPE
+关联、Helmet/Vest 合规判断、事件管理、告警、Web 业务页面、LLM 报告和
+Agent 均尚未实现。未来阶段占位接口会明确抛出 `NotImplementedError`，
+不会返回伪造业务结果。
+
+EXP-001 的一次性 authorization 已 `CONSUMED`。P2-4、P2-5.1 至 P2-5.4
+的 preparation/freeze/verification 步骤不能用于授权第二次训练。
 
 ## 最终目标
 
@@ -63,15 +82,41 @@ docs/             Locked governance and phase documentation
 `data/`、`models/`、`artifacts/`、`tests/` 和 `docs/` 组成。受 Git 忽略的
 数据、模型和运行产物目录通过 `.gitkeep` 保留。
 
-## 环境要求
+## 环境要求与当前 Runtime
+
+### 本地开发与治理
 
 - Python 3.10 或更高版本
 - Git
 - Phase 0 基础测试仅需要 `pytest` 和 `PyYAML`
-- 完整 GPU/PyTorch/Ultralytics 环境是后续阶段的计划依赖，Phase 0 不要求
-  安装，也不要求 CUDA 可用
 
-## Phase 0 安装方式
+### P2-4 Training Preparation
+
+- AutoDL cloud GPU：NVIDIA GeForce RTX 4090 24GB
+- Ubuntu 20.04.5 LTS
+- Isolated Conda environment：`ppe-exp001`
+- Python 3.10.21
+- PyTorch 2.5.1+cu124 / torchvision 0.20.1+cu124
+- NVIDIA driver 560.35.03 / CUDA driver API 12.6
+- PyTorch CUDA runtime 12.4，`torch.cuda.is_available() == True`
+- Ultralytics 8.4.157
+- Remote dataset：`CSS-PPE-10-V1`
+- Verification：5,604 files、2,799 images、2,799 labels、7-class mapping
+  和 full manifest PASS
+- Initialization weight：`models/pretrained/yolo11n.pt`，5,613,764 bytes，
+  SHA256 `0ebbc80d...7644ee1`
+- Remote initialization weight：
+  `/root/autodl-tmp/models/pretrained/yolo11n.pt`，size 和 SHA256 与本地
+  一致
+- Dependency locks：`locks/EXP-001/conda-environment.yml`、
+  `conda-explicit.lock`、`pip-freeze-all.txt`
+- Runtime fingerprint：`locks/EXP-001/runtime-fingerprint.yaml`
+
+Environment READY、Dataset READY、Configuration FROZEN、Dependency FROZEN
+和 Weight REGISTERED / REMOTE VERIFIED 只证明 EXP-001 的输入边界；第二次
+训练仍需新的 authorization。
+
+## Phase 0 历史基线：安装方式
 
 `requirements.txt` 记录后续完整运行计划依赖，并不表示当前都必须安装。
 Phase 0 只需要：
@@ -83,7 +128,7 @@ python -m pip install pytest PyYAML
 这项安装不会下载数据集或模型权重。`pyproject.toml` 只保存项目元数据和
 测试配置，不声明第二套运行时依赖来源。
 
-## Phase 0 测试方法
+## Phase 0 历史基线：测试方法
 
 在项目根目录执行：
 
@@ -106,9 +151,18 @@ git status --short
 - `docs/03_TECHNICAL_DECISIONS.md`：追加式 ADR
 - `docs/04_CHANGELOG.md`：变更记录
 - `docs/05_TEST_GATES.md`：阶段 Gate
-- `docs/06_DATASET_CARD.md`：数据集计划，Phase 0 不下载
+- `docs/06_DATASET_CARD.md`：冻结数据集、mapping 与质量证据
 - `docs/07_OPEN_SOURCE_USAGE.md`：开源依赖、参考和许可证记录
 - `docs/08_RISK_REGISTER.md`：风险登记册
+- `docs/P2-4_FINAL_PROVISIONING_REPORT.md`：P2-4 runtime、依赖和数据集验证
+- `docs/reports/EXP-001_TRAINING_EXECUTION_REPORT.md`：EXP-001 训练结果、
+  指标、产物和披露
+- `docs/reports/P2-5.1_CONFIGURATION_FREEZE.md`：EXP-001 配置冻结记录
+- `P2-5.1_CONFIGURATION_FREEZE_REPORT.md`：P2-5.1 最终配置冻结报告
+- `docs/reports/P2-5.3_DEPENDENCY_FREEZE.md`：EXP-001 依赖与 runtime 冻结记录
+- `P2-5.3_DEPENDENCY_FREEZE_REPORT.md`：P2-5.3 最终报告
+- `docs/reports/EXP-001_REMOTE_WEIGHT_VERIFY.md`：远端初始化权重完整性验证
+- `locks/EXP-001/`：conda、pip 和 runtime fingerprint
 - `docs/phases/`：每个阶段的独立文档
 
 ## 开源使用原则
@@ -119,11 +173,11 @@ git status --short
 
 ## 下一阶段
 
-只有 Phase 0 Gate 全部通过后才能进入：
+当前下一允许步骤是：
 
 ```text
-Phase 1 — Data Engineering
+WAIT FOR PHASE 3 EVALUATION AUTHORIZATION
 ```
 
-Phase 1 的计划数据源是 Construction Site Safety (CSS)，不会在 Phase 0
-提前下载。
+在明确授权前，不启动 Phase 3、不执行独立评估、不创建第二次训练，也不
+修改冻结 dataset、mapping 或 EXP-001 identity。M-005 仍为 `待实现`。

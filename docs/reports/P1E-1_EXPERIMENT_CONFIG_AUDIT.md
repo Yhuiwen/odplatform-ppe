@@ -59,3 +59,11 @@ device_strategy
 
 The configuration is sufficiently explicit and traceable for the next
 preparation step, while remaining non-executable in P1E-1.
+
+## P2-5.1 Supersession
+
+P2-5.1 subsequently resolved the values listed above as pending. The canonical
+configuration is now `CONFIGURATION_FROZEN`, with the approved values and
+hashes recorded in `docs/reports/P2-5.1_CONFIGURATION_FREEZE.md`.
+`execution_enabled` remains `false`; the freeze does not grant training
+authorization.

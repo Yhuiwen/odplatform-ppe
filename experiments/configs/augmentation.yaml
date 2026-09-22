@@ -1,17 +1,18 @@
 schema_version: training-config-v1
-status: DESIGN_PLACEHOLDER
+status: CONFIGURATION_FROZEN
 execution_enabled: false
 
 augmentation:
-  enabled: PENDING_DESIGN_REVIEW
-  pipeline: PENDING_DESIGN_REVIEW
+  enabled: true
+  pipeline: ultralytics_yolo11
   parameters:
-    image_scale: PENDING_DESIGN_REVIEW
-    translation: PENDING_DESIGN_REVIEW
-    horizontal_flip: PENDING_DESIGN_REVIEW
-    color_jitter: PENDING_DESIGN_REVIEW
-    mosaic: PENDING_DESIGN_REVIEW
+    image_scale: 0.5
+    translation: 0.1
+    horizontal_flip: 0.5
+    color_jitter: 0.2
+    mosaic: 1.0
+    close_mosaic: 10
 
 notes:
-  - No augmentation is executed in P1E-0.
-  - No value is frozen until P1E-1 review.
+  - Values are frozen for EXP-001 by P2-5.1.
+  - No augmentation or training is executed by this configuration freeze.

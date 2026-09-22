@@ -1,0 +1,308 @@
+schema_version: training-result-freeze-v1
+status: FROZEN
+frozen_on: '2026-09-22'
+phase: P2-7 Training Result Freeze
+experiment_id: EXP-001
+training_status: COMPLETED
+model: YOLO11n
+model_role: Project-trained Model / best training checkpoint
+seed: 42
+dataset:
+  id: CSS-PPE-10-V1
+  mapping: PPE-MAPPING-V1
+  source:
+    workspace: roboflow-universe-projects
+    project: construction-site-safety
+    version: 27
+    export_format: yolov8
+  images: 2799
+  splits:
+    train: 2603
+    valid: 114
+    test: 82
+  classes:
+  - person
+  - hardhat
+  - no_hardhat
+  - vest
+  - no_vest
+  - machinery
+  - vehicle
+  fingerprint:
+    source_data_yaml_sha256: 5c393e74086c366a2ef55a77a4ddbf26bde1e08887a16f292f30a69fb3d21b34
+    source_manifest_sha256: ea0de4b0ca379c5aae066e500b1e0bf30b69ae71467c2bb99e4f2cbd5f98d795
+    processed_manifest_sha256: dbfe43c43d45e65951abec1bd112e07342b66651d799a05d79b6d749f2831c2c
+  processed_data_yaml:
+    path: data/processed/css-ppe-10-v1/data.yaml
+    size_bytes: 170
+    sha256: 45cc271729a71157e548004c2802b7d8ac3294a1c2fac0105129ca2498d2878a
+  training_contract:
+    path: docs/dataset_contracts/CSS-PPE-10-V1-TRAINING.yaml
+    size_bytes: 754
+    sha256: 84b95b3bf15eb10730bb12fd22e582d4dba013c7fd8527acc1274e578bd15727
+  mapping_contract:
+    path: docs/dataset_contracts/CSS-PPE-10-V1-MAPPING.yaml
+    size_bytes: 616
+    sha256: 7003f87af9cc8ad5ce7f8c58dffb25f43ab4bb533d0df1fba7033164a6ff40c7
+  class_mapping:
+    path: data/processed/css-ppe-10-v1/metadata/class_mapping.json
+    size_bytes: 685
+    sha256: e539bc831526f1532d12870053f827c0f0f37659de0d8964b6443ab9d505870d
+configuration:
+  path: configs/training/exp001_baseline.yaml
+  size_bytes: 1618
+  sha256: df6c55ae6deb4697493a2c1e49ac171bff5c38edfd73ad968aa5e1e2cacff989
+initial_weight:
+  path: models/pretrained/yolo11n.pt
+  size_bytes: 5613764
+  sha256: 0ebbc80d4a7680d14987a577cd21342b65ecfd94632bd9a8da63ae6417644ee1
+best_checkpoint:
+  path: models/checkpoints/EXP-001/best.pt
+  size_bytes: 5479891
+  sha256: 1c144eef0dfa06b984dde760ea5501a11746b99c1f8a9ae581790241c3871f61
+  epoch: 75
+  epoch_numbering: one-based
+  run_copy: experiments/runs/EXP-001/weights/best.pt
+  git_tracked: false
+training:
+  configured_epochs: 100
+  completed_epochs: 95
+  best_epoch: 75
+  stop_reason: early stopping; patience 20
+  started_at_utc: '2026-09-22T08:00:02.209838+00:00'
+  finished_at_utc: '2026-09-22T08:19:29.543992+00:00'
+  wall_clock_duration_seconds: 1167.334154
+  epoch_loop_duration_seconds: 835.678
+  epoch_loop_duration_source: results.csv final row; log reports 0.232 hours
+final_metrics:
+  scope: best.pt validation emitted by the completed training workflow
+  split: valid
+  images: 114
+  instances: 558
+  precision_note: Rounded values preserved from training.log; no new evaluation
+  overall:
+    precision: 0.899
+    recall: 0.649
+    mAP50: 0.767
+    mAP50-95: 0.48
+  per_class:
+    person:
+      precision: 0.935
+      recall: 0.693
+      mAP50: 0.797
+      mAP50-95: 0.515
+    hardhat:
+      precision: 0.945
+      recall: 0.722
+      mAP50: 0.819
+      mAP50-95: 0.526
+    no_hardhat:
+      precision: 0.843
+      recall: 0.522
+      mAP50: 0.634
+      mAP50-95: 0.327
+    vest:
+      precision: 0.966
+      recall: 0.689
+      mAP50: 0.888
+      mAP50-95: 0.555
+    no_vest:
+      precision: 0.862
+      recall: 0.604
+      mAP50: 0.739
+      mAP50-95: 0.461
+    machinery:
+      precision: 0.979
+      recall: 0.835
+      mAP50: 0.924
+      mAP50-95: 0.636
+    vehicle:
+      precision: 0.761
+      recall: 0.476
+      mAP50: 0.564
+      mAP50-95: 0.337
+  speed_ms_per_image:
+    preprocess: 0.7
+    inference: 12.3
+    postprocess: 0.4
+last_epoch_metrics:
+  epoch: 95
+  precision: 0.85966
+  recall: 0.68461
+  mAP50: 0.75966
+  mAP50-95: 0.47044
+runtime_fingerprint:
+  path: locks/EXP-001/runtime-fingerprint.yaml
+  size_bytes: 2179
+  sha256: f5f8240d2225219743e0fc3a310a174e5583d0dd405b2ecc315b0433eefbf7aa
+  provider:
+    name: AutoDL
+    region: bjb1
+    instance_id: bcb849a74f-38320766
+    hostname: autodl-container-bcb849a74f-38320766
+    machine_id: 08dfa3464dbc42b1afb9de0b5f908acb
+    image_digest: NOT_EXPOSED_BY_PROVIDER
+  operating_system:
+    name: Ubuntu
+    version: 20.04.5 LTS
+    kernel: Linux 5.15.0-97-generic x86_64 GNU/Linux
+  gpu:
+    count: 1
+    name: NVIDIA GeForce RTX 4090
+    uuid: GPU-ad5f1f4a-5bdb-4a26-9b62-5eb190196bb4
+    memory_total_mib: 24564
+    compute_capability: '8.9'
+  cuda:
+    nvidia_driver_version: 560.35.03
+    driver_api_version: '12.6'
+    pytorch_runtime_version: '12.4'
+    cudnn_version: 90100
+    torch_cuda_available: true
+    nvcc: NOT_FOUND
+  runtime:
+    conda_version: 4.10.3
+    conda_environment: ppe-exp001
+    conda_prefix: /root/miniconda3/envs/ppe-exp001
+    python: 3.10.21
+    pip: 26.2.1
+    torch: 2.5.1+cu124
+    torchvision: 0.20.1+cu124
+    torchaudio: 2.5.1+cu124
+    ultralytics: 8.4.157
+    opencv_python: 5.0.0.93
+    numpy: 2.2.6
+    pip_check: PASS
+  locks:
+    conda_environment:
+      path: locks/EXP-001/conda-environment.yml
+      size_bytes: 2582
+      lines: 89
+      sha256: 95b03d3dfc57f4124dcf370b9bd42cadab86f1701649d3610824c74a86f88fc3
+    conda_explicit:
+      path: locks/EXP-001/conda-explicit.lock
+      size_bytes: 3005
+      lines: 36
+      sha256: 599ed7c0e6b9ee9817517d140488c382066fc2e9d7e2a14315deefb43f3438d5
+    pip_freeze_all:
+      path: locks/EXP-001/pip-freeze-all.txt
+      size_bytes: 1210
+      lines: 53
+      sha256: 34c9b668095029732f1c4c084b81185309c64614fe25e88b69328e1f9b91599e
+artifact_inventory:
+- path: models/checkpoints/EXP-001/best.pt
+  size_bytes: 5479891
+  sha256: 1c144eef0dfa06b984dde760ea5501a11746b99c1f8a9ae581790241c3871f61
+- path: models/checkpoints/EXP-001/last.pt
+  size_bytes: 5479891
+  sha256: acdd89c00cde096d609b596577572d7f4ed5bbcc7104babf0a1691c6cd8aba88
+- path: experiments/runs/EXP-001/args.yaml
+  size_bytes: 1793
+  sha256: c886ab6a206feb7744d66f3dfa1c5ae91d4d4620f77531707f5b70983d744e3d
+- path: experiments/runs/EXP-001/BoxF1_curve.png
+  size_bytes: 300469
+  sha256: 31ec9b7a52613f7c96faee4dc168d1be59d6b325eb826ef2f06e24d01f9b48f0
+- path: experiments/runs/EXP-001/BoxP_curve.png
+  size_bytes: 236670
+  sha256: f7b1fed611114347c6b20cbe726017ba193514fc7b48607fcf28984753a2bc3b
+- path: experiments/runs/EXP-001/BoxPR_curve.png
+  size_bytes: 195264
+  sha256: 4f5ba6e6001e7267abb3ce50adfa65b80fef1dcb29520072b3fbe741b2ad6e4c
+- path: experiments/runs/EXP-001/BoxR_curve.png
+  size_bytes: 246650
+  sha256: 7a2ba0de5371c2c5a856e9da5d63bd32540fe46495b2ca9334796a002c27f2cb
+- path: experiments/runs/EXP-001/confusion_matrix.png
+  size_bytes: 173668
+  sha256: 8166e9780d63fc61071c7baa7c06cc2bc22400713cb36fba734ba72b40d8917d
+- path: experiments/runs/EXP-001/confusion_matrix_normalized.png
+  size_bytes: 213691
+  sha256: 1559a4c48bd095a10df7453a40349af99c00b0e964ca32c91fb957000848a1a1
+- path: experiments/runs/EXP-001/exp001_baseline.frozen.yaml
+  size_bytes: 1618
+  sha256: df6c55ae6deb4697493a2c1e49ac171bff5c38edfd73ad968aa5e1e2cacff989
+- path: experiments/runs/EXP-001/labels.jpg
+  size_bytes: 186928
+  sha256: 9cda8b408bf4034a6022422cf569520c7cc95ec815035a5b83783c5dcdf1df03
+- path: experiments/runs/EXP-001/results.csv
+  size_bytes: 12090
+  sha256: 3aafff966f4b7a851e1f9e1051aa928627c0a93e155c44611fd0fc4ee78e6d87
+- path: experiments/runs/EXP-001/results.png
+  size_bytes: 273825
+  sha256: 96b9446902513f3222f838626669791e4309837f071efad5fb0090eede4c9a25
+- path: experiments/runs/EXP-001/train_batch0.jpg
+  size_bytes: 735835
+  sha256: f8b175fa287792a68d748ea74a1c9d2317611406543d65ab93bce193accffb97
+- path: experiments/runs/EXP-001/train_batch1.jpg
+  size_bytes: 712788
+  sha256: 68348afe2514368e22d7a95e019bc7b99307fcab3789c8beeaa572186f17ed58
+- path: experiments/runs/EXP-001/train_batch14670.jpg
+  size_bytes: 603942
+  sha256: 695895db868fbf21a14fe8bd28deea392acc1e2c5aab13e5281dc7f83dd51c71
+- path: experiments/runs/EXP-001/train_batch14671.jpg
+  size_bytes: 601901
+  sha256: 81b922f15c95e21d54d1869947ab91821202a13b8691ecdfb94fb4aeaf29d9e6
+- path: experiments/runs/EXP-001/train_batch14672.jpg
+  size_bytes: 581560
+  sha256: 52299e678d608c9cf1a8d9da24b1682f1546789d49c7b3d6e1d1ea086748a461
+- path: experiments/runs/EXP-001/train_batch2.jpg
+  size_bytes: 649672
+  sha256: 9a0da13e3a29a39985c8eb39aea1bbf369822a5c9429289f1296f5ff8c3ed1bd
+- path: experiments/runs/EXP-001/val_batch0_labels.jpg
+  size_bytes: 759088
+  sha256: b2454d5c598c6d9be9a63b930fbc4ae1137dca018643d299117264b31b53f8ec
+- path: experiments/runs/EXP-001/val_batch0_pred.jpg
+  size_bytes: 768851
+  sha256: e118652321b838eb9d676f79f66db9b1420000ed7b3a3482c95e7eedad7a4ad5
+- path: experiments/runs/EXP-001/val_batch1_labels.jpg
+  size_bytes: 685976
+  sha256: 5784af6d0be95ad6e77c16585d8e55caa66103314e8ebead0cf3b46065b03592
+- path: experiments/runs/EXP-001/val_batch1_pred.jpg
+  size_bytes: 700038
+  sha256: 7de30fbddd0efa111993047000a9e98201338e1096d6be9a1129ca5efd2716ea
+- path: experiments/runs/EXP-001/val_batch2_labels.jpg
+  size_bytes: 715540
+  sha256: 45f86f7666a77be3ebd530cf7757ba55ade4803cc9745b26c80927776d7a6e69
+- path: experiments/runs/EXP-001/val_batch2_pred.jpg
+  size_bytes: 725264
+  sha256: 1b5b5cc53033817470d0a5946942d8923910ea66a24ee806e29c92fdf9ad30a4
+- path: experiments/runs/EXP-001/weights/best.pt
+  size_bytes: 5479891
+  sha256: 1c144eef0dfa06b984dde760ea5501a11746b99c1f8a9ae581790241c3871f61
+- path: experiments/runs/EXP-001/weights/last.pt
+  size_bytes: 5479891
+  sha256: acdd89c00cde096d609b596577572d7f4ed5bbcc7104babf0a1691c6cd8aba88
+- path: experiments/reports/EXP-001/run_record.yaml
+  size_bytes: 922
+  sha256: e97f86c12942887c5772176ccfacae91c4c85064e208fff0e93d290638e72a50
+- path: artifacts/logs/EXP-001/training.log
+  size_bytes: 1012613
+  sha256: 12d1f872a0aed34625dc50f399a1385f123e3be6d4beac7a05386298eef87456
+verification:
+  method: Read-only SHA256 hashing of local retained files; no checkpoint deserialization
+    or model execution
+  dataset_manifests:
+  - manifest: data/external/css-v27-yolov8/metadata/checksums.sha256
+    sha256: ea0de4b0ca379c5aae066e500b1e0bf30b69ae71467c2bb99e4f2cbd5f98d795
+    verified_entries: 5601
+  - manifest: data/processed/css-ppe-10-v1/metadata/checksums.sha256
+    sha256: dbfe43c43d45e65951abec1bd112e07342b66651d799a05d79b6d749f2831c2c
+    verified_entries: 5602
+  configuration_snapshot_matches: true
+  artifact_hashes_match_execution_report: true
+  runtime_lock_hashes_match: true
+  artifacts_git_ignored: true
+  remote_reverification_performed: false
+boundaries:
+  phase_3: NOT STARTED
+  evaluation_executed_this_task: false
+  training_executed_this_task: false
+  dataset_modified: false
+  mapping_modified: false
+  frozen_configuration_modified: false
+  authorization: CONSUMED; no additional run authorized
+  M-005: pending
+evidence:
+- docs/reports/EXP-001_TRAINING_EXECUTION_REPORT.md
+- docs/reports/P2-6_TRAINING_AUTHORIZATION_REQUEST.md
+- P2-5.1_CONFIGURATION_FREEZE_REPORT.md
+- P2-5.2_WEIGHT_REGISTRATION_REPORT.md
+- P2-5.3_DEPENDENCY_FREEZE_REPORT.md

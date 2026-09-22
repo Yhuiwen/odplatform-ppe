@@ -1,10 +1,10 @@
 # Training Strategy
 
-> Status: DESIGN FROZEN / TRAINING NOT EXECUTED
+> Status: CONFIGURATION FROZEN / DEPENDENCY FROZEN / EXP-001 TRAINING COMPLETED
 >
-> This document defines the P1E-0 training-preparation strategy only. It does
-> not download weights, execute training, tune hyperparameters, or modify the
-> frozen `CSS-PPE-10-V1` dataset.
+> P1E-0 defined the strategy. P2-5.1 freezes the canonical EXP-001 parameters.
+> P2-5.5 records one authorized execution without modifying the frozen
+> `CSS-PPE-10-V1` dataset.
 
 ## Scope And Inputs
 
@@ -53,7 +53,7 @@ dataset contract.
 | Dataset | `CSS-PPE-10-V1` |
 | Classes | `7` |
 | Task | `object detection` |
-| Status | Design only; not executed |
+| Status | Executed; best epoch 75; early stopped after epoch 95 |
 
 The baseline must use the exact class order recorded in the dataset contract.
 `machinery` and `vehicle` are scene-context classes and must not be interpreted
@@ -61,25 +61,62 @@ as PPE compliance states.
 
 ## Training Parameters
 
-The following values are intentionally unresolved until P1E-1 review. They
-must not be guessed or copied from another project merely to make a run
-possible.
+The canonical parameters are frozen by P2-5.1. Changing any value requires a
+new reviewed configuration revision; a run must use the exact canonical file.
 
-| Parameter | P1E-0 state |
+| Parameter | Frozen value |
 | --- | --- |
-| Image size | `PENDING_DESIGN_REVIEW` |
-| Batch size | `PENDING_DESIGN_REVIEW` |
-| Epochs | `PENDING_DESIGN_REVIEW` |
-| Optimizer | `PENDING_DESIGN_REVIEW` |
-| Learning rate | `PENDING_DESIGN_REVIEW` |
-| Augmentation | `PENDING_DESIGN_REVIEW` |
-| Seed | `PENDING_DESIGN_REVIEW` |
-| Hardware/device | `PENDING_DESIGN_REVIEW` |
-| Dependency versions | `PENDING_DESIGN_REVIEW` |
+| Model implementation version | Ultralytics `8.4.157` |
+| Starting weights | `yolo11n.pt`, Ultralytics official pretrained checkpoint |
+| Image size | `640` |
+| Batch size | `16` |
+| Epochs | `100` |
+| Optimizer | `AdamW` |
+| Initial learning rate | `0.001` |
+| LR strategy | `cosine`, final fraction `0.01` |
+| Weight decay | `0.0005` |
+| Warmup epochs | `3.0` |
+| Early-stopping patience | `20` |
+| Augmentation | `experiments/configs/augmentation.yaml` |
+| Seed | `42` |
+| Device | `cuda:0` |
+| Device strategy | Single AutoDL RTX 4090 24GB |
+| Workers | `8` |
+| Deterministic | `true` |
+| AMP | `true` |
+| Cache | `false` |
+| Dependency versions | FROZEN by P2-5.3: `locks/EXP-001/conda-environment.yml`, `conda-explicit.lock`, and `pip-freeze-all.txt` |
 
-The canonical template is `configs/training/exp001_baseline.yaml`. The schema is
-`configs/training/schema.yaml`. No command-line-only run is an acceptable
-experiment record.
+The canonical configuration is `configs/training/exp001_baseline.yaml`. The
+schema is `configs/training/schema.yaml`. No command-line-only run is an
+acceptable experiment record.
+
+P2-5.2 subsequently registered the official Ultralytics `yolo11n.pt` asset:
+
+```text
+path:   models/pretrained/yolo11n.pt
+size:   5613764 bytes
+sha256: 0ebbc80d4a7680d14987a577cd21342b65ecfd94632bd9a8da63ae6417644ee1
+```
+
+The version-controlled manifest is
+`docs/weights/EXP-001_WEIGHT_MANIFEST.yaml`. The binary remains Git-ignored.
+The one-time authorization was consumed by EXP-001.
+
+P2-5.3 froze the resolved AutoDL runtime at:
+
+```text
+fingerprint: locks/EXP-001/runtime-fingerprint.yaml
+instance:    bcb849a74f-38320766 / bjb1
+GPU:         NVIDIA GeForce RTX 4090 / GPU-ad5f1f4a-5bdb-4a26-9b62-5eb190196bb4
+driver:      560.35.03 / CUDA API 12.6
+pytorch:     2.5.1+cu124 / CUDA runtime 12.4
+python:      3.10.21
+```
+
+Dependency freeze is not training authorization. The registered weight was
+transferred to the remote training environment and used as the single
+initialization checkpoint for EXP-001.
 
 ## Experiment Record
 
@@ -121,6 +158,34 @@ class imbalance and HIGH small-object risk for `hardhat`, `no_hardhat`, `vest`,
 and `vehicle`. Aggregate metrics alone are not sufficient evidence of
 compliance-detection quality.
 
+## EXP-001 Result
+
+EXP-001 completed 95 of 100 configured epochs. The best validation result was
+obtained at epoch 75, and early stopping then ended the run after 20 epochs
+without improvement.
+
+| Class | Precision | Recall | mAP50 | mAP50-95 |
+| --- | ---: | ---: | ---: | ---: |
+| all | 0.899 | 0.649 | 0.767 | 0.480 |
+| person | 0.935 | 0.693 | 0.797 | 0.515 |
+| hardhat | 0.945 | 0.722 | 0.819 | 0.526 |
+| no_hardhat | 0.843 | 0.522 | 0.634 | 0.327 |
+| vest | 0.966 | 0.689 | 0.888 | 0.555 |
+| no_vest | 0.862 | 0.604 | 0.739 | 0.461 |
+| machinery | 0.979 | 0.835 | 0.924 | 0.636 |
+| vehicle | 0.761 | 0.476 | 0.564 | 0.337 |
+
+The best checkpoint is recorded as a Git-ignored artifact with size
+`5,479,891` bytes and SHA256
+`1c144eef0dfa06b984dde760ea5501a11746b99c1f8a9ae581790241c3871f61`.
+These are training validation metrics. They satisfy the M-004 experiment
+archive but do not replace the independent Phase 3 evaluation required by
+M-005.
+
+Ultralytics also downloaded `yolo26n.pt` for its one-time AMP compatibility
+check. The training log records that it was not used for training and it did
+not replace the frozen `yolo11n.pt` initialization checkpoint.
+
 ## Quality And Risk Handling
 
 P1D-1 findings are inputs to evaluation, not permission to repair the dataset:
@@ -143,14 +208,16 @@ files. A manual command-line experiment is not accepted as a reproducible
 record, even if metrics were produced. The configuration and dataset
 fingerprint must be sufficient to reconstruct the run.
 
-## Non-Goals
+## P2-5.1 Historical Non-Goals
 
-P1E-0 does not:
+P2-5.1 did not:
 
 - train or evaluate a model;
 - download `yolo11n.pt` or any other checkpoint;
-- create training code or run logs;
+- create training code, checkpoints, or run logs;
 - modify images, labels, `data.yaml`, metadata, or processed fingerprints;
-- select tuned hyperparameters;
 - claim any metric for this project; or
-- begin Phase 1E release execution or Phase 2.
+- grant training authorization.
+
+The subsequent P2-5.5 execution is recorded in
+`docs/reports/EXP-001_TRAINING_EXECUTION_REPORT.md`.
