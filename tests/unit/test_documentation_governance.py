@@ -16,6 +16,9 @@ REQUIRED_DOCS = [
     "docs/08_RISK_REGISTER.md",
     "docs/09_REFERENCE_ASSETS.md",
     "docs/10_DATA_SOURCE_EVIDENCE.md",
+    "docs/16_DATASET_QUALITY_PLAN.md",
+    "docs/17_DATASET_QUALITY_REPORT.md",
+    "docs/18_TRAINING_STRATEGY.md",
 ]
 
 PHASE_DOCS = [

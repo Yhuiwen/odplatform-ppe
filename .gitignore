@@ -50,6 +50,11 @@ artifacts/events/videos/*
 artifacts/logs/*
 !artifacts/logs/.gitkeep
 
+experiments/runs/*
+!experiments/runs/.gitkeep
+experiments/reports/*
+!experiments/reports/.gitkeep
+
 *.log
 *.mp4
 *.avi

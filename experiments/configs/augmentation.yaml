@@ -1,0 +1,17 @@
+schema_version: training-config-v1
+status: DESIGN_PLACEHOLDER
+execution_enabled: false
+
+augmentation:
+  enabled: PENDING_DESIGN_REVIEW
+  pipeline: PENDING_DESIGN_REVIEW
+  parameters:
+    image_scale: PENDING_DESIGN_REVIEW
+    translation: PENDING_DESIGN_REVIEW
+    horizontal_flip: PENDING_DESIGN_REVIEW
+    color_jitter: PENDING_DESIGN_REVIEW
+    mosaic: PENDING_DESIGN_REVIEW
+
+notes:
+  - No augmentation is executed in P1E-0.
+  - No value is frozen until P1E-1 review.

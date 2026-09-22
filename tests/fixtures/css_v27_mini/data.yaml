@@ -1,0 +1,31 @@
+path: .
+train: train/images
+val: valid/images
+test: test/images
+nc: 25
+names:
+  - Person
+  - Hardhat
+  - NO-Hardhat
+  - Safety Vest
+  - NO-Safety Vest
+  - Mask
+  - NO-Mask
+  - Gloves
+  - Safety Cone
+  - machinery
+  - vehicle
+  - Excavator
+  - wheel loader
+  - dump truck
+  - truck and trailer
+  - truck
+  - semi
+  - SUV
+  - sedan
+  - mini-van
+  - van
+  - bus
+  - trailer
+  - Ladder
+  - fire hydrant

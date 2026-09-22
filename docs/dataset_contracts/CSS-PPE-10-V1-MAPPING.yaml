@@ -1,0 +1,46 @@
+source_dataset:
+  id: CSS-PPE-10-V1
+
+mapping_version:
+  id: PPE-MAPPING-V1
+
+source_classes:
+  0: Hardhat
+  1: Mask
+  2: NO-Hardhat
+  3: NO-Mask
+  4: NO-Safety Vest
+  5: Person
+  6: Safety Cone
+  7: Safety Vest
+  8: machinery
+  9: vehicle
+
+target_classes:
+  0: person
+  1: hardhat
+  2: no_hardhat
+  3: vest
+  4: no_vest
+  5: machinery
+  6: vehicle
+
+class_mapping:
+  0: 1
+  2: 2
+  4: 4
+  5: 0
+  7: 3
+  8: 5
+  9: 6
+
+discard_classes:
+  1: Mask
+  3: NO-Mask
+  6: Safety Cone
+
+conversion_rules:
+  - source labels are immutable
+  - discarded boxes are counted
+  - unknown source class id is error
+  - target ids are frozen

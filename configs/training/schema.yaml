@@ -1,0 +1,134 @@
+schema_version: training-config-v1
+status: DESIGN_FROZEN
+execution_enabled: false
+manual_review_required: true
+
+required_fields:
+  - experiment_id
+  - dataset
+  - dataset_contract
+  - processed_dataset
+  - model
+  - model_family
+  - model_variant
+  - model_version
+  - weights
+  - epochs
+  - imgsz
+  - batch
+  - optimizer
+  - learning_rate
+  - augmentation
+  - seed
+  - hyperparameter_status
+  - device
+  - device_strategy
+  - output_path
+  - logs_path
+  - reports_path
+  - checkpoint_path
+  - metrics
+
+constraints:
+  experiment_id:
+    type: string
+    pattern: '^EXP-\d{3}$'
+    unique: true
+  dataset:
+    type: string
+    allowed:
+      - CSS-PPE-10-V1
+  dataset_contract:
+    type: string
+    frozen: docs/dataset_contracts/CSS-PPE-10-V1-TRAINING.yaml
+  processed_dataset:
+    type: string
+    frozen: data/processed/css-ppe-10-v1/
+  model:
+    type: string
+    allowed:
+      - YOLO11n
+      - YOLO11s
+  model_family:
+    type: string
+    allowed:
+      - YOLO11
+  model_variant:
+    type: string
+    allowed:
+      - YOLO11n
+      - YOLO11s
+  model_version:
+    type: string
+    state: PENDING_DESIGN_REVIEW
+  weights:
+    type: string
+    state: PENDING_DESIGN_REVIEW
+  epochs:
+    type: integer
+    state: PENDING_DESIGN_REVIEW
+  imgsz:
+    type: integer
+    state: PENDING_DESIGN_REVIEW
+  batch:
+    type: integer
+    state: PENDING_DESIGN_REVIEW
+  optimizer:
+    type: string
+    state: PENDING_DESIGN_REVIEW
+  learning_rate:
+    type: number
+    state: PENDING_DESIGN_REVIEW
+  augmentation:
+    type: mapping-or-reference
+    state: PENDING_DESIGN_REVIEW
+  seed:
+    type: integer
+    state: PENDING_DESIGN_REVIEW
+  hyperparameter_status:
+    type: string
+    state: PENDING_DESIGN_REVIEW
+  device:
+    type: string
+    state: PENDING_DESIGN_REVIEW
+  device_strategy:
+    type: string
+    state: PENDING_DESIGN_REVIEW
+  output_path:
+    type: string
+    frozen: experiments/runs/EXP-001
+  logs_path:
+    type: string
+    frozen: artifacts/logs/EXP-001
+  reports_path:
+    type: string
+    frozen: experiments/reports/EXP-001
+  checkpoint_path:
+    type: string
+    frozen: models/checkpoints/EXP-001
+  metrics:
+    type: list
+    required:
+      - mAP50
+      - mAP50-95
+      - precision
+      - recall
+      - per-class AP
+      - confusion matrix
+      - inference speed
+      - model size
+
+record_required:
+  - date
+  - dataset_id
+  - model_version
+  - weights
+  - hyperparameters
+  - hardware
+  - metrics
+  - notes
+  - checkpoint
+
+training_execution:
+  allowed: false
+  reason: P1E-1 review is complete, but training remains prohibited until Phase 2 preparation and explicit user approval.

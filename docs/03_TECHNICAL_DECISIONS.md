@@ -120,3 +120,168 @@ This file is an append-only ADR log. Historical entries must not be deleted.
   `project=construction-site-safety`, `version=27`, `format=yolov8`。
 - Consequences: Phase 1B 必须记录实际下载档案哈希与来源；Phase 1C 只按
   Charter 锁定五类做显式映射，不修改本 ADR 锁定的源版本。
+
+## ADR-010
+
+- Date: 2026-09-21
+- Status: Accepted
+- Title: Dataset freeze requires export artifact fingerprint
+- Decision: Roboflow version number alone cannot uniquely identify a training
+  artifact. A dataset identity must include:
+  - workspace
+  - project
+  - version
+  - export format
+  - `data.yaml` SHA256
+  - class list
+  - manifest SHA256
+  - actual split counts
+- Context: The frozen v27 metadata recorded 25 classes and 2,801 images, while
+  the materialized `yolov8` export records 10 classes and 2,799 images. Both
+  artifacts identify the same workspace and project and both contain version
+  `27`, so the version number alone cannot distinguish the metadata identity
+  from the exported training artifact.
+- Consequences: CSS-V1 remains blocked for freeze correction. The 10-class,
+  2,799-image artifact is recorded as `CSS-V1.1 Candidate`, not as a frozen
+  replacement. Any future freeze must bind the complete artifact fingerprint
+  above and must not treat a version number, class count, or image count in
+  isolation as sufficient identity.
+
+## ADR-011
+
+- Date: 2026-09-21
+- Status: Accepted
+- Title: V1 dataset selection criteria
+- Decision: V1 dataset selection prioritizes:
+  1. reproducibility
+  2. verified artifact identity
+  3. PPE task relevance
+  4. license clarity
+  5. training feasibility
+  Maximum class count is not a selection criterion by itself.
+- Context: CSS-V1 has a broader 25-class metadata record but no matching
+  materialized artifact fingerprint. CSS-V1.1 is a materialized 10-class,
+  2,799-image export with a complete fingerprint, but it remains an unfrozen
+  candidate. Selecting the larger metadata record without a reproducible
+  artifact would make the eventual training data ambiguous.
+- Consequences: The P1B.2 evaluation compares candidates against these
+  criteria and records both current statuses without freezing either one.
+  A future freeze still requires an explicit route decision and the complete
+  artifact fingerprint required by ADR-010. P1C and training remain blocked
+  until that decision is recorded.
+
+## ADR-012
+
+- Date: 2026-09-21
+- Status: Accepted
+- Title: V1 dataset is frozen by artifact fingerprint
+- Decision: V1 dataset identity is defined by the complete artifact
+  fingerprint, not only by a Roboflow version number. The frozen V1 dataset is
+  `CSS-PPE-10-V1`, promoted from `CSS-V1.1 Candidate`, with:
+  - workspace `roboflow-universe-projects`
+  - project `construction-site-safety`
+  - version `27`
+  - format `yolov8`
+  - `data.yaml` SHA256
+    `5c393e74086c366a2ef55a77a4ddbf26bde1e08887a16f292f30a69fb3d21b34`
+  - ten-class exported class list
+  - manifest SHA256
+    `ea0de4b0ca379c5aae066e500b1e0bf30b69ae71467c2bb99e4f2cbd5f98d795`
+  - actual split counts train `2603` / valid `114` / test `82`
+  - total images `2799`
+- Context: CSS-V1's 25-class / 2,801-image metadata cannot be tied to the
+  materialized 10-class / 2,799-image export. Under ADR-011, reproducibility
+  and verified artifact identity take priority over the larger reported class
+  count.
+- Consequences: `CSS-PPE-10-V1` is the immutable P1C input. CSS-V1 remains
+  recorded as rejected and blocked for historical audit but is not the V1
+  training dataset. No class conversion, download, training, or P1C work is
+  performed by this ADR.
+
+## ADR-013
+
+- Date: 2026-09-21
+- Status: Accepted
+- Title: Class mapping must be frozen before dataset conversion
+- Decision: Original dataset classes and training classes are separate
+  concepts. A class mapping must be reviewed and frozen before:
+  - label conversion
+  - processed dataset generation
+  - model training
+- Context: The frozen `CSS-PPE-10-V1` export contains ten original classes,
+  while the locked V1 output defines five PPE compliance classes. Candidate
+  mapping choices can retain, discard, or reorganize classes, so conversion
+  must not begin while the mapping remains ambiguous.
+- Consequences: P1C remains blocked until a mapping candidate is explicitly
+  selected and recorded. The original snapshot and `data.yaml` remain
+  immutable. Conversion must emit new files under `data/interim/` or
+  `data/processed/` and must prove coverage or disposition for every original
+  class.
+
+## ADR-014
+
+- Date: 2026-09-21
+- Status: Accepted
+- Title: V1 training class mapping decision
+- Decision: Training dataset classes are derived from `CSS-PPE-10-V1` through
+  the frozen Strategy C mapping:
+  - `0 person <- [5]`
+  - `1 hardhat <- [0]`
+  - `2 no_hardhat <- [2]`
+  - `3 vest <- [7]`
+  - `4 no_vest <- [4]`
+  - `5 machinery <- [8]`
+  - `6 vehicle <- [9]`
+  Source classes `1 Mask`, `3 NO-Mask`, and `6 Safety Cone` are discarded from
+  the V1 training output.
+- Context: The original export contains ten classes, while the locked
+  compliance surface contains five PPE classes. Strategy C retains the five
+  compliance classes in ADR-003 order and adds two scene-context classes for
+  future hazard and report capabilities without changing the compliance
+  semantics.
+- Governance boundary: `machinery` and `vehicle` are not PPE compliance
+  classes. They must not trigger helmet or vest violations and must not alter
+  the required five-class per-class AP reporting.
+- Consequences: Original dataset remains immutable. P1C conversion must use
+  this exact seven-class mapping, preserve source data, and report mapped and
+  discarded boxes. Conversion and processed dataset generation remain
+  unimplemented until the P1C implementation gate is approved.
+
+## ADR-015
+
+- Date: 2026-09-21
+- Status: Accepted
+- Title: Dataset quality validation is observation-only before training
+- Decision: Quality validation may identify risks, report invalid records,
+  and recommend a later dataset version, but it must not mutate the frozen
+  source or processed datasets. Any data modification requires a new dataset
+  version and a new frozen artifact fingerprint.
+- Context: P1D must answer whether the YOLO-ready dataset is suitable for
+  training without improving metrics by silently deleting, relabeling,
+  resizing, remapping, or resplitting data. Roboflow augmentation also means
+  that exact and perceptual duplicates require interpretation rather than
+  automatic deletion.
+- Consequences: `DatasetQualityService.analyze()` is read-only and verifies
+  the dataset manifest before and after analysis. P1D findings remain evidence.
+  Auto-repair APIs are prohibited. P1D-0 defines thresholds and architecture;
+  only P1D-1 may execute the framework against the real `CSS-PPE-10-V1`
+  processed dataset and generate the real quality report.
+
+## ADR-016
+
+- Date: 2026-09-21
+- Status: Accepted
+- Title: Training experiments must be configuration-driven
+- Decision: All experiments must be defined by immutable configuration files.
+  Manual command-line-only experiments are not accepted as reproducible
+  records.
+- Context: The baseline must be traceable across dataset identity, model
+  version, hyperparameters, hardware, metrics, and checkpoint outputs.
+  Untracked command lines can produce results that cannot be audited or
+  compared, especially after the dataset, dependency, or hardware state
+  changes.
+- Consequences: Every training run must reference a version-controlled YAML
+  configuration, the frozen dataset contract, and recorded environment and
+  metric evidence. The canonical EXP-001 template and schema are introduced in
+  P1E-0. P1E-0 does not execute training, download weights, or create a model
+  checkpoint.

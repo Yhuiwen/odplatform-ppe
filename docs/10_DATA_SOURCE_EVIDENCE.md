@@ -2,9 +2,11 @@
 
 > Evidence access date: 2026-09-21
 >
-> This document records source metadata and licensing evidence only. No dataset
-> archive, image set, label set, model weight, or generated export was
-> downloaded for this phase.
+> This document records source metadata and licensing evidence. Phase 1B
+> downloaded the selected Roboflow API export with the user's account, copied
+> it without modification into a Git-ignored snapshot, and recorded actual
+> counts and hashes. No dataset image, label, archive, model weight, API key,
+> or machine path is committed.
 
 ## CSS-V1
 
@@ -121,6 +123,7 @@ record.
 | Roboflow version count drift | Version 27 has 2,801 images and 25 classes. Version 30 has 717 images and 26 classes. The current parent project record also exposes 3,033 total images, 717 annotated images, and 193 unannotated images. | Freeze version 27 for V1. Do not use a moving project-level count. |
 | Mirror class definition | Kaggle reports ten exported classes, while Roboflow version 27 reports 25 source classes. | Use the original Roboflow version 27 class record as authoritative. Kaggle is excluded from the V1 download path. |
 | Mirror image count | Kaggle's inspected metadata does not expose an authoritative image count; a third-party README reports 2,801. | Do not infer a bit-for-bit mirror relationship. Verify the downloaded version 27 archive during Phase 1B. |
+| Downloaded v27 export counts | The public version metadata reports 2,801 images and 25 classes. The direct Roboflow API `yolov8` export contains 2,799 images and a 10-class `data.yaml`. | Preserve the direct export unchanged, record both observations, and block P1B until the discrepancy is resolved against the canonical v27 source. Do not edit the snapshot to match the metadata. |
 | Kaggle version number | Kaggle labels its dataset version `3`; Roboflow version 27 is selected. These version numbers are from different systems and are not equivalent. | Record both identifiers and never equate them. |
 | Underlying image provenance | The project is labeled CC BY 4.0, but the source and privacy status of every underlying image are not independently documented. | Use the licensed source for course/development work, retain attribution and modification notices, keep raw data outside Git, and reassess before any public redistribution. |
 
@@ -159,11 +162,97 @@ the attribution and notice conditions.
 
 ## Decision
 
-CSS-V1 will use Roboflow Universe version 27 as the canonical V1 source. Phase
-1B must download that exact version through the Roboflow Universe download
-mechanism with a local API key and record the resulting archive hash. The
-Kaggle mirror is evidence of an accessible redistribution, not a reproducibility
-baseline.
+The historical CSS-V1 decision selected Roboflow Universe version 27 as the
+intended V1 source. The P1B identity audit found that version metadata and the
+materialized export artifact are not interchangeable identities, so the freeze
+is blocked pending correction. The Kaggle mirror remains evidence of an
+accessible redistribution, not a reproducibility baseline.
+
+## Phase 1B Download Record
+
+- Dataset ID: `CSS-V1`
+- Dataset: Construction Site Safety
+- Workspace: `roboflow-universe-projects`
+- Project: `construction-site-safety`
+- Version: `27`
+- Format: `yolov8`
+- Download method: Roboflow API with the user's account
+- Dataset extracted directory: `Construction-Site-Safety-27`
+- Archive: unavailable because the Roboflow API returned an extracted
+  directory; no archive SHA-256 may be claimed
+- Snapshot location: Git-ignored `data/external/css-v27-yolov8/source/`
+- Source data.yaml SHA-256:
+  `5c393e74086c366a2ef55a77a4ddbf26bde1e08887a16f292f30a69fb3d21b34`
+- Snapshot manifest SHA-256:
+  `ea0de4b0ca379c5aae066e500b1e0bf30b69ae71467c2bb99e4f2cbd5f98d795`
+- Manifest files: `5,601`
+- Actual counts: train `2,603`, valid `114`, test `82`, total `2,799`
+- Frozen expected counts: train `2,605`, valid `114`, test `82`, total `2,801`
+- Count result: FAIL, train and total are each two images below expectation
+- Actual classes: `Hardhat`, `Mask`, `NO-Hardhat`, `NO-Mask`,
+  `NO-Safety Vest`, `Person`, `Safety Cone`, `Safety Vest`, `machinery`,
+  `vehicle`
+- Class-count result: FAIL against the P1A-reported 25 source classes
+- Required semantics: PASS; all five target semantics are present
+- Pair/integrity result: zero missing labels, zero orphan labels, 23 empty
+  label files, zero zero-byte images
+- Exact SHA-256 duplicate files: 22, retained without deletion
+- Machine path recorded: NO
+- Secret saved: NO
+- Snapshot status: `IMMUTABLE`
+- Validation status: `FAILED - EXPECTED COUNT OR CLASS MISMATCH`
+
+Required follow-up: resolve the count and exported-class discrepancy against
+the canonical version 27 source before P1C starts. Do not modify the snapshot
+to force a match.
+
+## P1B.1 Identity Audit
+
+- Observed artifact:
+  - Class count: `10`
+  - Classes: `Hardhat`, `Mask`, `NO-Hardhat`, `NO-Mask`,
+    `NO-Safety Vest`, `Person`, `Safety Cone`, `Safety Vest`, `machinery`,
+    `vehicle`
+  - Images: `2,799`
+  - Splits: train `2,603`, valid `114`, test `82`
+  - `data.yaml` SHA256:
+    `5c393e74086c366a2ef55a77a4ddbf26bde1e08887a16f292f30a69fb3d21b34`
+- Expected metadata:
+  - Class count: `25`
+  - Images: `2,801`
+  - Splits: train `2,605`, valid `114`, test `82`
+- The materialized export identifies workspace `roboflow-universe-projects`,
+  project `construction-site-safety`, and version `27`; the generated README
+  also identifies v27 and provides a generation timestamp consistent with the
+  version creation timestamp.
+- The actual 10 classes are a subset of the 25 metadata classes. The artifact
+  is internally consistent: class IDs `0` through `9` are used and no invalid
+  class IDs were found.
+- Root cause: `CONFIRMED: export artifact mismatch`.
+- Exact Roboflow internal reason: `UNKNOWN`; an authenticated API re-query was
+  unavailable because no user credential was configured during this audit.
+
+## P1B.3 Final Freeze Decision
+
+- Rejected dataset identity: `CSS-V1`
+- Accepted candidate: `CSS-V1.1 Candidate`
+- Frozen dataset ID: `CSS-PPE-10-V1`
+- Decision record: `docs/12_DATASET_FREEZE_DECISION.md`
+- Frozen workspace: `roboflow-universe-projects`
+- Frozen project: `construction-site-safety`
+- Frozen version: `27`
+- Frozen format: `yolov8`
+- Frozen `data.yaml` SHA256:
+  `5c393e74086c366a2ef55a77a4ddbf26bde1e08887a16f292f30a69fb3d21b34`
+- Frozen manifest SHA256:
+  `ea0de4b0ca379c5aae066e500b1e0bf30b69ae71467c2bb99e4f2cbd5f98d795`
+- Frozen classes: `Hardhat`, `Mask`, `NO-Hardhat`, `NO-Mask`,
+  `NO-Safety Vest`, `Person`, `Safety Cone`, `Safety Vest`, `machinery`,
+  `vehicle`
+- Frozen counts: train `2603`, valid `114`, test `82`, total `2799`
+- P1C input remains the immutable Git-ignored
+  `data/external/css-v27-yolov8/source/` snapshot.
+- No dataset file was modified while recording this decision.
 
 ## Verification Status
 
@@ -171,4 +260,11 @@ baseline.
 version metadata, source class names, reported size, split, and download
 mechanism.
 
-`NOT DOWNLOADED`: this phase did not retrieve the dataset or any export.
+`SNAPSHOT CREATED`: the direct API export is preserved as an immutable,
+Git-ignored source snapshot with a full manifest and reproducible integrity
+checks.
+
+`BLOCKED / NEEDS FREEZE CORRECTION`: the historical CSS-V1 metadata and the
+materialized export artifact have different identities. `CSS-V1.1 Candidate`
+is now recorded as promoted to the frozen `CSS-PPE-10-V1` identity by ADR-012;
+P1C remains not started until manual review.

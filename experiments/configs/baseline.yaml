@@ -1,0 +1,25 @@
+schema_version: training-config-v1
+status: DESIGN_PLACEHOLDER
+execution_enabled: false
+
+template_for: EXP-001
+canonical_config: configs/training/exp001_baseline.yaml
+dataset: CSS-PPE-10-V1
+model: YOLO11n
+epochs: PENDING_DESIGN_REVIEW
+imgsz: PENDING_DESIGN_REVIEW
+batch: PENDING_DESIGN_REVIEW
+optimizer: PENDING_DESIGN_REVIEW
+learning_rate: PENDING_DESIGN_REVIEW
+augmentation: PENDING_DESIGN_REVIEW
+seed: PENDING_DESIGN_REVIEW
+
+metrics:
+  - mAP50
+  - mAP50-95
+  - precision
+  - recall
+  - per-class AP
+  - confusion matrix
+  - inference speed
+  - model size

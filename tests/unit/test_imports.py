@@ -30,6 +30,8 @@ MODULES = [
     "scripts.infer_stream",
     "scripts.run_demo",
     "services.dataset_service",
+    "services.dataset_conversion_service",
+    "services.dataset_quality_service",
     "services.train_service",
     "services.val_service",
     "services.inference_service",
@@ -41,6 +43,7 @@ MODULES = [
     "utils.config_loader",
     "utils.logging_utils",
     "utils.performance_utils",
+    "utils.quality_metrics",
     "utils.system_utils",
     "web.Home",
 ]

@@ -1,0 +1,28 @@
+dataset_id: CSS-PPE-10-V1
+processed_dataset: css-ppe-10-v1
+mapping: PPE-MAPPING-V1
+
+classes:
+  0: person
+  1: hardhat
+  2: no_hardhat
+  3: vest
+  4: no_vest
+  5: machinery
+  6: vehicle
+
+fingerprint:
+  source_data_yaml_sha256: 5c393e74086c366a2ef55a77a4ddbf26bde1e08887a16f292f30a69fb3d21b34
+  source_manifest_sha256: ea0de4b0ca379c5aae066e500b1e0bf30b69ae71467c2bb99e4f2cbd5f98d795
+  processed_manifest_sha256: dbfe43c43d45e65951abec1bd112e07342b66651d799a05d79b6d749f2831c2c
+
+quality_report: 17_DATASET_QUALITY_REPORT.md
+quality_report_path: docs/17_DATASET_QUALITY_REPORT.md
+quality_status: PASS
+
+release:
+  status: DESIGN_FROZEN
+  immutable: true
+  executable: false
+  training_started: false
+  next_review: P1E-1 Baseline Training Preparation Review
