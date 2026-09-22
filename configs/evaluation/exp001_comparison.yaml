@@ -1,0 +1,7 @@
+schema_version: model-comparison-v1
+comparison_id: CMP-001
+scope: EXP-001 best versus last checkpoint; not independent training runs
+base_config: configs/evaluation/exp001_test.yaml
+base_config_sha256: 796bf9dc6515b7636c805947f72ba8f1a99e7d66493f4a4c7240fee6dca5cbc6
+output_path: artifacts/reports/EXP-001-evaluation/CMP-001
+checkpoint_roles: [best, last]

@@ -1,0 +1,82 @@
+schema_version: release-model-selection-v1
+selection_id: SEL-001
+selection_date: '2026-09-22'
+experiment_id: EXP-001
+model: YOLO11n
+model_role: Project-trained Model
+decision_status: SELECTED
+human_review_status: PENDING
+phase_release_status: NOT_RELEASED
+selected_checkpoint: models/checkpoints/EXP-001/best.pt
+sha256: 1c144eef0dfa06b984dde760ea5501a11746b99c1f8a9ae581790241c3871f61
+size_bytes: 5479891
+selected_epoch: 75
+epoch_numbering: one-based
+alternative_checkpoint:
+  path: models/checkpoints/EXP-001/last.pt
+  sha256: acdd89c00cde096d609b596577572d7f4ed5bbcc7104babf0a1691c6cd8aba88
+  epoch: 95
+  disposition: RETAINED_FOR_REFERENCE_NOT_SELECTED
+dataset:
+  id: CSS-PPE-10-V1
+  mapping: PPE-MAPPING-V1
+  test_images: 82
+  test_instances: 561
+  classes:
+  - person
+  - hardhat
+  - no_hardhat
+  - vest
+  - no_vest
+  - machinery
+  - vehicle
+selection_rationale:
+- Retain the validation-selected epoch-75 checkpoint; do not replace it by maximizing
+  observed test mAP.
+- Existing CMP-001 evidence shows higher no_hardhat recall (25/41 versus 24/41) and
+  higher overall and five-PPE-class macro precision for best.pt.
+- The alternative improves mAP, no_vest recall and small-object recall; these mixed
+  results do not establish a uniformly better PPE detector.
+- This is a documented engineering tradeoff for the integration baseline, not proof
+  of safer operation or statistically significant superiority.
+criteria_policy:
+  basis: Preserve prior validation selection; review both violation-class recalls,
+    precision, per-class AP, small-object recall and reproducibility.
+  timing: Qualitative comparative review documented after CMP-001; not a preregistered
+    scoring rule.
+  new_scoring_weights: false
+  new_acceptance_thresholds: false
+  test_set_tuning: false
+evidence:
+- path: docs/weights/EXP-001_BEST_MODEL_MANIFEST.yaml
+  sha256: 5f20a24869e1d481d0c05389cfe4541789c96a0caa0e2c282e8bb79ca3a66e0d
+- path: PHASE_3_EVALUATION_REPORT.md
+  sha256: 203078900e39d10cde114fd0ee1f064d0ba99b3cdf620683282ce1f39ec4a7b9
+- path: P3_MODEL_COMPARISON_REPORT.md
+  sha256: e8e4f6f0f9cbab08868dc3d3072c4013bc89874e37e50a0fdab679b0a1f4d870
+- path: docs/reports/P3_MODEL_COMPARISON_SUMMARY.json
+  sha256: 6926a1a2105836ff1abb170e7ef0cf753bfa9cda5e58188da417fff7827f3eb3
+- path: configs/evaluation/exp001_test.yaml
+  sha256: 796bf9dc6515b7636c805947f72ba8f1a99e7d66493f4a4c7240fee6dca5cbc6
+- path: configs/evaluation/exp001_comparison.yaml
+  sha256: e8384764be1aa80d0819cea96c564d4d4d8990b2e1c809e4fa372c353fe021ca
+selection_report: P3_MODEL_SELECTION_REPORT.md
+limitations:
+- 82-image test split with recorded valid/test near-duplicate candidates and class
+  imbalance.
+- Both candidates belong to one training run; no independent-model superiority established.
+- Selected no_hardhat recall is 0.609756 and small-object recall is 0.544444; misses
+  remain material.
+- Detector precision/recall do not establish person-PPE association, temporal violation
+  detection or event false-alarm rates.
+- Teacher Baseline not compared; deployment readiness and statistical significance
+  not established.
+boundaries:
+  training_executed: false
+  new_model_evaluation: false
+  dataset_modified: false
+  mapping_modified: false
+  weights_modified: false
+  phase_2_artifacts_modified: false
+  phase_4_authorized: false
+  commit_push_authorized: false

@@ -1,0 +1,351 @@
+{
+  "schema_version": "detection-evaluation-metrics-v1",
+  "images": 82,
+  "instances": 561,
+  "class_names": [
+    "person",
+    "hardhat",
+    "no_hardhat",
+    "vest",
+    "no_vest",
+    "machinery",
+    "vehicle"
+  ],
+  "iou_thresholds": [
+    0.5,
+    0.55,
+    0.6,
+    0.65,
+    0.7,
+    0.75,
+    0.8,
+    0.8500000000000001,
+    0.9,
+    0.95
+  ],
+  "operating_confidence": 0.25,
+  "matching_iou": 0.5,
+  "precision_recall_policy": "macro over supported classes at fixed confidence; no test-set tuning",
+  "AP_policy": "IoU matching at 0.50:0.05:0.95; confidence ranked; 101-point PR envelope trapezoid",
+  "overall": {
+    "precision": 0.7986690916252808,
+    "recall": 0.7123149058533526,
+    "mAP50": 0.7332026729463846,
+    "mAP50-95": 0.46512189485964256
+  },
+  "ppe_five_classes": {
+    "precision": 0.8320577009197698,
+    "recall": 0.7210767883720772,
+    "mAP50": 0.7395673520626467,
+    "mAP50-95": 0.45450005588377607
+  },
+  "per_class": [
+    {
+      "class_id": 0,
+      "name": "person",
+      "targets": 174,
+      "tp": 130,
+      "fp": 46,
+      "fn": 44,
+      "precision": 0.7386363636363636,
+      "recall": 0.7471264367816092,
+      "AP50": 0.7910287360272114,
+      "AP50-95": 0.4931465206618354,
+      "AP_by_iou": [
+        0.7910287360272114,
+        0.779537724873745,
+        0.7669336149905978,
+        0.7455436005449931,
+        0.6641440091062982,
+        0.4967937163375388,
+        0.3606673552832471,
+        0.21115507730738736,
+        0.10853637214733453,
+        0.007124999999999999
+      ]
+    },
+    {
+      "class_id": 1,
+      "name": "hardhat",
+      "targets": 110,
+      "tp": 85,
+      "fp": 6,
+      "fn": 25,
+      "precision": 0.9340659340659341,
+      "recall": 0.7727272727272727,
+      "AP50": 0.8388498932821642,
+      "AP50-95": 0.5223129876986514,
+      "AP_by_iou": [
+        0.8388498932821642,
+        0.8317287853456211,
+        0.8160911901465366,
+        0.7719509547229724,
+        0.6806069526585496,
+        0.5835861502141337,
+        0.46475041623889557,
+        0.20498793038068217,
+        0.02908363201911589,
+        0.0014939719778429457
+      ]
+    },
+    {
+      "class_id": 2,
+      "name": "no_hardhat",
+      "targets": 41,
+      "tp": 25,
+      "fp": 5,
+      "fn": 16,
+      "precision": 0.8333333333333334,
+      "recall": 0.6097560975609756,
+      "AP50": 0.5472857142857144,
+      "AP50-95": 0.290487798605684,
+      "AP_by_iou": [
+        0.5472857142857144,
+        0.5472857142857144,
+        0.5062210363072432,
+        0.42174925303454724,
+        0.3792567927170868,
+        0.27378683473389354,
+        0.1392926406926407,
+        0.07500000000000001,
+        0.015,
+        0.0
+      ]
+    },
+    {
+      "class_id": 3,
+      "name": "vest",
+      "targets": 61,
+      "tp": 48,
+      "fp": 10,
+      "fn": 13,
+      "precision": 0.8275862068965517,
+      "recall": 0.7868852459016393,
+      "AP50": 0.8037548177307903,
+      "AP50-95": 0.5241257863117521,
+      "AP_by_iou": [
+        0.8037548177307903,
+        0.7996441457940313,
+        0.7878560787885729,
+        0.7537560566628929,
+        0.7405512394774785,
+        0.6499431326430768,
+        0.5004532519715392,
+        0.18022338247338246,
+        0.0243939393939394,
+        0.0006818181818181819
+      ]
+    },
+    {
+      "class_id": 4,
+      "name": "no_vest",
+      "targets": 90,
+      "tp": 62,
+      "fp": 13,
+      "fn": 28,
+      "precision": 0.8266666666666667,
+      "recall": 0.6888888888888889,
+      "AP50": 0.7169175989873535,
+      "AP50-95": 0.44242718614095733,
+      "AP_by_iou": [
+        0.7169175989873535,
+        0.6969542479584795,
+        0.6866377416755247,
+        0.6529009940356914,
+        0.5860935204326991,
+        0.46678946573714786,
+        0.3584713787629784,
+        0.21854338120126424,
+        0.04050898716388913,
+        0.00045454545454545455
+      ]
+    },
+    {
+      "class_id": 5,
+      "name": "machinery",
+      "targets": 44,
+      "tp": 35,
+      "fp": 12,
+      "fn": 9,
+      "precision": 0.7446808510638298,
+      "recall": 0.7954545454545454,
+      "AP50": 0.8195198329687668,
+      "AP50-95": 0.5811973645168599,
+      "AP_by_iou": [
+        0.8195198329687668,
+        0.8076403104075726,
+        0.7354747247819555,
+        0.7225495498185381,
+        0.7127143929088844,
+        0.6765200678853103,
+        0.6054314175242219,
+        0.41407182940516274,
+        0.2999104938271605,
+        0.01814102564102564
+      ]
+    },
+    {
+      "class_id": 6,
+      "name": "vehicle",
+      "targets": 41,
+      "tp": 24,
+      "fp": 11,
+      "fn": 17,
+      "precision": 0.6857142857142857,
+      "recall": 0.5853658536585366,
+      "AP50": 0.6150621173426926,
+      "AP50-95": 0.40215562008175754,
+      "AP_by_iou": [
+        0.6150621173426926,
+        0.6042041194066761,
+        0.5689312977571409,
+        0.5082961268087522,
+        0.506067681610096,
+        0.47416465941426084,
+        0.3465559414067073,
+        0.23658789831722163,
+        0.15168635875402792,
+        0.01
+      ]
+    }
+  ],
+  "confusion_matrix": {
+    "axis_order": "predicted rows / true columns",
+    "labels": [
+      "person",
+      "hardhat",
+      "no_hardhat",
+      "vest",
+      "no_vest",
+      "machinery",
+      "vehicle",
+      "background"
+    ],
+    "matching_policy": "correct-class first, then residual class-agnostic IoU matches",
+    "counts": [
+      [
+        130,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        45
+      ],
+      [
+        0,
+        85,
+        1,
+        0,
+        0,
+        0,
+        0,
+        5
+      ],
+      [
+        0,
+        1,
+        25,
+        0,
+        0,
+        0,
+        0,
+        4
+      ],
+      [
+        0,
+        0,
+        0,
+        48,
+        0,
+        0,
+        0,
+        10
+      ],
+      [
+        0,
+        0,
+        0,
+        1,
+        62,
+        0,
+        0,
+        12
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        35,
+        0,
+        12
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        24,
+        11
+      ],
+      [
+        44,
+        24,
+        15,
+        12,
+        27,
+        9,
+        17,
+        0
+      ]
+    ]
+  },
+  "small_object_recall": {
+    "small": {
+      "targets": 270,
+      "tp": 147,
+      "recall": 0.5444444444444444
+    },
+    "non_small": {
+      "targets": 291,
+      "tp": 262,
+      "recall": 0.9003436426116839
+    }
+  },
+  "error_counts": {
+    "missed_ground_truth": 148,
+    "background_false_positive": 23,
+    "duplicate_or_unmatched_overlap": 35,
+    "localization_candidate": 41,
+    "class_confusion": 4
+  },
+  "evaluation_id": "EVAL-001",
+  "experiment_id": "EXP-001",
+  "split": "test",
+  "status": "COMPLETED_AWAITING_HUMAN_REVIEW",
+  "checkpoint_sha256": "1c144eef0dfa06b984dde760ea5501a11746b99c1f8a9ae581790241c3871f61",
+  "evaluation_config_sha256": "796bf9dc6515b7636c805947f72ba8f1a99e7d66493f4a4c7240fee6dca5cbc6",
+  "raw_artifact_root": "artifacts/reports/EXP-001-evaluation/EVAL-001",
+  "artifact_sha256": {
+    "confusion_matrix.json": "8f54dc25ff391144b5bccefc68c4bc206234bb39f5394db5a0f2726abdfc0b39",
+    "confusion_matrix.png": "5f99e6dcbe094dfc3c2222b6e91826eab91c21306b94e5dec1dec0940616887f",
+    "dataset_before.json": "9246d2110cabc9c5f7344050f7c88e6728d74677b51ce3fc6c90071102116cdf",
+    "error_analysis.json": "37a60603eb70262d3bba530a21bab758a7a72617b0e2b8eb13594a459ddf4811",
+    "metrics.json": "6a6f01502120afdf0102da2d7a63b76267a814f289275803bbfe3d969b4c2e2a",
+    "predictions.json": "2636025df3a8e85ed534fe8eca54c700c4384da5d4983be9b9e9539dfe60ea57",
+    "run_record.json": "181c7500308bd5459e8f248cabbd3342003c449bd32cbb46f409a2552c52f45c"
+  },
+  "reference_metric_check": {
+    "status": "PASS",
+    "matching_equal": true,
+    "AP_max_absolute_delta": 2.220446049250313e-16,
+    "reference": "Ultralytics 8.4.157 BaseValidator.match_predictions + ap_per_class",
+    "scope": "same retained single-label NMS predictions; not a second model run"
+  },
+  "integrity_unchanged": true
+}

@@ -25,7 +25,6 @@ from services.inference_service import InferenceService
 from services.report_service import ReportService
 from services.tracking_service import TrackingService
 from services.train_service import TrainService
-from services.val_service import ValService
 
 
 PLACEHOLDER_CALLS = [
@@ -38,7 +37,6 @@ PLACEHOLDER_CALLS = [
     ("event-state", lambda: EventStateManager().update(None)),
     ("pipeline", lambda: InferencePipeline().run(None)),
     ("dataset-quality-validation", lambda: DatasetService().validate()),
-    ("val-service", lambda: ValService().evaluate({})),
     ("image-service", lambda: InferenceService().infer_image(None)),
     ("video-service", lambda: InferenceService().infer_video(None)),
     ("stream-service", lambda: InferenceService().infer_stream(None)),

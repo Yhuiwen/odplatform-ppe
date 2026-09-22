@@ -1,5 +1,40 @@
 # Changelog
 
+## 2026-09-22 — Phase 3 Final Release Freeze
+
+- 创建 `PHASE_3_FINAL_RELEASE_REPORT.md`，汇总 P3-G1～G4 技术 PASS、M-005
+  技术完成/人工验收待定、最终 best.pt 模型、artifact 清单、SHA256 和限制。
+- 冻结现有 EVAL-001、CMP-001、SEL-001 证据及实现/配置/测试哈希；不改写既有
+  报告或 EXP-001_RELEASE_MODEL.yaml，不新增模型实测或调优。
+- 本轮全量测试 213 passed / 1 skipped；离线复算与证据身份核验通过。
+- Freeze COMPLETED / AWAITING HUMAN REVIEW；GitHub NOT_RELEASED。
+  明确 Phase 4 需人工审核、模型/推理配置确认和开始指令，未进入开发。
+- 未训练、未修改 dataset/mapping/weights 或 Phase 2 artifacts；未 commit/push。
+
+## 2026-09-22 — P3-G4 Final Comparative Model Selection
+
+- SEL-001 正式记录选择 EXP-001 best.pt（epoch 75），保留原验证集选择；last.pt
+  保留为参考。没有新增模型实测、重新训练、调阈值或修改权重。
+- 新增 `P3_MODEL_SELECTION_REPORT.md` 与 `EXP-001_RELEASE_MODEL.yaml`，记录
+  候选、既有评估证据、PPE 合规关注点、取舍、SHA256 与限制；人工审核 PENDING。
+- 全量测试 213 passed / 1 skipped；compileall、离线复算、清单身份与证据哈希
+  校验通过。P3-G4 技术门禁 PASS；Phase 3 尚未发布，未进入 Phase 4。
+- 未修改 dataset、mapping、EXP-001 weights、既有评估/比较结果或 Phase 2
+  artifacts；未 commit/push。
+
+## 2026-09-22 — P3-G3 Model Comparison
+
+- 完成 CMP-001：EXP-001 best.pt（epoch 75）与 last.pt（epoch 95）的同条件
+  checkpoint 对照；两者调用相同 ValService，使用相同 test split、参数、代码与 runtime。
+- 新增配置、比较入口、条件一致性验证与离线复算；checkpoint 仅能从 Phase 2
+  冻结清单选择。保留 EVAL-001，并精确复现其 best 指标。
+- 输出 `P3_MODEL_COMPARISON_REPORT.md` 和机器可读 summary，包含四项总体指标、
+  七类 AP、no_hardhat / no_vest / small-object recall 与取舍分析。
+- 全量测试 213 passed / 1 skipped；专用环境相关测试 29 passed。P3-G3 PASS，
+  等待人工审核；P3-G4 仍未完成，不改变原 best 选择。
+- 未训练、未下载模型、未修改 EXP-001 配置/权重、dataset/mapping 或 Phase 2
+  artifacts；未 commit/push，未进入 Phase 4。
+
 All notable project changes are recorded here. This project follows a
 phase-based log rather than claiming semantic-release completeness.
 
@@ -537,3 +572,18 @@ phase-based log rather than claiming semantic-release completeness.
   checkpoints, dependency locks and the existing Charter status change.
 - Current Phase is `P2-7 Training Result Freeze`; EXP-001 Training is `COMPLETED`.
 - No training, evaluation, Phase 3 work, commit or push was performed.
+
+### P3-1 EXP-001 Test Evaluation (Awaiting Human Review)
+
+- Implemented ValService, the evaluation CLI and deterministic replayable metrics;
+  added a fixed test protocol and evaluation-only dependency pins under EVAL-001.
+- Evaluated the unchanged EXP-001 best.pt on 82 test images / 561 boxes. Seven-class
+  P/R/mAP50/mAP50-95: 0.798669 / 0.712315 / 0.733203 / 0.465122.
+- Retained all seven per-class AP entries, the five PPE aggregate, confusion matrix,
+  per-image predictions/ground truth/errors and small-object recall diagnostics.
+- Cross-checked matching/AP against Ultralytics 8.4.157 and replayed retained results.
+- Added PHASE_3_EVALUATION_REPORT.md and EXP-001_EVALUATION_SUMMARY.json. M-005
+  technical evidence is complete, awaiting human review; comparison/model-selection
+  gates remain pending. No Phase 4 entry, training, commit or push.
+- Dataset, mapping, weights, training configuration and Phase 2 release artifacts
+  were preserved. The CPU evaluation environment is separate from the training lock.

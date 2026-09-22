@@ -39,3 +39,14 @@ Before any SELECTIVE-REUSE:
 3. Record origin, commit, file path, modifications, and required attribution.
 4. Add a focused test and update this document before merge.
 5. Obtain explicit user approval when the license or obligation is ambiguous.
+
+## Phase 3 Evaluation Dependency Use
+
+EVAL-001 uses Ultralytics 8.4.157 through its public prediction API, PyTorch
+2.5.1 CPU / torchvision 0.20.1, NumPy 2.2.6, Pillow and Matplotlib in a separate
+Windows environment. Exact installed versions are pinned in
+`locks/EVAL-001/requirements.txt`; EXP-001 training locks remain unchanged.
+The installed Ultralytics matching/AP source was inspected and used as a runtime
+reference check; no third-party business source was copied. The repository's
+metric and error-analysis implementation is original and tested against that API.
+Existing dependency-license and distribution boundaries remain in force.

@@ -2,7 +2,7 @@
 
 ## Current Phase
 
-P2-7 Training Result Freeze
+Phase 3 — Release Freeze / Awaiting Human Review
 
 ## EXP-001 Training
 
@@ -15,6 +15,15 @@ COMPLETED
 Phase 完成 → Gate PASS → Commit → Tag → Push
 
 ## Overall Status
+
+Phase 3 已按明确用户指令开始，并完成 EXP-001 best.pt 的独立 test evaluation。
+M-005 要求的总体指标、五类 per-class AP、confusion matrix 和 error analysis
+均已保存，可离线复算。随后 CMP-001 完成 best.pt 与 last.pt 的同条件 checkpoint
+对照；SEL-001 已正式记录选择 best.pt（epoch 75）。P3-G1～P3-G4 技术门禁
+PASS，等待人工审核；Phase 3 尚未发布，不执行 commit/push，不进入 Phase 4。
+Phase 3 最终发布证据已冻结于 `PHASE_3_FINAL_RELEASE_REPORT.md`。
+Release Freeze：COMPLETED；Human Review：PENDING；GitHub Release：NOT_RELEASED。
+以下 Phase 2 描述保留原归档时点的历史语义。
 
 Phase 2 的 EXP-001 baseline training 已完成并由
 `docs/reports/EXP-001_TRAINING_EXECUTION_REPORT.md` 归档。本次训练依据明确
@@ -95,6 +104,105 @@ EXP-001 configuration；随后用户明确授权 EXP-001 单次训练，授权�
 
 ## Current Subphase
 
+Phase 3 — Final Release Freeze
+
+Freeze status：COMPLETED / AWAITING HUMAN REVIEW。
+
+冻结报告：`PHASE_3_FINAL_RELEASE_REPORT.md`，包含 P3-G1～G4、M-005 状态、
+最终模型、artifact inventory、SHA256 引用、已知限制和 Phase 4 进入条件。
+
+最终模型：EXP-001 best.pt，epoch 75；选择记录 `EXP-001_RELEASE_MODEL.yaml`
+保持原样。EVAL-001、CMP-001、SEL-001 及 Phase 2 产物均未改写。
+
+M-005：技术完成 / 等待人工验收；Charter 的正式状态仍为 `待实现`，审核后同步。
+P3-G1～P3-G4：技术 PASS；Phase 3：证据冻结，未进行 GitHub 发布。
+
+本轮全量测试 213 passed / 1 skipped；既有评估及比较结果离线复算、选定模型
+和证据哈希核对通过。无新模型实测、训练、dataset/weights 修改或 Phase 4 开发。
+
+### Retained P3-G4 Selection Evidence
+
+P3-G4 — Final Comparative Model Selection
+
+SEL-001：COMPLETED / AWAITING HUMAN REVIEW。
+
+Selected checkpoint：`models/checkpoints/EXP-001/best.pt`（epoch 75）。
+
+SHA256：`1c144eef0dfa06b984dde760ea5501a11746b99c1f8a9ae581790241c3871f61`。
+
+选择报告：`P3_MODEL_SELECTION_REPORT.md`；发布模型选择记录：
+`EXP-001_RELEASE_MODEL.yaml`（SELECTED；human review PENDING；NOT_RELEASED）。
+
+保留原验证集选择；现有对照显示 best 的 no_hardhat recall 和 macro precision
+较高，last 的 mAP、no_vest recall 和小目标 recall 较高，没有全面更优候选。
+不使用事后加权评分或新的阈值进行优化，不把检测指标等同于违规事件效果。
+
+P3-G4 PASS；P3-G1～G4 技术证据完整，人工验收仍 PENDING。没有新增模型实测、
+重训或修改 dataset/mapping/weights；未 commit/push，未进入 Phase 4。
+
+### Retained P3-G3 Comparison Evidence
+
+P3-G3 — EXP-001 Best / Last Checkpoint Comparison
+
+CMP-001：COMPLETED / AWAITING HUMAN REVIEW。
+
+比较对象：冻结 best.pt（epoch 75）与 last.pt（epoch 95），同一次训练的两个
+checkpoint；均使用同一 test split、evaluation pipeline、参数、代码与 runtime。
+
+| 指标 | best.pt | last.pt |
+| --- | ---: | ---: |
+| Precision | 0.798669 | 0.781081 |
+| Recall | 0.712315 | 0.716522 |
+| mAP50 | 0.733203 | 0.744729 |
+| mAP50-95 | 0.465122 | 0.472776 |
+| no_hardhat recall | 0.609756 | 0.585366 |
+| no_vest recall | 0.688889 | 0.700000 |
+| small-object recall | 0.544444 | 0.555556 |
+
+报告：`P3_MODEL_COMPARISON_REPORT.md`；per-class AP 与完整统一结果：
+`docs/reports/P3_MODEL_COMPARISON_SUMMARY.json`。原 EVAL-001 完整指标已精确复现。
+
+P3-G3 PASS；P3-G4 已完成选择记录，待人工审核。last 的 AP 改善伴随 precision / no_hardhat recall
+下降，不修改 best 的原验证集选择，不宣称外部模型优势。Teacher Baseline 未评估。
+
+### Retained P3-1 Evaluation Evidence
+
+P3-1 — EXP-001 Independent Test Evaluation
+
+Implementation / execution：COMPLETED；human review：PENDING。
+
+Evaluation record：`EVAL-001`；training experiment remains `EXP-001`。
+
+Dataset：CSS-PPE-10-V1 frozen test split，82 images / 561 ground-truth boxes。
+
+Overall seven-class metrics：Precision `0.798669`，Recall `0.712315`，
+mAP50 `0.733203`，mAP50-95 `0.465122`。P/R 使用预设 confidence `0.25`、
+IoU `0.5`；AP 使用 confidence floor `0.001`，未在 test set 上调参。
+
+Five PPE-class metrics：Precision `0.832058`，Recall `0.721077`，
+mAP50 `0.739567`，mAP50-95 `0.454500`。
+
+Report：`PHASE_3_EVALUATION_REPORT.md`
+
+Summary：`docs/reports/EXP-001_EVALUATION_SUMMARY.json`
+
+Artifacts：`artifacts/reports/EXP-001-evaluation/EVAL-001/`（Git-ignored）。
+
+Matching/AP reference check：PASS；offline replay：PASS；input integrity：PASS。
+
+M-005 技术实现和实测证据已完成，等待人工审核；Charter 正式状态本轮未改写。
+P3-G1/G2 PASS；P3-G3 已由 CMP-001 完成，P3-G4 已由 SEL-001 完成，均待人工审核，
+不宣称整个 Phase 3 已完成。未进入 Phase 4。
+
+没有重训、创建训练实验、修改 dataset/mapping/weights/frozen config，
+没有修改 Phase 2 release tag、训练证据或依赖锁；未 commit/push。
+
+## Previous Subphases
+
+以下是历史阶段结束时的状态，不代表当前 Phase 3 执行状态。
+
+### P2-7 Historical Freeze Status
+
 P2-7 — EXP-001 Training Result Freeze
 
 实现状态：COMPLETED / TRAINING RESULT FROZEN
@@ -131,7 +239,6 @@ M-005：待实现
 
 Phase 3：NOT STARTED
 
-## Previous Subphases
 
 P2-5.5 — EXP-001 Baseline Training Execution
 
@@ -272,6 +379,11 @@ Reference Intake: COMPLETED
 - Execution report: `docs/reports/EXP-001_TRAINING_EXECUTION_REPORT.md`
 
 ## Completed
+
+- P3-1 完成 EXP-001 best.pt evaluation pipeline：只读图片/标签、输入哈希验证、
+  固定 test protocol、四项总体指标、7 类 AP、混淆矩阵、逐图错误和小目标召回。
+- P3-1 完成 82 张图片实测；Ultralytics 8.4.157 matching/AP 对照一致；
+  原始预测离线 replay PASS，dataset 与权重等受保护输入前后保持一致。
 
 - P2-7 完成 EXP-001 Training Result Freeze：冻结最佳权重身份、最终训练验证指标、
   runtime fingerprint、训练时长和 29 项产物清单；source/processed checksum
@@ -432,7 +544,7 @@ weight 和 remote-copy freeze/verification；P2-5.5 使用一次性授权完成
 
 ## Pending
 
-- Phase 3 模型评估、对照实验和 M-005 独立验收
+- M-005 本次评估结果的人工审核；Phase 3 同条件对照实验和综合模型选择
 - M-001 的数据治理语义确认，以及 P1D-1 perceptual split-leakage
   candidates 的解释或后续 dataset version 决策
 - 尚未实现的 MUST：M-001 至 M-003 的最终验收，以及 M-005 至 M-026
@@ -536,9 +648,11 @@ weight 和 remote-copy freeze/verification；P2-5.5 使用一次性授权完成
 
 ## Next Allowed Step
 
-当前停留在 P2-7 Training Result Freeze，结果冻结已完成，等待新的用户指令。
-本任务不授权进入 Phase 3、evaluation、第二次训练、dataset/mapping 修改或新 experiment。
+WAIT FOR HUMAN REVIEW OF PHASE 3 RELEASE FREEZE。
 
-M-004 已由 `docs/reports/EXP-001_TRAINING_EXECUTION_REPORT.md` 的证据满足并
-标记为 `已经实现`。M-005 保持 `待实现`；M-001 也保持 `待实现`，因为其
-最终治理边界仍需独立处理。
+提交 `PHASE_3_FINAL_RELEASE_REPORT.md` 及其引用证据供人工审核；不 commit/push，
+不进入 Phase 4，不重训，不创建新的训练实验，不修改冻结数据、mapping 或权重。
+当前正式记录选择 best.pt；Phase 4 进入前需完成人工审核、确认推理配置和明确
+开始指令。Phase 3 GitHub 发布需要单独授权，当前没有新 commit/tag/push。
+
+M-004 已经实现；M-005 技术证据完整，正式 Charter 状态保留至人工审核决定。

@@ -451,3 +451,69 @@ not started and requires a new explicit instruction.
 | P2-7-G4 | Mapping and frozen config preserved | Class order and frozen hashes match; task-entry comparison recorded in freeze report | PASS |
 | P2-7-G5 | Phase boundary preserved | No training/evaluation; Phase 3 NOT STARTED; authorization remains CONSUMED | PASS |
 | P2-7-G6 | Verification and Charter review | See final verification results in P2-7 freeze report; existing M-004 status-only diff retained | PASS |
+
+## Phase 3-1 EXP-001 Test Evaluation Gates
+
+| Gate | Requirement | Evidence | Status |
+| --- | --- | --- | --- |
+| P3-G1 | Four overall metrics complete and replayable | PHASE_3_EVALUATION_REPORT.md; metrics.json and offline replay | PASS |
+| P3-G2 | Five PPE per-class AP values in frozen order | EXP-001_EVALUATION_SUMMARY.json includes classes 0-4 and separate context classes 5-6 | PASS |
+| P3-G3 | Controlled model comparison | CMP-001 best/last checkpoint comparison; see subsequent P3-G3 evidence below | PASS |
+| P3-G4 | Written comparative model selection | SEL-001 selection report and EXP-001_RELEASE_MODEL.yaml; human review pending | PASS |
+| P3-1-G1 | Frozen checkpoint/data/config verified | Manifest hashes checked before evaluation; full processed tree unchanged afterward | PASS |
+| P3-1-G2 | Fixed test protocol and no test-set tuning | 82 test images; thresholds frozen before prediction | PASS |
+| P3-1-G3 | Confusion matrix and error analysis saved | Numeric/PNG matrix; 251 diagnostic events (4 class confusions count as FP and FN) | PASS |
+| P3-1-G4 | Metric/reference and replay agreement | Ultralytics matching identical; AP delta <= 2.23e-16; replay exact | PASS |
+| P3-1-G5 | Meaningful regression and integrity tests | Tests cover AP, matching, absent classes, duplicates, tampering, overwrite refusal and failures | PASS |
+| P3-1-G6 | No Phase 2 protected-state mutation or training | Phase 2 artifacts/weights/config/tags preserved; no new training experiment | PASS |
+
+M-005 technical evidence: COMPLETE / AWAITING HUMAN REVIEW. Phase 3 overall
+remains AWAITING HUMAN REVIEW; comparison and selection technical evidence are complete.
+Final test counts and integrity evidence are recorded in PHASE_3_EVALUATION_REPORT.md.
+
+## P3-G3 Model Comparison Gates
+
+| Gate | Requirement | Evidence | Status |
+| --- | --- | --- | --- |
+| P3-G3 | 对照实验条件一致、结论有证据 | P3_MODEL_COMPARISON_REPORT.md; CMP-001 same-run best/last checkpoint scope explicit | PASS |
+| P3-CMP-1 | Candidates identified before evaluation | Epoch 75 best and epoch 95 last, distinct SHA256 registered in frozen Phase 2 manifest | PASS |
+| P3-CMP-2 | Same test split and evaluation pipeline | Identical 82 image/label hashes, GT, full dataset hashes, protocol, implementation and runtime | PASS |
+| P3-CMP-3 | Unified metric coverage | Four metrics, seven-class AP, no_hardhat/no_vest/small-object recall in JSON and report | PASS |
+| P3-CMP-4 | Results replay and reference agreement | Both runs replay; official AP difference <= 2.23e-16; best metrics exactly match EVAL-001 | PASS |
+| P3-CMP-5 | Regression tests | Full suite 213 passed / 1 skipped; isolated runtime 29 passed; mismatch/tamper rejection tested | PASS |
+| P3-CMP-6 | Protected state unchanged | Full task-entry SHA256 verification recorded in comparison report; Phase 2/EVAL-001 preserved | PASS |
+
+P3-G3 technical result: PASS / AWAITING HUMAN REVIEW. Its historical closure preceded
+SEL-001; the completed P3-G4 selection is recorded below. No Phase 3 release or Phase 4 entry.
+No external-model superiority or statistical significance is claimed from same-run checkpoints.
+
+## P3-G4 Final Comparative Model Selection Gates
+
+| Gate | Requirement | Evidence | Status |
+| --- | --- | --- | --- |
+| P3-G4 | 选定模型有书面选择和限制说明 | P3_MODEL_SELECTION_REPORT.md selects best.pt, records PPE tradeoffs and limitations | PASS |
+| P3-SEL-1 | Candidate and selected identity traceable | EXP-001_RELEASE_MODEL.yaml path/epoch/SHA256 match frozen Phase 2 manifest and local bytes | PASS |
+| P3-SEL-2 | Decision grounded in existing evidence | EVAL-001/CMP-001 retained; evidence hashes bound in selection YAML; existing comparison replay PASS | PASS |
+| P3-SEL-3 | PPE criteria and alternative advantages disclosed | Both violation recalls, precision, per-class AP and small-object recall reviewed; no invented cost ratio or score | PASS |
+| P3-SEL-4 | No new test tuning or protected-state mutation | No new model execution/parameter changes; task-entry integrity audit in selection report | PASS |
+| P3-SEL-5 | Verification complete | Full suite 213 passed / 1 skipped; compileall and manifest consistency checks PASS | PASS |
+
+P3-G1 through P3-G4: technical PASS. Human review: PENDING. Phase 3 release:
+NOT_RELEASED. The selected artifact is best.pt; this is not a production-safety
+acceptance or permission to begin Phase 4. No commit/push performed.
+
+## Phase 3 Final Release Freeze Gates
+
+| Gate | Requirement | Evidence | Status |
+| --- | --- | --- | --- |
+| P3-FR-1 | P3-G1 through P3-G4 evidence complete | PHASE_3_FINAL_RELEASE_REPORT.md binds EVAL-001, CMP-001 and SEL-001 | PASS |
+| P3-FR-2 | Selected release model identity fixed | best.pt epoch 75 matches EXP-001_RELEASE_MODEL.yaml and Phase 2 SHA256 | PASS |
+| P3-FR-3 | Artifact inventory and hash references | Final report inventories documents, implementation/config/tests and ignored runtime outputs | PASS |
+| P3-FR-4 | Existing results verifiable | EVAL-001 and CMP-001 offline replay; selection evidence hashes verified in freeze task | PASS |
+| P3-FR-5 | Verification and immutable boundaries | 213 passed / 1 skipped; compileall, diff and task-entry SHA256 checks in final report | PASS |
+| P3-FR-6 | Limitations and Phase 4 conditions explicit | Human review pending; inference config confirmation and explicit start required; no Phase 4 development | PASS |
+
+Freeze: COMPLETED / AWAITING HUMAN REVIEW. P3-G1～G4: technical PASS.
+M-005: technical COMPLETE, formal human acceptance PENDING; Charter status retained.
+GitHub release: NOT_RELEASED. No training, new model evaluation, dataset/mapping/weight
+mutation, commit/tag/push or Phase 4 development in the freeze task.
