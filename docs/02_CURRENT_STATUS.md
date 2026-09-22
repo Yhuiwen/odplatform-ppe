@@ -4,6 +4,12 @@
 
 Phase 1 — Data Engineering / Phase 2 Preparation
 
+## GitHub Release Strategy
+
+当前项目采用 Phase Milestone Release：
+
+Phase 完成 → Gate PASS → Commit → Tag → Push
+
 ## Overall Status
 
 Phase 1 实现中。P1A 已通过；P1B 已完成并冻结 `CSS-PPE-10-V1`。P1C-0、
@@ -35,15 +41,21 @@ P2-2 已完成训练执行授权审查：dependency freeze 仍为 `PENDING`；EX
 数据集、mapping、模型、class count、输出、logging 和 metrics 已复核。
 P2-3 已完成 cloud provider selection 与 cost review：推荐 AutoDL 作为
 成本受控方案，设计目标为 RTX 4090 24GB，并比较阿里云、腾讯云和其他方案。
-该选择尚未 provisioning，region、host、image ID、driver、live price 和
-retention policy 仍需人工确认。训练授权保持 `NOT GRANTED`，下一允许步骤是
-`WAIT FOR HUMAN TRAINING AUTHORIZATION`。
+P2-4-G3 随后在用户提供的 AutoDL RTX 4090 实例上完成隔离环境 provisioning：
+创建 `ppe-exp001`，安装 Python 3.10.21、PyTorch 2.5.1+cu124、torchvision
+0.20.1+cu124、Ultralytics 8.4.157、OpenCV 5.0.0.93 和 NumPy 2.2.6，并确认
+`cuda_available: True`。P2-1 计划中的 Ultralytics 8.4.158 未在配置 index
+发布，实际安装记录为 8.4.157。P2-4-G4 随后将冻结的
+`CSS-PPE-10-V1` 传输到 AutoDL，并完成 5,604 个文件、2,799 张图片、
+2,799 个 label、7 类 mapping 和完整 SHA256 manifest 验证。P2-4 final
+provisioning gate 已完成：Environment READY，Dataset READY，Training
+PENDING AUTHORIZATION。训练授权保持 `NOT GRANTED`。
 
 ## Current Subphase
 
-P2-3 — Cloud Provider Selection & Cost Review
+P2-4 — AutoDL Training Environment Provisioning
 
-实现状态：COMPLETED / DESIGN SELECTION COMPLETE / AWAITING HUMAN REVIEW
+实现状态：COMPLETED / FINAL GATE PASS
 
 数据修改：NONE
 
@@ -51,15 +63,25 @@ P2-3 — Cloud Provider Selection & Cost Review
 
 环境决策：SELECTED — D. Controlled Cloud GPU
 
-环境选择：SELECTED BY DESIGN — AutoDL / RTX 4090 24GB / NOT PROVISIONED
+环境选择：PROVISIONED — AutoDL `bcb849a74f-38320766` / RTX 4090 24GB
 
-依赖冻结：PENDING
+依赖状态：INSTALLED / VERIFIED / FROZEN FOR P2-4 — conda `ppe-exp001`
 
 训练授权：NOT GRANTED
 
-环境状态：NOT PROVISIONED / NOT READY FOR TRAINING
+环境状态：READY — TRAINING PENDING AUTHORIZATION
+
+数据集状态：TRANSFERRED AND VERIFIED
 
 ## Previous Subphases
+
+P2-3 — Cloud Provider Selection & Cost Review
+
+实现状态：COMPLETED / DESIGN SELECTION COMPLETE
+
+该阶段记录 AutoDL + RTX 4090 24GB 的 provider selection、cost、upload 和
+retention 边界；P2-4-G3 随后在用户选定的实例上完成隔离依赖安装，但该历史
+记录中的 `NOT PROVISIONED` 状态仍表示 P2-3 完成时的状态。
 
 P2-2 — Training Execution Authorization Review
 
@@ -101,17 +123,24 @@ Reference Intake: COMPLETED
 
 ## Current Environment
 
-- OS: Windows NT 10.0.22631.0
-- Python: 3.13.6
-- pip: 25.3
-- Git: 2.51.2.windows.1
-- PyTorch: not installed
-- CUDA: unavailable
-- Environment decision: D. Controlled Cloud GPU (selected, not provisioned)
-- Planned training Python: 3.11.16 (not installed)
-- Cloud provider and GPU SKU: AutoDL / RTX 4090 24GB (selected by design,
-  not provisioned)
-- Dependency freeze: PENDING
+- Local OS: Windows NT 10.0.22631.0
+- Local Python: 3.13.6
+- Local pip: 25.3
+- Local Git: 2.51.2.windows.1
+- Local PyTorch: not installed
+- Local CUDA: unavailable
+- Environment decision: D. Controlled Cloud GPU (provisioned)
+- Training instance: AutoDL `bcb849a74f-38320766`, region `bjb1`
+- Training OS: Ubuntu 20.04.5 LTS
+- Training GPU: NVIDIA GeForce RTX 4090, 24,564 MiB
+- Training environment: `/root/miniconda3/envs/ppe-exp001`
+- Training Python: 3.10.21
+- Training PyTorch: `2.5.1+cu124`
+- Training CUDA runtime: 12.4; GPU available via `torch.cuda.is_available()`
+- Training Ultralytics: `8.4.157`
+- Remote dataset: `/root/autodl-tmp/datasets/css-ppe-10-v1/`
+- Remote dataset integrity: 5,604 files; processed manifest PASS
+- Dependency freeze: P2-4 VERIFIED; training authorization remains separate
 - Training authorization: NOT GRANTED
 
 ## Completed
@@ -219,16 +248,16 @@ dataset，人工审核结果为 PASS。P1D-0 已完成设计框架；P1D-1 已�
 
 Phase 2 仍处于准备状态：P2-0 设计与环境审计已完成，P2-1 环境架构与 setup
 方案已记录，P2-2 authorization review 已完成，P2-3 已选择 AutoDL +
-RTX 4090 24GB 作为设计目标。实际 provisioning、dependency freeze、runtime
-verification 和 training authorization 尚未完成。
+RTX 4090 24GB。P2-4-G3 已完成实例连接、`ppe-exp001` 创建、依赖安装和
+CUDA/Ultralytics import 验证；P2-4-G4 已完成 dataset transfer 和远端
+integrity verification。P2-4 final gate 已 PASS，Environment 和 Dataset
+均为 READY；training authorization 尚未完成。
 
 ## Pending
 
-- P2-3 provider/GPU 设计选择的人工批准，以及 region、host、image ID、
-  driver、live price、storage 和 retention policy 的 provisioning 前确认
-- 环境 provisioning、dependency installation/freeze、runtime fingerprint 和
-  model weight provenance
+- model weight provenance
 - 全部 EXP-001 seed、hyperparameter、augmentation、device 和 weight 参数冻结
+- 独立的 EXP-001 training authorization
 - P2 训练执行：只有 P2-2 审核通过、环境实际 provision 与验证完成，并取得
   独立执行授权后才允许启动
 - 所有 M-001 至 M-026 业务能力
@@ -259,26 +288,35 @@ verification 和 training authorization 尚未完成。
 - P1E-1 后，model version、weights、image size、batch、epochs、optimizer、
   learning rate、augmentation、seed、device 和 device strategy 仍是
   `PENDING_DESIGN_REVIEW`；不得视为已冻结训练参数。
-- 当前环境没有 PyTorch、Ultralytics 或可用 CUDA/NVIDIA GPU，审计状态为
-  `NOT READY FOR TRAINING`；本轮未安装依赖。
+- 本地 Windows 主机没有 PyTorch、Ultralytics 或可用 CUDA/NVIDIA GPU；
+  AutoDL `ppe-exp001` 已具备 CUDA 12.4 和 RTX 4090，dataset 已传输并通过
+  integrity verification；P2-4 final gate 为 PASS。训练仍须等待 weight
+  provenance、参数冻结和独立 authorization。
 - P2-0 的版本矩阵仍将 Python、PyTorch、CUDA、Ultralytics 和 YOLO11
   权重来源标记为待验证；仓库中的 `ultralytics>=8.3,<9` 不是训练执行版本
   freeze。
 - P2-0 推荐的完整训练路径是具备 NVIDIA GPU 的本地/WSL2 环境或受控 cloud
   GPU；当前主机只有 Intel Iris Xe，CPU fallback 不能视为等价 GPU baseline。
-- P2-1 已记录 controlled cloud GPU architecture；P2-3 随后选择 AutoDL 和
-  RTX 4090 24GB 设计目标，但 region、host、image ID、driver、live price 和
-  retention policy 尚未确认。
-- P2-1 dependency specification 是 PLANNED VERSION，不是已解析 lock；
-  `Dependency Freeze` 保持 `PENDING`，不得把 planned version 用于训练声明。
+- P2-1 已记录 controlled cloud GPU architecture；P2-3 选择 AutoDL 和
+  RTX 4090 24GB，P2-4-G3 已在实例 `bcb849a74f-38320766` 上安装验证
+  `ppe-exp001`。P2-4 runtime、依赖和 dataset fingerprint 已验证；live
+  price、storage 和 retention 继续按 provider risk 管理。
+- P2-1 dependency specification 仍是 PLANNED VERSION；P2-4-G3 的实际
+  Ultralytics 版本为 `8.4.157`，因此不能把 planned `8.4.158` 写成已安装
+  版本。P2-4 已记录并验证 resolved dependency fingerprint；训练授权仍需
+  独立审批。
 - Cloud GPU 将引入成本、数据上传、凭据、网络和实例保留风险；P2-2 必须先
   审核这些边界，且不得把凭据或数据写入 Git。
-- P2-3 已选择 AutoDL + RTX 4090 24GB，但 region、host、image ID、driver、
-  live price、storage 和 retention policy 仍需在 provisioning 前记录并人工
-  批准；provider selection 不等于 instance creation。
-- P2-2 dependency freeze review 确认 planned dependency set 尚未安装；
-  `Dependency Freeze: PENDING`，不存在 `pip freeze`、wheel installation 或
-  runtime fingerprint。
+- P2-3 已选择 AutoDL + RTX 4090 24GB；P2-4-G3 已在用户提供的实例上完成
+  isolated dependency provisioning 和 CUDA 验证。live price、storage 和
+  retention 继续按 provider risk 管理，训练仍需独立授权。
+- P2-4-G4 已将 `data/processed/css-ppe-10-v1/` 原样传输到
+  `/root/autodl-tmp/datasets/css-ppe-10-v1/`，未修改 labels、`data.yaml`、
+  annotation、class mapping 或 EXP-001 configuration；远端 metadata manifest
+  5,602 项和 full 5,604 项 checksum 均 PASS。
+- P2-2 dependency freeze review 记录的是历史 `PENDING` 状态；P2-4-G3 已
+  安装并验证实际依赖，P2-4-G2 已记录 runtime fingerprint，P2-4 final gate
+  为 PASS。
 - EXP-001 execution review 仍不 ready：seed、image size、batch、epochs、
   optimizer、learning rate、augmentation、device、device strategy、model
   version 和 weights 均为 `PENDING_DESIGN_REVIEW`。
@@ -287,13 +325,11 @@ verification 和 training authorization 尚未完成。
 
 - P1E-1 review 无 execution blocker；训练执行仍有 environment readiness
   blocker、未决训练参数和未获授权状态。
-- P2-0 未解决硬件和依赖 blocker；P2-1 需要先完成环境选型、隔离安装和
-  exact dependency verification。
-- P2-1 已解决 architecture decision blocker，但实际 provisioning、provider
-  选择、依赖安装、runtime fingerprint 和 model weight provenance 仍未完成。
-- P2-3 review 无 provider-selection blocker；训练执行仍有 provider human
-  approval、environment provisioning、dependency freeze、GPU verification、
-  weight provenance、参数冻结和 authorization blockers。
+- P2-0 未解决的本地硬件和依赖 blocker 已由受控 AutoDL 路径规避；P2-4-G3
+  已完成实际依赖安装和 CUDA verification。
+- P2-1/P2-3 的 architecture/provider selection blocker 已解除；P2-4
+  environment 和 dataset blockers 已解除。仍存在 weight provenance、参数
+  冻结和 authorization blockers。
 - 历史 CSS-V1 metadata mismatch 继续作为审计记录保留；ADR-012 已选择并以
   artifact fingerprint 冻结 `CSS-PPE-10-V1`，因此不再阻塞 conversion。
 - P1D-1 已完成 exact/perceptual duplicate、坏样本、坐标范围和 split 泄漏
@@ -301,11 +337,9 @@ verification 和 training authorization 尚未完成。
 
 ## Next Allowed Step
 
-下一允许步骤是 `WAIT FOR HUMAN TRAINING AUTHORIZATION`。在用户明确批准
-AutoDL provider/GPU 选择、region、image、live price、budget 和 retention
-policy，且完成环境 provisioning、dependency freeze、runtime verification、
-weight provenance 和全部参数冻结前，不得创建实例、安装依赖、上传 dataset、
-下载权重或启动训练。不得把 P2-3 selection design 解释为训练授权，也不得把
-perceptual candidate 当作已确认 contamination 自动修复。
+下一允许步骤是 `WAIT FOR HUMAN TRAINING AUTHORIZATION`。P2-4 final gate
+已 PASS，Environment 和 Dataset 均为 READY，但这不代表训练授权。下载
+模型权重、执行训练和修改 frozen dataset / mapping / EXP-001 identity 仍被
+禁止。不得把 P2-4 provisioning PASS 解释为 training authorization。
 
 M-001 保持 `待实现`，因为可复现训练、权重、日志和验证结果尚未产生。

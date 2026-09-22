@@ -5,6 +5,10 @@ phase-based log rather than claiming semantic-release completeness.
 
 ## 2026-09-22
 
+### GitHub Phase Milestone Release Governance
+
+- Added ADR-017 GitHub Phase Milestone Release Strategy.
+
 ### P2-0 Training Environment Preparation & Dependency Boundary Review
 
 - Added `docs/reports/P2-0_DEPENDENCY_STRATEGY.md` comparing a Windows NVIDIA
@@ -83,6 +87,60 @@ phase-based log rather than claiming semantic-release completeness.
   `DESIGN SELECTED / NOT PROVISIONED`; Authorization remains `NOT GRANTED`.
 - No cloud instance was provisioned; no dependency, dataset, or model weight
   was uploaded or downloaded; no training was executed.
+- Validation: pytest `174 passed`; compileall passed; `git diff --check`
+  passed; Charter diff empty.
+
+### P2-4-G3 AutoDL Dependencies Provisioning
+
+- Connected to the user-provided AutoDL instance `bcb849a74f-38320766`
+  (RTX 4090 24GB, Ubuntu 20.04.5 LTS) using key authentication.
+- Created the isolated conda environment `ppe-exp001` with Python `3.10.21`
+  without changing the base environment.
+- Installed `torch 2.5.1+cu124`, `torchvision 0.20.1+cu124`,
+  `torchaudio 2.5.1+cu124`, `ultralytics 8.4.157`,
+  `opencv-python 5.0.0.93`, NumPy `2.2.6`, PyYAML `6.0.3`, tqdm `4.70.1`,
+  matplotlib `3.10.9`, and psutil `7.2.2`.
+- Verified `torch.cuda.is_available() == True`, RTX 4090 visibility, and
+  successful PyTorch, Ultralytics, OpenCV, and NumPy imports.
+- Recorded that planned Ultralytics `8.4.158` was not published by the
+  configured index and pinned the resolved `8.4.157` instead.
+- Added `docs/P2-4-G3_DEPENDENCY_VERIFICATION_REPORT.md`.
+- No dataset transfer, model weight download, training execution, dataset
+  mutation, mapping change, experiment change, or source-code change occurred.
+
+### P2-4-G4 Dataset Transfer & Integrity Verification
+
+- Transferred `data/processed/css-ppe-10-v1/` unchanged to
+  `/root/autodl-tmp/datasets/css-ppe-10-v1/` using recursive SCP without
+  compression or restructuring.
+- Verified 5,604 total files, 2,799 images, 2,799 labels, and the frozen split
+  counts: train 2,603, valid 114, test 82.
+- Verified the processed seven-class order:
+  `person, hardhat, no_hardhat, vest, no_vest, machinery, vehicle`.
+- Verified the processed `data.yaml` SHA256 as `45cc2717...d2878a`, the
+  upstream source `data.yaml` as `5c393e7...d21b34`, the source manifest as
+  `ea0de4b0...f98d795`, and the processed manifest file as
+  `dbfe43c4...831c2c`.
+- Verified all 5,602 entries in `metadata/checksums.sha256` and all 5,604
+  entries in the external full dataset manifest.
+- Added `docs/P2-4-G4_DATASET_VERIFICATION_REPORT.md`.
+- No training, `yolo train`, model weight download, label modification,
+  annotation regeneration, class mapping change, or EXP-001 configuration
+  change occurred.
+- Validation: pytest `174 passed`; compileall passed; `git diff --check`
+  passed; Charter diff empty.
+
+### P2-4 Final AutoDL Provisioning Gate
+
+- Added `docs/P2-4_FINAL_PROVISIONING_REPORT.md` consolidating instance,
+  runtime, dependency, dataset, safety, and final-gate evidence.
+- Marked P2-4-G1 through P2-4-G6 PASS.
+- Recorded Environment `READY`, Dataset `READY`, and Training
+  `PENDING AUTHORIZATION`.
+- Confirmed no training, `yolo train`, `python train.py`, model download,
+  benchmark, or evaluation was executed.
+- Updated project status and Phase 2 records to mark P2-4 complete without
+  marking training, model, or experiment work complete.
 - Validation: pytest `174 passed`; compileall passed; `git diff --check`
   passed; Charter diff empty.
 

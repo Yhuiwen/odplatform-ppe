@@ -288,3 +288,50 @@ P2-3 result: `COMPLETED / DESIGN SELECTION COMPLETE`. The provider choice is
 selected but not provisioned, dependency freeze remains `PENDING`, and
 authorization remains `NOT GRANTED`. The next allowed step is
 `WAIT FOR HUMAN TRAINING AUTHORIZATION`.
+
+## Phase 2-4-G3 AutoDL Dependency Provisioning Gates
+
+| Gate | Requirement | Evidence | Status |
+| --- | --- | --- | --- |
+| P2-4-G3-G1 | AutoDL instance identity recorded | `docs/P2-4-G3_DEPENDENCY_VERIFICATION_REPORT.md` records instance `bcb849a74f-38320766`, RTX 4090 24GB, Ubuntu 20.04.5, and GPU UUID | PASS |
+| P2-4-G3-G2 | Isolated `ppe-exp001` environment created | Remote `conda info --envs` lists base and `/root/miniconda3/envs/ppe-exp001`; base dependencies were not modified | PASS |
+| P2-4-G3-G3 | PyTorch CUDA stack installed | `torch 2.5.1+cu124`, `torchvision 0.20.1+cu124`, and `torchaudio 2.5.1+cu124` are installed | PASS |
+| P2-4-G3-G4 | Ultralytics and runtime dependencies installed | `ultralytics 8.4.157`, `opencv-python 5.0.0.93`, NumPy 2.2.6, PyYAML, tqdm, matplotlib, and psutil are installed | PASS |
+| P2-4-G3-G5 | PyTorch CUDA and Ultralytics imports verified | `torch.cuda.is_available()` is true on the RTX 4090 and all required imports succeed | PASS |
+| P2-4-G3-G6 | No dataset, weight, training, or frozen identity change | Dataset transfer, weight download, training, source/config/dataset/mapping changes were not performed | PASS |
+| P2-4-G3-G7 | Charter unchanged | `git diff charter-v1 -- docs/00_PROJECT_CHARTER.md` is empty | PASS |
+
+P2-4-G3 result: `PASS`. The isolated dependency environment is provisioned
+and verified. The full environment freeze and training authorization remain
+outstanding.
+
+## Phase 2-4-G4 Dataset Transfer & Integrity Gates
+
+| Gate | Requirement | Evidence | Status |
+| --- | --- | --- | --- |
+| P2-4-G4-G1 | Remote dataset directory created | `/root/autodl-tmp/datasets/css-ppe-10-v1/` contains the transferred artifact | PASS |
+| P2-4-G4-G2 | Frozen dataset transferred unchanged | Recursive SCP copied `data/processed/css-ppe-10-v1/` without restructuring, compression, or mutation | PASS |
+| P2-4-G4-G3 | File, image, and label counts verified | 5,604 total files, 2,799 images, and 2,799 labels match locally and remotely | PASS |
+| P2-4-G4-G4 | `data.yaml` and class mapping verified | Remote `data.yaml` declares `nc: 7` and the frozen `person, hardhat, no_hardhat, vest, no_vest, machinery, vehicle` order | PASS |
+| P2-4-G4-G5 | Source and processed fingerprints verified | Processed `data.yaml` is `45cc2717...`; upstream source `data.yaml` is `5c393e7...`; processed manifest file is `dbfe43c4...` | PASS |
+| P2-4-G4-G6 | Full remote manifest verification passed | `metadata/checksums.sha256` verified 5,602 entries; full external manifest verified 5,604 entries | PASS |
+| P2-4-G4-G7 | No training, weights, or frozen identity change | No training, `yolo train`, weight download, label edit, annotation regeneration, mapping change, or EXP-001 config change occurred | PASS |
+| P2-4-G4-G8 | Charter unchanged | `git diff charter-v1 -- docs/00_PROJECT_CHARTER.md` is empty | PASS |
+
+P2-4-G4 result: `PASS`. The remote dataset is transferred and
+integrity-verified. Training remains prohibited pending explicit
+authorization.
+
+## Phase 2-4 Final Provisioning Gates
+
+| Gate | Requirement | Evidence | Status |
+| --- | --- | --- | --- |
+| P2-4-G1 | Instance created | AutoDL instance `bcb849a74f-38320766` is reachable on an RTX 4090 24GB host | PASS |
+| P2-4-G2 | Runtime fingerprint recorded | `docs/P2-4_FINAL_PROVISIONING_REPORT.md` records OS, Python, conda, PyTorch, CUDA, driver, and GPU identity | PASS |
+| P2-4-G3 | Dependencies installed and verified | `ppe-exp001` contains verified PyTorch, torchvision, torchaudio, Ultralytics, OpenCV, NumPy, and supporting runtime packages | PASS |
+| P2-4-G4 | Dataset transferred and verified | `CSS-PPE-10-V1` is remote at `/root/autodl-tmp/datasets/css-ppe-10-v1/` with 5,604 files and full manifest PASS | PASS |
+| P2-4-G5 | Training not executed | No `yolo train`, `python train.py`, benchmark, evaluation, or experiment run occurred | PASS |
+| P2-4-G6 | Charter unchanged | `git diff charter-v1 -- docs/00_PROJECT_CHARTER.md` is empty | PASS |
+
+P2-4 final result: `PASS`. Environment and dataset provisioning is complete;
+training remains `NOT STARTED` pending explicit authorization.

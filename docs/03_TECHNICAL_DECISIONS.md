@@ -285,3 +285,46 @@ This file is an append-only ADR log. Historical entries must not be deleted.
   metric evidence. The canonical EXP-001 template and schema are introduced in
   P1E-0. P1E-0 does not execute training, download weights, or create a model
   checkpoint.
+
+## ADR-017
+
+- Date: 2026-09-22
+- Status: Accepted
+- Title: GitHub Phase Milestone Release Strategy
+
+## Decision
+
+项目采用“大 Phase 完成后 GitHub 归档”的发布策略。
+
+每完成一个主要 Phase：
+
+1. 完成对应 Gate 验收；
+2. 更新阶段状态；
+3. 执行测试验证；
+4. 创建 Git commit；
+5. 创建对应 Git tag；
+6. 推送 GitHub。
+
+## Phase Release Mapping
+
+| Phase   | GitHub Action                                |
+| ------- | -------------------------------------------- |
+| Phase 0 | tag: `phase-0-foundation-complete`           |
+| Phase 1 | tag: `phase-1-data-engineering-complete`     |
+| Phase 2 | tag: `phase-2-training-complete`             |
+| Phase 3 | tag: `phase-3-evaluation-complete`           |
+| Phase 4 | tag: `phase-4-inference-complete`            |
+| Phase 5 | tag: `phase-5-tracking-association-complete` |
+| Phase 6 | tag: `phase-6-compliance-events-complete`    |
+| Phase 7 | tag: `phase-7-web-alerts-complete`           |
+| Phase 8 | tag: `phase-8-llm-agent-complete`            |
+| Phase 9 | GitHub Release + final tag                   |
+
+## Release Rules
+
+- 只有 Phase Gate 全部 PASS 后允许发布。
+- 未完成 Gate 的阶段禁止创建 complete tag。
+- tag 必须对应真实代码状态。
+- 不允许使用 tag 掩盖未完成工作。
+- 大文件、数据集、模型权重必须遵守 .gitignore 规则。
+- Phase 9 使用 GitHub Release 作为最终交付版本。
