@@ -43,6 +43,7 @@ artifacts/runs/*
 !artifacts/runs/.gitkeep
 artifacts/reports/*
 !artifacts/reports/.gitkeep
+artifacts/validation/
 artifacts/events/snapshots/*
 !artifacts/events/snapshots/.gitkeep
 artifacts/events/videos/*

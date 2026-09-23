@@ -11,16 +11,16 @@
 
 ## 3. 当前子任务
 
-P3-1 / M-005：EXP-001 best.pt 的独立 test evaluation 已完成，等待人工审核。
+P3-1 / M-005：EXP-001 best.pt 的独立 test evaluation 已完成，人工审核 PASS。
 总体指标、5 类 PPE AP（另含 2 类 context AP）、confusion matrix、error analysis
 和原始结果离线复算已实现。测试集 82 images / 561 boxes；评估记录 `EVAL-001`。
 P3-G3：CMP-001 已完成 best.pt（epoch 75）与 last.pt（epoch 95）的同条件
 checkpoint 对照。P3-G4 已形成 SEL-001 正式选择记录，保留 best.pt（epoch 75），
-技术门禁 P3-G1～P3-G4 PASS，等待人工审核；尚未发布 Phase 3，不进入 Phase 4。
+技术门禁 P3-G1～P3-G4 PASS，人工审核 PASS；Phase 3 已完成。
 
 当前子阶段为 Phase 3 Release Freeze：发布证据已冻结，报告为
-`PHASE_3_FINAL_RELEASE_REPORT.md`。Freeze COMPLETED；human review PENDING；
-GitHub NOT_RELEASED。M-005 技术完成，正式验收状态等待人工审核。
+`PHASE_3_FINAL_RELEASE_REPORT.md`。Freeze COMPLETED；human review PASS；
+M-005 正式状态同步为 `已经实现`。
 
 ## 4. 实现设计
 

@@ -133,3 +133,26 @@ def test_phase_zero_has_not_downloaded_unregistered_large_assets() -> None:
             if path.is_file()
         ]
         assert set(files) == expected_files.get(directory, {".gitkeep"}), directory
+
+
+def test_phase4_offline_scope_adjustment_is_documented() -> None:
+    adr_log = (PROJECT_ROOT / "docs/03_TECHNICAL_DECISIONS.md").read_text(
+        encoding="utf-8"
+    )
+    master_plan = (PROJECT_ROOT / "docs/01_MASTER_PLAN.md").read_text(
+        encoding="utf-8"
+    )
+    phase = (
+        PROJECT_ROOT / "docs/phases/PHASE_04_INFERENCE.md"
+    ).read_text(encoding="utf-8")
+    readme = (PROJECT_ROOT / "README.md").read_text(encoding="utf-8")
+
+    assert "## ADR-018" in adr_log
+    assert "phase-4-offline-inference-complete" in adr_log
+    assert "Camera/RTSP" in adr_log
+    assert "M-008" in adr_log
+    assert "Offline Inference COMPLETE" in master_plan
+    assert "Offline Inference COMPLETE" in phase
+    assert "Deferred Extension" in phase
+    assert "Phase 4 — Offline Inference" in readme
+    assert "Camera / RTSP：DEFERRED EXTENSION / M-008 PENDING" in readme

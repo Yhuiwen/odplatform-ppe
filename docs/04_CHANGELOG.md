@@ -1,5 +1,159 @@
 # Changelog
 
+## 2026-09-23 — Phase 4 Scope Adjustment and Offline Inference Release
+
+- Added ADR-018 to re-scope Phase 4 as `Offline Inference`: structured image
+  inference, sequential local MP4 inference, frozen runtime/checkpoint, and
+  real validation evidence.
+- Deferred Camera, RTSP, real-time/network behavior, M-008 and annotated video
+  rendering as Extension work; Charter M-008 remains `待实现`.
+- Updated the Phase 4 milestone name to
+  `phase-4-offline-inference-complete`; the original
+  `phase-4-inference-complete` name is explicitly not used.
+- Updated README, Master Plan, current status, Phase 4 document and test-gate
+  records to report `Phase 4: Offline Inference COMPLETE`,
+  `Camera/RTSP: Deferred Extension`, and `Phase 5: WAITING`.
+- No detector or tracker behavior was changed, no model or dataset was
+  modified, and Phase 5 was not started.
+
+## 2026-09-23 — Phase 4C-2 Real MP4 Inference Validation
+
+- 新增 `configs/video_validation.yaml` 和
+  `scripts/run_video_validation.py`；validation-only 配置显式启用执行，
+  frozen `configs/inference.yaml` 保持 `execution_enabled: false`。
+- 使用 `INF-RUNTIME-001` 加载 frozen
+  `models/checkpoints/EXP-001/best.pt`，checkpoint SHA256 保持
+  `1c144eef0dfa06b984dde760ea5501a11746b99c1f8a9ae581790241c3871f61`。
+- 顺序处理 external public-domain MP4 的全部 47/47 帧，未跳帧、未 batch、
+  未 async、未迁移 CUDA；检测 77 项（person 76、no_vest 1），端到端耗时
+  15.1920268 s，处理速率 3.0937281 FPS。
+- 新增 Git-ignored `artifacts/validation/P4C-2/video_validation.json`、
+  `frame_summary.json` 和 schema-backed `validation_report.json`。
+- 新增 `tests/test_video_validation_config.py`，验证 validation-only 配置、
+  frozen inference contract 和 Git-ignore 边界。
+- Phase 4C-2 COMPLETE，Phase 5 WAITING。未执行 RTSP、Camera、tracking、
+  association、compliance、events、alerts、Web 或 LLM；未修改 dataset、
+  mapping、training config 或 checkpoint，未 commit/push/tag。
+
+## 2026-09-23 — Phase 4C-1 Real Image Inference Validation
+
+- 新增 `configs/validation.yaml` 和 `scripts/run_image_validation.py`；validation
+  配置单独启用执行，frozen `configs/inference.yaml` 保持
+  `execution_enabled: false`。
+- 增加显式 `execution_enabled` 调用级 override，并修正 Torch runtime
+  fingerprint 读取为 `torch.__version__`，从而严格匹配冻结的
+  `2.5.1+cpu` 而不是 wheel metadata 的 `2.5.1`。
+- 在 `INF-RUNTIME-001` 中使用 frozen `models/checkpoints/EXP-001/best.pt`
+  完成一次外部 public-domain construction image 的真实推理；checkpoint
+  SHA256 保持
+  `1c144eef0dfa06b984dde760ea5501a11746b99c1f8a9ae581790241c3871f61`。
+- Hot inference 返回 5 个 `DetectionResult`：person 2、hardhat 1、
+  no_hardhat 1、no_vest 1；cold start 为 14.237 s，warm inference 为
+  176.386 ms。
+- 新增 Git-ignored `artifacts/validation/P4C-1/image_validation.json` 和
+  `validation_report.json`，并通过既有 validation schemas 重新构造验证。
+- Phase 4C-1 image validation COMPLETE；video、tracking、association、
+  compliance、events 和 alerts 未执行。未修改 dataset、mapping、training
+  config 或 checkpoint，未 commit/push/tag。
+
+## 2026-09-23 — Phase 4C-0 Real Inference Validation Design
+
+- 新增 `docs/phases/PHASE_04C_VALIDATION_DESIGN.md`，定义真实 checkpoint +
+  external image / short MP4 验证流程、证据字段、Git-ignored `artifacts/`
+  输出政策和 fail-closed 错误边界。
+- 新增 `core/schemas/validation.py`，定义 model-independent
+  `ImageValidationRecord`、`VideoValidationRecord` 和
+  `InferenceValidationReport`；记录 detection statistics、confidence、
+  latency、processing time 和 processing FPS。
+- 新增 `tests/test_validation_schema.py`，只验证 schema creation、计数一致性
+  和 JSON serialization，不加载模型或访问真实输入。
+- Phase 4C-0 COMPLETE，Phase 4C-1 WAITING。未加载 `best.pt`、未执行真实
+  inference，未修改模型、dataset 或 training assets，未 commit/push/tag。
+
+## 2026-09-23 — Phase 4B-2b MP4 Video Inference Implementation
+
+- 新增 `core/video/reader.py`，实现 lazy OpenCV、本地 MP4 顺序读取、
+  metadata extraction、timestamp generation 和结构化 reader errors。
+- 新增 `services/video_inference_service.py`，串联 `VideoReader`、
+  `InferenceService`、`FrameInferenceResult` 和 `VideoInferenceResult`；
+  不复制 detector 参数、checkpoint 校验或结果解析逻辑。
+- 为 `YOLODetector` 和 `InferenceService` 增加共享 frame-level entry
+  point，使图片与视频使用同一冻结 CPU/checkpoint/class-filter 策略。
+- 新增 `scripts/run_video_inference.py`，支持
+  `python scripts/run_video_inference.py xxx.mp4` 并输出结构化 JSON；
+  missing、invalid format、empty、decode 和 disabled execution 都有稳定
+  error code。
+- 新增 `tests/test_video_inference.py`，默认使用 fake capture 和 fake
+  inference service，覆盖顺序、frame count、metadata、serialization、
+  disabled execution 和错误处理，不加载 `best.pt`。
+- Phase 4B-2b COMPLETE，Phase 4B-3 WAITING。未执行真实大规模视频测试，
+  未修改 dataset、mapping、training config 或 checkpoint，未 commit/push/tag。
+
+## 2026-09-23 — Phase 4B-2a Video Inference Architecture Design
+
+- 新增 `docs/phases/PHASE_04B2_VIDEO_DESIGN.md` 和
+  `PHASE_04B2_VIDEO_DESIGN_REPORT.md`，定义本地 MP4 顺序推理、
+  `VideoReader -> FrameProcessor -> InferenceService -> Result Writer`
+  流水线、runtime policy、错误处理和非目标。
+- 新增 `core/schemas/video.py`，只定义 `FrameData`、`VideoMetadata`、
+  `FrameInferenceResult` 和 JSON-serializable `VideoInferenceResult`，
+  不包含 OpenCV/Torch/Ultralytics 依赖或视频读取实现。
+- 新增 `tests/test_video_schema.py`，验证 schema creation、字段完整性和
+  serialization。
+- Phase 4B-2a COMPLETE，Phase 4B-2b WAITING。未修改 detector/service，
+  未加载模型、未执行真实视频推理，未修改 dataset、mapping、training
+  assets 或 checkpoint，未 commit/push/tag。
+
+## 2026-09-23 — Phase 4B-1 Single Image Inference
+
+- 新增 `core/inference/detector.py` 与 `core/inference/__init__.py`，实现
+  lazy-loading `YOLODetector`、frozen checkpoint size/SHA256 检查、CPU-only
+  device policy、固定 `imgsz/conf/iou/max_det/classes` 和
+  `DetectionResult` 转换。
+- 实现 `services/inference_service.py` 的单图路径检查、格式验证和 detector
+  委托；video 与 Camera/RTSP 仍为明确的 future-phase placeholder。
+- 新增 `scripts/run_image_inference.py`，支持
+  `python scripts/run_image_inference.py image.jpg` 并输出 JSON；默认
+  `execution_enabled: false` 时返回明确的 `execution_disabled`。
+- 新增 `tests/test_image_inference.py`，默认使用 fake model/image loader，
+  不加载真实 `best.pt`；覆盖 invalid input、disabled execution、lazy load、
+  schema output、checkpoint tamper 和 CLI error output。
+- Phase 4B-1 COMPLETE，Phase 4B-2 WAITING。未执行真实推理，未修改 dataset、
+mapping、training artifact 或 checkpoint，未 commit/push/tag。
+
+## 2026-09-23 — Phase 4B-0 Inference Runtime Freeze
+
+- 新增 `docs/phases/PHASE_04B_RUNTIME_FREEZE.md`，冻结 release checkpoint
+  `models/checkpoints/EXP-001/best.pt` 及 SHA256
+  `1c144eef...871f61`。
+- 冻结 `INF-RUNTIME-001`：Windows x86_64、Python 3.10.4、PyTorch
+  2.5.1+cpu、torchvision 0.20.1、Ultralytics 8.4.157、NumPy 2.2.6、
+  OpenCV 5.0.0.93；依赖来源固定为 `locks/EVAL-001/requirements.txt`。
+- 冻结 CPU-only device policy、`imgsz: 640`、confidence `0.25`、
+  NMS IoU `0.45`、五类 output filter、input formats、`DetectionResult`
+  output reference 和 fail-closed error handling policy。
+- 将 `configs/inference.yaml` 从 planned defaults 更新为只读配置契约；
+  `execution_enabled: false`，不包含推理逻辑，不加载模型。
+- Phase 4A COMPLETE，Phase 4B-0 COMPLETE，Phase 4B-1 WAITING。
+- 未执行模型加载或推理，未修改 dataset 或训练产物，未 commit/push/tag。
+
+## 2026-09-23 — Phase 4A Inference Architecture Design
+
+- 完成 Phase 3 人工审核 PASS 后的状态同步：Phase 3 COMPLETE，M-005
+  `已经实现`，Phase 4A 进入 design-only 工作。
+- 新增 `PHASE_4A_PRECHECK_REPORT.md`，审计现有 inference 占位接口、
+  `configs/inference.yaml`、detection schemas、缺失模块和风险。
+- 新增 `docs/phases/PHASE_04_INFERENCE_DESIGN.md`，定义 Input Adapter、
+  YOLO11 detector wrapper、统一 `DetectionResult`、未来 P5-P7 集成边界和
+  Phase 4A non-goals。
+- 新增 `core/schemas/detection.py`，只定义无模型依赖的结果数据结构及
+  JSON-serializable `to_dict()`；现有 Detector、Pipeline、Service 和 CLI
+  占位实现保持不变。
+- 新增 `tests/test_detection_schema.py` 验证结果创建、字段完整性和序列化。
+- 未加载 `best.pt`、未启动推理、未实现 ByteTrack/PPE 关联/规则/事件/告警/
+  Web/LLM/Agent，未修改 dataset、mapping、weights 或 EXP-001 配置，未 commit
+  或 push。
+
 ## 2026-09-22 — Phase 3 Final Release Freeze
 
 - 创建 `PHASE_3_FINAL_RELEASE_REPORT.md`，汇总 P3-G1～G4 技术 PASS、M-005

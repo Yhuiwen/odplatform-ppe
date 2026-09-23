@@ -1,14 +1,67 @@
-# Planned defaults only. Used in Phase 4, not by Phase 0.
+# Phase 4B-0 runtime freeze. Configuration only; execution is disabled.
+schema_version: inference-runtime-freeze-v1
 inference:
   phase: 4
-  status: planned
-  model_path: null
-  imgsz: 640
-  conf_threshold: 0.25
-  iou_threshold: 0.45
-  device: auto
-  source:
-    image: null
-    video: null
-    camera: null
-    rtsp: null
+  subphase: 4B-0
+  status: frozen
+  execution_enabled: false
+  runtime:
+    id: INF-RUNTIME-001
+    os: windows-x86_64
+    python: "3.10.4"
+    torch: "2.5.1+cpu"
+    torchvision: "0.20.1"
+    ultralytics: "8.4.157"
+    numpy: "2.2.6"
+    opencv_python: "5.0.0.93"
+    pillow: "12.3.0"
+    dependency_source: locks/EVAL-001/requirements.txt
+  model:
+    path: models/checkpoints/EXP-001/best.pt
+    sha256: 1c144eef0dfa06b984dde760ea5501a11746b99c1f8a9ae581790241c3871f61
+    size_bytes: 5479891
+    auto_download: false
+  device:
+    policy: cpu_only
+    device: cpu
+    auto: false
+    cuda_authorized: false
+  preprocessing:
+    imgsz: 640
+    batch: 1
+  detection:
+    conf_threshold: 0.25
+    iou_threshold: 0.45
+    max_det: 300
+    class_filter: [0, 1, 2, 3, 4]
+    class_names:
+      - person
+      - hardhat
+      - no_hardhat
+      - vest
+      - no_vest
+  input:
+    image_extensions: [".jpg", ".jpeg", ".png", ".bmp", ".webp"]
+    video_extensions: [".mp4", ".avi", ".mov", ".mkv"]
+    camera: device_index_or_uri
+    rtsp_schemes: ["rtsp://", "rtsps://"]
+    local_video_fallback: false
+  output:
+    schema: core/schemas/detection.py
+    result_type: DetectionResult
+    structured_format: json_records
+    root: artifacts/inference
+    log: artifacts/logs/inference
+    rendering: pending_phase_4b_1
+  errors:
+    fail_closed: true
+    checkpoint_hash_mismatch: refuse
+    model_load_failure: fail
+    runtime_unavailable: fail
+    invalid_device: fail
+    unsupported_source: fail
+    decode_failure: fail
+    stream_timeout: observable_failure
+    silent_frame_skip: false
+    model_download: false
+    silent_class_remap: false

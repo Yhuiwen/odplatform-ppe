@@ -1,0 +1,18 @@
+# Phase 4C-1 validation-only configuration. This file does not change the
+# frozen Phase 4B-0 inference configuration.
+schema_version: inference-validation-config-v1
+validation:
+  id: P4C-1
+  mode: image_only
+  execution_enabled: true
+  inference_config: configs/inference.yaml
+  input:
+    source: artifacts/validation/P4C-1/input/construction-workers-public-domain.jpg
+    source_label: external:construction-workers-public-domain
+    provider: NIOSH / Wikimedia Commons
+    source_url: https://commons.wikimedia.org/wiki/File:Construction_workers_not_wearing_fall_protection_equipment.jpg
+    license: Public domain
+  output:
+    directory: artifacts/validation/P4C-1
+    image_result: image_validation.json
+    report: validation_report.json

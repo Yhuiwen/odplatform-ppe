@@ -517,3 +517,36 @@ Freeze: COMPLETED / AWAITING HUMAN REVIEW. P3-G1～G4: technical PASS.
 M-005: technical COMPLETE, formal human acceptance PENDING; Charter status retained.
 GitHub release: NOT_RELEASED. No training, new model evaluation, dataset/mapping/weight
 mutation, commit/tag/push or Phase 4 development in the freeze task.
+
+## Phase 4C-2 Real MP4 Validation Gates
+
+| Gate | Requirement | Evidence | Status |
+| --- | --- | --- | --- |
+| P4C2-G1 | Frozen checkpoint identity verified | `best.pt` size and SHA256 matched the Phase 4B-0 freeze before model construction | PASS |
+| P4C2-G2 | Frozen CPU sequential runtime used | `INF-RUNTIME-001`; CPU-only, no CUDA migration, batch or async processing | PASS |
+| P4C2-G3 | External MP4 excluded from Git | `git check-ignore` confirms the MP4 under `artifacts/validation/` is ignored | PASS |
+| P4C2-G4 | All source frames processed in order | 47/47 frames, contiguous IDs, monotonic timestamps, no frame skipping | PASS |
+| P4C2-G5 | Structured evidence retained | Git-ignored raw JSON, frame summary and schema-backed validation report contain 77 detections across 47 frames | PASS |
+| P4C2-G6 | Downstream scope excluded | No RTSP, Camera, tracking, association, compliance, event, alert, Web or LLM execution | PASS |
+| P4C2-G7 | Protected assets preserved | Dataset, mapping, training configuration and frozen checkpoint were not modified | PASS |
+
+Phase 4C-2 result: `COMPLETE`. The frozen model loaded successfully and the
+external MP4 was processed sequentially through the implemented video path.
+Phase 5 remains `WAITING`; no commit, push or tag was performed.
+
+## Phase 4 Scope Adjustment and Offline Release Gates
+
+| Gate | Requirement | Evidence | Status |
+| --- | --- | --- | --- |
+| P4-OFF-G1 | Scope adjustment recorded | ADR-018 re-scopes Phase 4 to structured local image/MP4 offline inference | PASS |
+| P4-OFF-G2 | Image inference evidence complete | Architecture, implementation, frozen runtime/checkpoint, and real image validation are recorded | PASS |
+| P4-OFF-G3 | MP4 inference evidence complete | Sequential implementation processed 47/47 external frames and emitted structured evidence | PASS |
+| P4-OFF-G4 | Real validation evidence recorded | Image and MP4 validation both PASS against checkpoint SHA256 `1c144eef...871f61` | PASS |
+| P4-OFF-G5 | Deferred scope explicit | Camera/RTSP, real-time behavior, M-008 and annotated rendering are Extension work, not release claims | PASS |
+| P4-OFF-G6 | Charter status preserved | M-008 remains `待实现`; no locked MUST status was silently changed | PASS |
+| P4-OFF-G7 | Release identity accurate | Milestone tag is `phase-4-offline-inference-complete`, not the original broad Phase 4 tag | PASS |
+| P4-OFF-G8 | Phase boundary preserved | Phase 5 remains `WAITING`; detector and tracker behavior were not changed by scope adjustment | PASS |
+
+Phase 4 Offline Inference result: `COMPLETE`. This release covers only the
+structured local image and sequential MP4 inference paths. Camera/RTSP and the
+remaining downstream capabilities remain deferred or unimplemented.

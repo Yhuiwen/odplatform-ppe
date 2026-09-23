@@ -18,8 +18,13 @@ LLM 安全分析报告和基础 Agent。
 
 ## 当前开发状态
 
-- 当前 Phase：Phase 2 — Training
-- Phase 状态：EXP-001 COMPLETED / M-004 已经实现
+- 当前 Phase：Phase 4 — Offline Inference
+- 当前 Subphase：Phase 4 Release Preparation
+- Phase 状态：Offline Inference COMPLETE / Camera-RTSP Deferred Extension /
+  Phase 5 Waiting
+- EXP-001 Training：COMPLETED / M-004 已经实现
+- Phase 3 Evaluation：PASS / M-005 已经实现
+- Release model：`models/checkpoints/EXP-001/best.pt`
 - Dataset：READY
 - Environment：READY
 - EXP-001 Configuration：FROZEN / P2-5.1 COMPLETE
@@ -27,9 +32,43 @@ LLM 安全分析报告和基础 Agent。
 - Dependency Lock：FROZEN / P2-5.3 COMPLETE
 - Remote Weight Copy：VERIFIED / P2-5.4 COMPLETE
 - Training：COMPLETED / P2-5.5
-- Best checkpoint：`models/checkpoints/EXP-001/best.pt`
+- Inference Runtime：FROZEN / `INF-RUNTIME-001`
+- Single Image Inference：VALIDATED / FROZEN CHECKPOINT
+- Video：VALIDATED / FROZEN CHECKPOINT
+- Camera / RTSP：DEFERRED EXTENSION / M-008 PENDING
 - 已完成准备：Phase 0 工程基线、Phase 1 数据工程，以及 P2-4 AutoDL
   runtime、依赖和数据集完整性验证
+
+## Completed Capabilities
+
+- YOLO11 training
+- Evaluation and model selection
+- Frozen release checkpoint
+- Single-image inference
+- Sequential MP4 inference
+- Real image validation
+- Real MP4 validation
+
+## Current Runtime
+
+- Runtime ID：`INF-RUNTIME-001`
+- Python：3.10.4
+- PyTorch：2.5.1+cpu
+- torchvision：0.20.1
+- Ultralytics：8.4.157
+- Device policy：CPU only
+- Frozen checkpoint：`models/checkpoints/EXP-001/best.pt`
+- Frozen inference configuration：`configs/inference.yaml`
+
+## Validation Evidence
+
+- Image：PASS
+- Video：PASS
+
+Phase 4 的完成声明仅覆盖 structured offline inference。Camera/RTSP、
+real-time source behavior、M-008、tracking、association、compliance、
+events、alerts、Web、LLM 和 annotated video rendering 不在本次 release
+scope 内。
 
 EXP-001 已完成一轮授权 YOLO11n baseline 训练：95/100 epochs，
 best epoch 75，validation precision `0.899`、recall `0.649`、mAP50
@@ -38,10 +77,46 @@ bytes；最佳 checkpoint SHA256 为
 `1c144eef0dfa06b984dde760ea5501a11746b99c1f8a9ae581790241c3871f61`。
 完整训练证据见 `docs/reports/EXP-001_TRAINING_EXECUTION_REPORT.md`。
 
-当前没有 PPE 检测业务能力。图片/视频/RTSP 检测、人员跟踪、Person-PPE
+当前尚未形成可交付的 PPE 检测业务闭环。基础图片和本地 MP4 推理链路已实现
+并完成真实 checkpoint 验证，但 Camera/RTSP、人员跟踪、Person-PPE
 关联、Helmet/Vest 合规判断、事件管理、告警、Web 业务页面、LLM 报告和
 Agent 均尚未实现。未来阶段占位接口会明确抛出 `NotImplementedError`，
-不会返回伪造业务结果。
+不会返回伪造业务结果。Phase 4A 完成推理架构设计、输入/检测器边界和
+`DetectionResult` 数据结构；Phase 4B-0 完成 CPU runtime、checkpoint、
+device、threshold、input/output 和错误处理边界冻结；Phase 4B-1 已实现单图
+`Image -> YOLO11 -> DetectionResult` 链路和 CLI。默认冻结配置仍为
+`execution_enabled: false`；真实推理只通过独立 validation-only 配置显式
+启用。
+Phase 4B-2a 已完成本地 MP4 视频推理架构设计，新增 model-independent
+`FrameData`、`VideoMetadata`、`FrameInferenceResult` 和
+`VideoInferenceResult` 契约。Phase 4B-2b 已实现顺序 MP4 reader、
+`VideoInferenceService` 和结构化 JSON CLI，并复用单图 `InferenceService`
+的冻结 detector 策略。默认 `execution_enabled: false`，未加载 `best.pt`
+或执行真实大规模视频推理；Camera/RTSP、tracking、association、event 和
+alert 仍不属于当前范围。
+
+Phase 4C-0 已完成真实推理验证设计，定义 external image、短 MP4、
+checkpoint/runtime 身份、detection statistics、latency、processing FPS、
+Git-ignored `artifacts/validation/` 证据政策和 fail-closed 失败处理。新增
+model-independent validation schemas。Phase 4C-1 随后按单独授权执行一次
+真实图片验证：使用 `INF-RUNTIME-001` 加载冻结 `best.pt`，外部 public-domain
+construction image 的 hot inference 返回 5 个 `DetectionResult`，cold
+start 为 14.237 s，warm inference 为 176.386 ms。原始 detection JSON 和
+schema report 保存在 Git-ignored `artifacts/validation/P4C-1/`。视频推理、
+tracking、association、compliance、events 和 alerts 未执行。
+
+Phase 4C-2 随后按单独授权完成真实 MP4 验证：使用同一冻结 `best.pt` 和
+`INF-RUNTIME-001`，顺序处理 external public-domain MP4 的全部 47/47 帧，
+未跳帧、未批处理、未异步、未迁移 CUDA。该次 CPU end-to-end 运行共返回
+77 个检测（person 76、no_vest 1），处理耗时 15.192 s，处理速率
+3.094 FPS。原始 video result、frame summary 和 schema report 保存在
+Git-ignored `artifacts/validation/P4C-2/`。RTSP、Camera、tracking、
+association、compliance、events、alerts、Web 和 LLM 未执行。
+
+Phase 4 scope 已由 ADR-018 正式调整为 `Offline Inference COMPLETE`。
+Camera/RTSP、M-008 和 annotated video rendering 保持 `Deferred Extension`；
+本 release 不使用 `phase-4-inference-complete`，而使用准确的
+`phase-4-offline-inference-complete`。
 
 EXP-001 的一次性 authorization 已 `CONSUMED`。P2-4、P2-5.1 至 P2-5.4
 的 preparation/freeze/verification 步骤不能用于授权第二次训练。
@@ -116,6 +191,21 @@ Environment READY、Dataset READY、Configuration FROZEN、Dependency FROZEN
 和 Weight REGISTERED / REMOTE VERIFIED 只证明 EXP-001 的输入边界；第二次
 训练仍需新的 authorization。
 
+### Phase 4B-0 Inference Runtime
+
+- Runtime ID：`INF-RUNTIME-001`
+- Python：3.10.4
+- PyTorch：2.5.1+cpu
+- torchvision：0.20.1
+- Ultralytics：8.4.157
+- NumPy：2.2.6
+- Device policy：CPU only
+- Dependency source：`locks/EVAL-001/requirements.txt`
+- Release checkpoint：`models/checkpoints/EXP-001/best.pt`
+- `configs/inference.yaml`：FROZEN / `execution_enabled: false`
+
+这是后续 Phase 4B 实现的冻结边界，不是安装、推理、GPU 或性能验证授权。
+
 ## Phase 0 历史基线：安装方式
 
 `requirements.txt` 记录后续完整运行计划依赖，并不表示当前都必须安装。
@@ -176,8 +266,9 @@ git status --short
 当前下一允许步骤是：
 
 ```text
-WAIT FOR PHASE 3 EVALUATION AUTHORIZATION
+WAIT FOR PHASE 5 AUTHORIZATION
 ```
 
-在明确授权前，不启动 Phase 3、不执行独立评估、不创建第二次训练，也不
-修改冻结 dataset、mapping 或 EXP-001 identity。M-005 仍为 `待实现`。
+Phase 4 Offline Inference 已经完成并准备发布；Phase 5 保持等待。在明确
+授权前，不执行 Camera/RTSP，不实现 ByteTrack/PPE 关联/规则/事件/告警/Web，
+也不修改冻结 dataset、mapping、训练配置或 EXP-001 release model。

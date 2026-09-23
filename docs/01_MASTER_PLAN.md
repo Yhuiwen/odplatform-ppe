@@ -11,8 +11,8 @@
 | P0 | Foundation | 工程、文档、环境、配置体系建立 | 已经实现 |
 | P1 | Data | 数据获取、格式统一、质量检查、数据报告 | 实现中 |
 | P2 | Training | YOLO11 baseline 训练与实验归档 | 已经实现 |
-| P3 | Evaluation | 模型评估、对照实验、模型选择 | 待实现 |
-| P4 | Inference | 图片、视频、Camera/RTSP 推理流水线 | 待实现 |
+| P3 | Evaluation | 模型评估、对照实验、模型选择 | 已经实现 |
+| P4 | Offline Inference | 本地图片与 MP4 视频结构化推理流水线；Camera/RTSP 延期为 Extension | 已经实现（Offline Inference COMPLETE；ADR-018） |
 | P5 | Tracking & Association | ByteTrack + Person-PPE Association | 待实现 |
 | P6 | Compliance & Events | PPE 合规规则、时序判断、Event Engine | 待实现 |
 | P7 | Web & Alerts | SQLite + Snapshot + TTS + Streamlit | 待实现 |
@@ -36,7 +36,7 @@ P0 -> P1 -> P2 -> P3 -> P4 -> P5 -> P6 -> P7 -> P8 -> P9
 | P1 | 可复现数据准备、五类映射、质量检查、数据报告 | M-001、M-002、M-003 |
 | P2 | 可复现 YOLO11n baseline、实验归档 | M-004 |
 | P3 | 完整指标、对照实验、方案选择 | M-005 |
-| P4 | 图片、视频、Camera/RTSP 推理 | M-006、M-007、M-008 |
+| P4 | 本地图片结构化检测、MP4 顺序推理与真实验证 | M-006/M-007 的离线推理证据；M-008 deferred extension |
 | P5 | ByteTrack 人员跟踪、Person-PPE 关联 | M-009、M-010 |
 | P6 | Helmet/Vest 规则、多帧确认、事件去重 | M-011、M-012、M-013、M-014 |
 | P7 | SQLite、截图、TTS、Streamlit 查询与大屏 | M-015、M-016、M-017、M-018、M-019、M-020 |

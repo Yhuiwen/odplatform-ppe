@@ -1,0 +1,29 @@
+# Phase 4C-2 validation-only configuration. This file does not change the
+# frozen Phase 4B-0 inference configuration.
+schema_version: video-inference-validation-config-v1
+validation:
+  id: P4C-2
+  mode: video_only
+  execution_enabled: true
+  inference:
+    config: configs/inference.yaml
+    checkpoint: models/checkpoints/EXP-001/best.pt
+    checkpoint_sha256: 1c144eef0dfa06b984dde760ea5501a11746b99c1f8a9ae581790241c3871f61
+    device: cpu
+    confidence_threshold: 0.25
+    iou_threshold: 0.45
+    imgsz: 640
+  input:
+    source: artifacts/validation/P4C-2/input/construction-workers-public-domain.mp4
+    source_label: external:know-your-nailer-public-domain
+    provider: NIOSH / Wikimedia Commons
+    source_url: https://commons.wikimedia.org/wiki/File:Know_Your_Nailer-_Nail_Gun_Safety_(short_version).webm
+    license: Public domain
+    derivation: Two-second MP4 segment from 14.5 seconds; every decoded frame retained.
+    video_sha256: b630d851f9441aaaac23f75d8be3fa9307cc87201d1bb0972f4508356125b852
+    video_size_bytes: 409461
+  output:
+    directory: artifacts/validation/P4C-2
+    video_result: video_validation.json
+    frame_summary: frame_summary.json
+    report: validation_report.json

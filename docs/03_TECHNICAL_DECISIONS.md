@@ -328,3 +328,67 @@ This file is an append-only ADR log. Historical entries must not be deleted.
 - 不允许使用 tag 掩盖未完成工作。
 - 大文件、数据集、模型权重必须遵守 .gitignore 规则。
 - Phase 9 使用 GitHub Release 作为最终交付版本。
+
+## ADR-018
+
+- Date: 2026-09-23
+- Status: Accepted
+- Title: Phase 4 scope adjustment for offline inference release
+- Supersedes: the original Phase 4 scope and `phase-4-inference-complete`
+  milestone name from ADR-017 are superseded by this ADR.
+
+### Decision
+
+Phase 4 is re-scoped to **Offline Inference**:
+
+- structured single-image inference;
+- sequential local MP4 inference;
+- frozen checkpoint and CPU runtime identity;
+- real image and real MP4 validation evidence.
+
+Phase 4 release tag:
+
+```text
+phase-4-offline-inference-complete
+```
+
+Camera, RTSP, real-time/network source behavior, M-008, and annotated video
+rendering are deferred as Extension work. They are not claimed as complete by
+this phase release.
+
+### Original scope
+
+The original Phase 4 target covered Image, Video and Camera/RTSP inference,
+with M-006, M-007 and M-008 as Charter delivery mappings. The original
+`phase-4-inference-complete` tag name did not distinguish the completed local
+offline path from the unimplemented real-time path.
+
+### Completed scope
+
+The completed implementation provides:
+
+- `Image -> InferenceService -> YOLODetector -> DetectionResult`;
+- `MP4 -> VideoReader -> VideoInferenceService -> FrameInferenceResult`;
+- structured JSON output without returning Ultralytics framework objects;
+- frozen `INF-RUNTIME-001` CPU policy and checkpoint fingerprint verification;
+- real single-image validation against the frozen release checkpoint;
+- real 47/47-frame MP4 validation with no frame skipping, batching, async
+  execution or CUDA migration.
+
+### Camera/RTSP deferral reason
+
+Camera/RTSP requires a real live source or test endpoint, timeout and
+disconnect behavior, credential/network handling, and observable failure
+evidence. None of those conditions has been validated, so substituting local
+video or a simulated stream would violate the M-008 acceptance boundary.
+
+### New phase boundary
+
+- Phase 4 release status: `Offline Inference COMPLETE`.
+- Camera/RTSP and M-008: `Deferred Extension`, still `待实现` in the Charter.
+- Annotated video rendering: deferred Extension; not claimed by this release.
+- M-006 and M-007 Charter acceptance remain subject to their own full
+  acceptance review; the offline inference evidence is not a silent status
+  change for those MUST items.
+- Phase 5 remains `WAITING` and requires a separate authorization.
+- No detector or tracker behavior is changed by this scope adjustment.

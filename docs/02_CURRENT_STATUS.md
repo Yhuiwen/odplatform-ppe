@@ -2,11 +2,22 @@
 
 ## Current Phase
 
-Phase 3 — Release Freeze / Awaiting Human Review
+Phase 4 — Offline Inference
+
+## Current Subphase
+
+Phase 4 Release Preparation
+
+Status: Offline Inference COMPLETE / Camera-RTSP Deferred Extension /
+Phase 5 WAITING
 
 ## EXP-001 Training
 
 COMPLETED
+
+## Phase 3
+
+COMPLETE / HUMAN REVIEW PASS
 
 ## GitHub Release Strategy
 
@@ -16,14 +27,85 @@ Phase 完成 → Gate PASS → Commit → Tag → Push
 
 ## Overall Status
 
-Phase 3 已按明确用户指令开始，并完成 EXP-001 best.pt 的独立 test evaluation。
-M-005 要求的总体指标、五类 per-class AP、confusion matrix 和 error analysis
-均已保存，可离线复算。随后 CMP-001 完成 best.pt 与 last.pt 的同条件 checkpoint
-对照；SEL-001 已正式记录选择 best.pt（epoch 75）。P3-G1～P3-G4 技术门禁
-PASS，等待人工审核；Phase 3 尚未发布，不执行 commit/push，不进入 Phase 4。
-Phase 3 最终发布证据已冻结于 `PHASE_3_FINAL_RELEASE_REPORT.md`。
-Release Freeze：COMPLETED；Human Review：PENDING；GitHub Release：NOT_RELEASED。
-以下 Phase 2 描述保留原归档时点的历史语义。
+Phase 3 已完成 EXP-001 best.pt 的独立 test evaluation、per-class analysis、
+best/last checkpoint comparison 和最终 model selection。M-005 要求的总体指标、
+五类 per-class AP、confusion matrix 和 error analysis 均已保存并可离线复算；
+P3-G1～P3-G4 为 PASS，人工审核结果为 PASS。正式 release model 为
+`models/checkpoints/EXP-001/best.pt`（epoch 75）。
+
+Phase 4A 已完成 inference architecture design。已审计现有
+Detector、Pipeline、InferenceService、CLI、planned inference config 和
+detection schemas；新增架构设计与无模型依赖的 `DetectionResult` 接口。
+当前没有加载模型、没有执行图片/视频/Camera/RTSP 推理，也没有实现
+ByteTrack、Person-PPE association、规则、事件、告警、Web、LLM 或 Agent。
+Phase 4B-0 已完成 CPU inference runtime freeze：release checkpoint、
+SHA256、依赖来源、device、confidence、input format、output schema 和
+error handling policy 已记录。运行时冻结为 `INF-RUNTIME-001`，依赖来源为
+`locks/EVAL-001/requirements.txt`，`configs/inference.yaml` 保持
+`execution_enabled: false`。
+
+Phase 4B-1 已实现单张图片推理链路：`InferenceService` 负责路径与格式检查，
+`YOLODetector` 负责 lazy checkpoint 校验和固定参数调用，输出统一为
+`list[DetectionResult]`；新增 JSON CLI `scripts/run_image_inference.py`。
+默认配置继续禁用执行，因此未加载真实 `best.pt`、未执行真实图片推理。
+Video、Camera 和 RTSP 仍为 future-phase error，Phase 4B-2 等待授权。
+
+Phase 4B-2a 已完成本地 MP4 视频推理架构设计，新增 model-independent
+`FrameData`、`VideoMetadata`、`FrameInferenceResult` 和
+`VideoInferenceResult` 数据结构。设计固定 sequential processing、CPU-only、
+no frame skipping、no async、fail-closed error handling，并明确不包含
+Camera/RTSP、tracking、association、compliance、events 或 alerts。Video
+reader、processor、service method 和 writer 在 P4B-2a 结束时均未实现；
+Phase 4B-2b 当时等待授权。
+
+Phase 4B-2b 已实现本地 MP4 视频推理：`VideoReader` 顺序解码并生成
+`FrameData`，`VideoInferenceService` 复用 `InferenceService` 的共享
+frame-level detector boundary，输出 `VideoInferenceResult`；新增
+`scripts/run_video_inference.py` 提供结构化 JSON。测试使用 fake capture 和
+fake inference service，未加载 `best.pt`，未执行真实大规模视频测试。
+RTSP、Camera、tracking、association、compliance、events 和 alerts 仍未实现。
+
+Phase 4C-0 已完成真实模型推理验证设计：定义 external image 和短 MP4
+验证流程、真实 checkpoint/runtime 身份检查、detection count/classes/
+confidence/latency、video frame/time/FPS statistics、Git-ignored evidence
+policy 和 fail-closed failure handling。新增 model-independent
+`ImageValidationRecord`、`VideoValidationRecord` 和
+`InferenceValidationReport` schemas。未加载 `best.pt`、未执行真实推理。
+
+Phase 4C-1 已按单独授权完成真实图片推理验证。新增
+`configs/validation.yaml` 和 `scripts/run_image_validation.py`，仅在该验证
+调用中显式启用执行，冻结的 `configs/inference.yaml` 继续为
+`execution_enabled: false`。`INF-RUNTIME-001` 成功加载 release checkpoint
+SHA256 `1c144eef...871f61`，对一张 Git-ignored external public-domain
+construction image 完成 cold-start 加 warm inference；hot inference 返回
+5 个 `DetectionResult`，分类为 person 2、hardhat 1、no_hardhat 1、
+no_vest 1，cold start 为 14.237 s，warm inference 为 176.386 ms。原始
+`image_validation.json` 和 schema-backed `validation_report.json` 保存在
+Git-ignored `artifacts/validation/P4C-1/`。本阶段没有执行 MP4、Camera、
+RTSP、tracking、association、compliance、events、alerts、Web 或 LLM
+功能，未修改 dataset、mapping、training config 或 checkpoint。
+
+Phase 4C-2 随后按单独授权完成真实 MP4 验证。新增独立
+`configs/video_validation.yaml` 和 `scripts/run_video_validation.py`，
+冻结 `configs/inference.yaml` 继续为 `execution_enabled: false`。冻结
+`best.pt` 在一次 CPU-only sequential run 中加载并处理 external
+public-domain MP4 的全部 47/47 帧：未跳帧、未 batch、未 async、未迁移
+CUDA。共返回 77 个检测（person 76、no_vest 1），处理耗时
+15.1920268 s，end-to-end processing FPS 为 3.0937281。原始
+`video_validation.json`、`frame_summary.json` 和 schema-backed
+`validation_report.json` 保存在 Git-ignored `artifacts/validation/P4C-2/`。
+RTSP、Camera、tracking、association、compliance、events、alerts、Web 和
+LLM 均未执行，dataset、mapping、training config 和 checkpoint 未修改。
+
+Phase 4 scope 已由 ADR-018 正式调整为 `Offline Inference COMPLETE`。
+完成边界包括 structured single-image inference、sequential local MP4
+inference、frozen checkpoint/runtime 和真实 image/MP4 validation。
+Camera、RTSP、real-time/network source behavior、M-008 和 annotated video
+rendering 是 `Deferred Extension`，Charter 中 M-008 继续保持 `待实现`。
+本 release 不使用 `phase-4-inference-complete`，而使用准确的
+`phase-4-offline-inference-complete`。Phase 5 仍未开始并等待独立授权。
+
+以下 Phase 2 和 Phase 3 描述保留原归档时点的历史语义。
 
 Phase 2 的 EXP-001 baseline training 已完成并由
 `docs/reports/EXP-001_TRAINING_EXECUTION_REPORT.md` 归档。本次训练依据明确
@@ -31,7 +113,7 @@ Phase 2 的 EXP-001 baseline training 已完成并由
 验证结果为 precision `0.899`、recall `0.649`、mAP50 `0.767`、
 mAP50-95 `0.480`；权重、日志、resolved args、epoch metrics 和 run record
 均已生成。`best.pt` SHA256 为 `1c144eef...871f61`。M-004 已满足并标记
-`已经实现`。M-005 仍未实现，Phase 3 独立评估尚未开始。
+`已经实现`。Phase 3 的独立评估随后已完成，M-005 现为 `已经实现`。
 
 Phase 1 仍记为 `实现中`，但 P1A 至 P1E 的数据工程子阶段已经完成。P1A
 已通过；P1B 已完成并冻结 `CSS-PPE-10-V1`。P1C-0、
@@ -102,7 +184,7 @@ P2-5.4 随后完成 EXP-001 remote weight transfer verification：将官方
 EXP-001 configuration；随后用户明确授权 EXP-001 单次训练，授权记录现已
 标记为 `CONSUMED`。
 
-## Current Subphase
+## Retained Phase 3 Freeze Snapshot
 
 Phase 3 — Final Release Freeze
 
@@ -380,6 +462,9 @@ Reference Intake: COMPLETED
 
 ## Completed
 
+- Phase 4 Offline Inference 已完成 architecture、runtime freeze、single-image
+  inference、sequential MP4 inference、real image validation 和 real MP4
+  validation；ADR-018 将 Camera/RTSP、M-008 和 annotated rendering 明确延期。
 - P3-1 完成 EXP-001 best.pt evaluation pipeline：只读图片/标签、输入哈希验证、
   固定 test protocol、四项总体指标、7 类 AP、混淆矩阵、逐图错误和小目标召回。
 - P3-1 完成 82 张图片实测；Ultralytics 8.4.157 matching/AP 对照一致；
@@ -648,11 +733,9 @@ weight 和 remote-copy freeze/verification；P2-5.5 使用一次性授权完成
 
 ## Next Allowed Step
 
-WAIT FOR HUMAN REVIEW OF PHASE 3 RELEASE FREEZE。
+WAIT FOR PHASE 5 AUTHORIZATION。
 
-提交 `PHASE_3_FINAL_RELEASE_REPORT.md` 及其引用证据供人工审核；不 commit/push，
-不进入 Phase 4，不重训，不创建新的训练实验，不修改冻结数据、mapping 或权重。
-当前正式记录选择 best.pt；Phase 4 进入前需完成人工审核、确认推理配置和明确
-开始指令。Phase 3 GitHub 发布需要单独授权，当前没有新 commit/tag/push。
-
-M-004 已经实现；M-005 技术证据完整，正式 Charter 状态保留至人工审核决定。
+Phase 4 Offline Inference 已完成并通过 scope adjustment ADR-018；Phase 5
+保持等待。在明确授权前，不执行 Camera/RTSP，不实现 ByteTrack、Person-PPE
+association、compliance、events 或 alerts；不得修改 dataset、mapping、
+training assets、checkpoint 或 frozen inference configuration。
