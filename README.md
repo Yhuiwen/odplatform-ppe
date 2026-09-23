@@ -18,9 +18,11 @@ LLM 安全分析报告和基础 Agent。
 
 ## 当前开发状态
 
-- 当前 Phase：Phase 6 — PPE Compliance Event Engine
-- 当前 Subphase：Phase 6 Final Release
-- Phase 状态：COMPLETE / RELEASED
+- 当前 Phase：Phase 7 — Web & Alert Platform
+- 当前 Subphase：Phase 7-Release — Release Preparation Audit
+- Phase 状态：RELEASE AUDIT COMPLETE FOR HUMAN REVIEW / PUBLICATION WAITING
+- Phase 7 implementation：7-0、7-1、7-2、7-3、7-4、7-5 PASS；7-Release AUDIT COMPLETE FOR HUMAN REVIEW
+- Phase 6 — PPE Compliance Event Engine：COMPLETE / RELEASED
 - Phase 4 — Offline Inference：COMPLETE / Camera-RTSP Deferred MUST
 - EXP-001 Training：COMPLETED / M-004 已经实现
 - Phase 3 Evaluation：PASS / M-005 已经实现
@@ -35,13 +37,14 @@ LLM 安全分析报告和基础 Agent。
 - Inference Runtime：FROZEN / `INF-RUNTIME-001`
 - Single Image Inference：VALIDATED / FROZEN CHECKPOINT
 - Video：VALIDATED / FROZEN CHECKPOINT
-- Camera / RTSP：DEFERRED MUST / M-008 PENDING
-- M-009 Tracking：IMPLEMENTED / Runtime Evidence Pending
-- M-010 Association：IMPLEMENTED / Runtime Evidence Pending
+- Camera / RTSP：Deferred MUST / Input Adapters IMPLEMENTED / USB Runtime PASS / RTSP Pending / M-008 PENDING
+- M-009 Tracking：IMPLEMENTED / Phase 7-5 Runtime Evidence Recorded / Charter Acceptance Pending
+- M-010 Association：IMPLEMENTED / Phase 7-5 Runtime Evidence Recorded / Charter Acceptance Pending
 - M-011 Helmet Rule：IMPLEMENTED / Offline Validated
 - M-012 Vest Rule：IMPLEMENTED / Offline Validated
 - M-013 Temporal Confirmation：IMPLEMENTED / Offline Validated
 - M-014 Event Deduplication：IMPLEMENTED / Offline Validated
+- Phase 7 architecture：FROZEN
 - 已完成准备：Phase 0 工程基线、Phase 1 数据工程，以及 P2-4 AutoDL
   runtime、依赖和数据集完整性验证
 
@@ -61,6 +64,25 @@ LLM 安全分析报告和基础 Agent。
 - Five-frame and one-second temporal confirmation
 - Active-cycle event deduplication with recovery and cooldown
 - Append-only JSONL compliance event storage
+- Versioned SQLite event storage with migration checksums, restart-persistent
+  history queries, event status updates and idempotent event ingestion
+- Atomic JPEG evidence storage with UTC date partitions, relative POSIX paths,
+  SHA256/dimension verification and idempotent event snapshot association
+- Read-only Streamlit dashboard source for Overview, Event Explorer, Evidence
+  Viewer and Statistics
+- Dashboard event filtering, source filters, pagination and statistics from
+  the SQLite-backed event query service
+- Console and in-process Web alert adapters behind one idempotent
+  `AlertAdapter` contract
+- Unified `VideoSource` lifecycle for MP4, USB Camera and RTSP
+- MP4, USB Camera and RTSP adapters with source metadata, observable status,
+  credential-redacted RTSP identity, connection failure handling and release
+  cleanup
+- End-to-end MP4 smoke validation through inference, tracking, association,
+  compliance, JSONL, SQLite, snapshot evidence, dashboard queries and
+  Console/Web alert delivery
+- Real USB Camera open/read/close validation and Streamlit runtime page
+  validation for Overview, Event Explorer, Evidence Viewer and Statistics
 
 ## Current Runtime
 
@@ -77,6 +99,18 @@ LLM 安全分析报告和基础 Agent。
 
 - Image：PASS
 - Video：PASS
+- Phase 7-5 integrated MP4 pipeline：PASS
+- Phase 7-5 dashboard runtime：PASS
+- Phase 7-5 USB Camera lifecycle：PASS
+- Phase 7-5 RTSP runtime：NOT RUN
+- Phase 7-5 Console/Web alerts：PASS
+- Phase 7-5 TTS：NOT IMPLEMENTED
+
+The Phase 7-5 validation runtime used Python `3.12.1`, PyTorch `2.5.1+cpu`,
+Ultralytics `8.4.157` and Streamlit `1.64.0` in an isolated CPU-only
+environment. Python 3.12.1 differs from the frozen `INF-RUNTIME-001` Python
+3.10.4 baseline; this is recorded as a release limitation, not a runtime
+re-freeze.
 
 Phase 4 的完成声明仅覆盖 structured offline inference。Camera/RTSP、
 real-time source behavior、M-008、tracking、association、compliance、
@@ -88,17 +122,20 @@ AssociationResult` 接口、person-only ByteTrack 边界和
 containment/IoU/confidence association policy。P5-1 已实现 person-only
 `ByteTrackPersonTrackingAdapter`：真实 Ultralytics backend 保持 lazy/private，
 只接收 class `0` / `person`，输出项目自有 `TrackResult`。当前环境未安装
-Ultralytics/Torch，因此真实 ByteTrack 执行和 track ID 连续性尚未验证。
+Ultralytics/Torch 是 P5-1 review 时的历史限制；Phase 7-5 后续已在隔离
+环境中执行一次真实 ByteTrack/MP4 runtime path，但没有单独证明长期 track
+ID 连续性，Charter 验收仍未完成。
 P5-2 已实现 `PPEPersonAssociationAdapter`：仅关联已有 person track，使用
 containment `0.50`、IoU `0.10`、confidence `0.25` 和 ambiguity margin
 `0.10`，无法确定时输出 `unknown`，不存在 nearest-distance 强制归属。
 P5-3 已用 synthetic pipeline 验证完整的
 `DetectionResult -> TrackResult -> AssociationResult` adapter 组合；真实
-checkpoint/MP4 validation 配置与脚本已准备，但当前主机缺少 Torch 和
-Ultralytics，preflight 状态为 `BLOCKED_RUNTIME_DEPENDENCIES`，尚未执行
-真实 detector、tracker 与视频端到端关联。最终发布审计将 M-009 和 M-010
-记录为 `IMPLEMENTED / Runtime Evidence Pending`；Charter 锁定状态仍保持
-`待实现`，真实运行验收通过前不得改写为 `已经实现`。
+checkpoint/MP4 validation 在 P5-3 review 时因缺少 Torch 和 Ultralytics
+返回 `BLOCKED_RUNTIME_DEPENDENCIES`。Phase 7-5 后续用隔离 runtime 完成
+一次真实 detector、tracker、association 和视频端到端运行。因此 M-009
+和 M-010 当前记录为 `IMPLEMENTED / Phase 7-5 Runtime Evidence Recorded /
+Charter Acceptance Pending`；Charter 锁定状态仍保持 `待实现`，完整验收
+通过前不得改写为 `已经实现`。
 
 EXP-001 已完成一轮授权 YOLO11n baseline 训练：95/100 epochs，
 best epoch 75，validation precision `0.899`、recall `0.649`、mAP50
@@ -113,11 +150,37 @@ ComplianceEvent -> events.jsonl` 链路，包含保守的 Helmet/Vest/Unknown
 规则、多帧确认、事件去重、恢复和冷却。该链路使用确定性 JSON fixture 验证，
 不需要 Torch、YOLO、GPU、Camera 或 RTSP。
 
-当前仍未形成包含真实 runtime 跟踪、告警、留证和 Web 查询的可交付业务
-闭环。Camera/RTSP、告警、Web 业务页面、LLM 报告和 Agent 尚未实现；
-Phase 5 的真实 checkpoint/inference/ByteTrack runtime evidence 也仍为
-`BLOCKED / NOT RUN`。未来阶段占位接口会明确抛出 `NotImplementedError`，
-不会返回伪造业务结果。Phase 4A 完成推理架构设计、输入/检测器边界和
+Phase 7-0、Phase 7-1、Phase 7-2、Phase 7-3、Phase 7-4 和 Phase 7-5 已通过
+人工审核。
+Phase 7-2 实现了
+证据截图文件保存与事件关联：atomic JPEG write、UTC 日期分区、relative
+POSIX path、SHA256/尺寸验证、重复证据幂等和 conflict rejection。
+`PersistedEvent.snapshot` 现在可以指向真实、已验证的 evidence file。
+Phase 7-3 增加了只读 dashboard query service、四个 Streamlit 页面、SQLite
+统计查询、证据完整性查看，以及 Console/Web alert adapter 和事件身份幂等
+分发。Phase 7-3 review 时触发主机未安装 Streamlit，因此当时只完成页面
+源码、服务边界和 schema 测试；Phase 7-5 后续已在隔离环境中执行 AppTest
+和真实 Streamlit health/root HTTP check。Phase 6 的四字段 JSONL wire
+contract 保持不变。Phase 7-4 新增统一 `VideoSource` interface 和 MP4、USB
+Camera、RTSP adapters，具备 `idle/opening/live/degraded/ended/failed/closed`
+状态、连接失败处理和 release cleanup；RTSP URI 在日志和 status 中去除
+credentials/query。Phase 7-4 review 时未打开真实 device/stream；Phase 7-5
+后续验证了真实 USB Camera 的 open/read/close，但 RTSP、reconnect loop 和
+monitoring service integration 仍未执行。annotation rendering、automatic
+reconciliation、retention 和 TTS 仍未实现。Phase 7 锁定目标仍为
+`SQLite + Snapshot + TTS + Streamlit`；Email、WeChat 和 SMS 继续属于未来
+Extension。
+
+Phase 7-5 已用 frozen checkpoint 和已验证 MP4 完成一次 CPU end-to-end
+runtime smoke path：47/47 帧处理，生成 1 个 `PPE_UNKNOWN` 事件，事件经
+Phase 6 JSONL、SQLite、snapshot evidence、dashboard query 和 Console/Web
+alerts 全部保持原 `event_id`。真实 USB Camera open/read/close PASS；RTSP
+未测。Phase 7-5 已通过人工审核，Phase 7 Release Preparation Audit 已完成
+但尚未获得 publication authorization；TTS、real RTSP validation、
+annotated video rendering 和 M-008 最终验收仍未完成。Phase 5 的历史
+P5-3-G5 `BLOCKED / NOT RUN` 与 M-009/M-010 runtime evidence pending 继续
+保留；Phase 7-5 没有改写其历史结论。未来阶段占位接口会明确抛出
+`NotImplementedError`，不会返回伪造业务结果。Phase 4A 完成推理架构设计、输入/检测器边界和
 `DetectionResult` 数据结构；Phase 4B-0 完成 CPU runtime、checkpoint、
 device、threshold、input/output 和错误处理边界冻结；Phase 4B-1 已实现单图
 `Image -> YOLO11 -> DetectionResult` 链路和 CLI。默认冻结配置仍为
@@ -280,6 +343,15 @@ git status --short
 - `docs/06_DATASET_CARD.md`：冻结数据集、mapping 与质量证据
 - `docs/07_OPEN_SOURCE_USAGE.md`：开源依赖、参考和许可证记录
 - `docs/08_RISK_REGISTER.md`：风险登记册
+- `docs/designs/phase-07/PHASE_7_TARGET_ARCHITECTURE.md`：Phase 7 目标架构
+- `docs/designs/phase-07/PHASE_7_DATA_CONTRACTS.md`：Phase 7 数据契约
+- `docs/reports/phase-07/PHASE_7_ARCHITECTURE_FREEZE_REPORT.md`：Phase 7-0 冻结报告
+- `docs/reports/phase-07/PHASE_7_1_EVENT_STORAGE_REPORT.md`：Phase 7-1 事件存储报告
+- `docs/reports/phase-07/PHASE_7_2_EVIDENCE_SNAPSHOT_REPORT.md`：Phase 7-2 证据截图报告
+- `docs/reports/phase-07/PHASE_7_3_DASHBOARD_ALERT_REPORT.md`：Phase 7-3 Dashboard 与 Alert 报告
+- `docs/reports/phase-07/PHASE_7_4_CAMERA_RTSP_REPORT.md`：Phase 7-4 Camera / RTSP 输入报告
+- `docs/reports/phase-07/PHASE_7_5_RUNTIME_VALIDATION_REPORT.md`：Phase 7-5 Runtime Validation 报告
+- `docs/reports/phase-07/PHASE_7_RELEASE_AUDIT_REPORT.md`：Phase 7 Release Preparation Audit 报告
 - `docs/reports/phase-02/P2-4_FINAL_PROVISIONING_REPORT.md`：P2-4 runtime、依赖和数据集验证
 - `docs/reports/EXP-001_TRAINING_EXECUTION_REPORT.md`：EXP-001 训练结果、
   指标、产物和披露
@@ -302,11 +374,14 @@ git status --short
 当前下一允许步骤是：
 
 ```text
-WAIT FOR PHASE 6 RELEASE REVIEW
+WAIT FOR PHASE 7 RELEASE HUMAN REVIEW
 ```
 
-Phase 6 release 包含 compliance schema、AssociationAdapter、规则引擎、
-时序过滤、Event Engine、JSONL storage、离线 demo 和 focused tests。
-Phase 5 的历史 P5-3-G5 `BLOCKED / NOT RUN` 与 M-009/M-010 runtime evidence
-pending 继续保留；Phase 6 release 不把这些限制改写为 PASS，也不修改冻结
-dataset、mapping、训练配置或 EXP-001 release model。Phase 7 尚未开始。
+Phase 7 Release Preparation Audit 已核对 repository、documentation、
+generated-artifact、secret 和 test 边界。审计阶段不授权 commit、push 或 tag；
+必须等待人工审核后才能执行 publication。真实 RTSP、TTS、annotated
+rendering 和 M-008 acceptance 仍未完成。
+Phase 5 的历史 P5-3-G5 `BLOCKED / NOT RUN` 继续保留。M-009/M-010
+已增加 Phase 7-5 runtime evidence，但 Charter acceptance 仍未完成；
+Phase 7-5 不把历史 Phase 5 block 改写为 PASS，也不修改冻结 dataset、
+mapping、训练配置或 EXP-001 release model。

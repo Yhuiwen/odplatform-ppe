@@ -7,6 +7,10 @@ from core.schemas.detection import DetectionResult
 from core.schemas.video import (
     FrameData,
     FrameInferenceResult,
+    SourceMetadata,
+    SourceState,
+    SourceStatus,
+    SourceType,
     VideoInferenceResult,
     VideoMetadata,
 )
@@ -111,4 +115,42 @@ def test_video_result_serialization() -> None:
                 ],
             }
         ],
+    }
+
+
+def test_source_metadata_and_status_serialization() -> None:
+    metadata = SourceMetadata(
+        source_id="rtsp:rtsp://example.com/live",
+        source_type=SourceType.RTSP,
+        display_name="rtsp://example.com/live",
+        width=1280,
+        height=720,
+        fps=25.0,
+        frame_count=None,
+    )
+    status = SourceStatus(
+        state=SourceState.DEGRADED,
+        last_frame_id=4,
+        last_frame_at="2026-09-23T12:00:05Z",
+        error_code="SOURCE_TIMEOUT",
+        error_message="stream timed out",
+        reconnect_count=1,
+    )
+
+    assert json.loads(json.dumps(metadata.to_dict())) == {
+        "source_id": "rtsp:rtsp://example.com/live",
+        "source_type": "rtsp",
+        "display_name": "rtsp://example.com/live",
+        "width": 1280,
+        "height": 720,
+        "fps": 25.0,
+        "frame_count": None,
+    }
+    assert status.to_dict() == {
+        "state": "degraded",
+        "last_frame_id": 4,
+        "last_frame_at": "2026-09-23T12:00:05Z",
+        "error_code": "SOURCE_TIMEOUT",
+        "error_message": "stream timed out",
+        "reconnect_count": 1,
     }

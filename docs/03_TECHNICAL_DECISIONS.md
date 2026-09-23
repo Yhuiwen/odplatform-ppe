@@ -568,3 +568,54 @@ Ultralytics, a checkpoint, a camera or a network stream.
 This ADR does not close the historical P5-3-G5 real-runtime block and does not
 change M-011 through M-014 from `待实现`; runtime acceptance requires separate
 evidence.
+
+## ADR-022
+
+- Date: 2026-09-23
+- Status: Accepted
+- Title: Phase 7 Web and alert architecture is frozen before implementation
+
+### Decision
+
+Phase 7 uses the locked goal `SQLite + Snapshot + TTS + Streamlit` and the
+following frozen boundaries:
+
+- SQLite is the first V1 persistent store for queryable event history,
+  status, snapshot metadata and rebuildable statistics.
+- The Streamlit UI calls services only. It does not run SQL, inference,
+  tracking, association, rules or alert policy directly.
+- MP4, USB Camera and RTSP inputs are behind one project-owned `VideoSource`
+  contract. Only source adapters may call `cv2.VideoCapture`; business code
+  may not.
+- Confirmed events are persisted before alert delivery. Evidence snapshots
+  use the relative path
+  `artifacts/events/snapshots/YYYYMMDD/event_<event-id>.jpg`, with integrity
+  metadata stored in SQLite.
+- Console, Web and TTS are V1 alert adapters. Console and Web are the first
+  implementation priority, but TTS remains required by M-017 and cannot be
+  removed from Phase 7 acceptance.
+- Email, WeChat and SMS remain future Extension adapters.
+- Phase 7 adds a separate persisted-event DTO. It maps the in-memory Phase 6
+  `ComplianceEvent` and preserves the frozen four-field JSONL wire contract
+  exactly.
+- The Phase 7 subphase order is `7-0` Architecture Freeze, `7-1` Event
+  Storage, `7-2` Evidence Snapshot, `7-3` Dashboard and Alerts, `7-4`
+  Camera/RTSP, `7-5` Runtime Validation and `7-Release`.
+
+### Context
+
+Phase 6 ends at a model-independent `ComplianceEvent` and append-only JSONL
+wire record. Phase 7 must add persistence, evidence, query, live-source and
+alert behavior without changing the released detector, tracker, association,
+rule engine or event identity. Streamlit reruns also make it unsafe for the
+UI to own a long-running source loop.
+
+### Consequences
+
+The architecture remains under the existing `core/`, `services/`, `infra/`,
+`web/` and `utils/` boundaries; no `src/` tree is introduced. Phase 7 must
+implement migrations and query tests before dashboard work, evidence write
+and reconciliation before alert integration, and real runtime validation
+before release. This ADR does not implement SQLite, snapshots, Streamlit,
+Camera/RTSP, annotated video rendering or alerts, and it does not change any
+MUST status.

@@ -667,3 +667,145 @@ evidence remains `BLOCKED / NOT RUN`.
 Phase 6 result: `COMPLETE / RELEASED`. The offline compliance/event path is
 implemented and reproducible without model runtime dependencies. M-011 through
 M-014 remain `待实现` until full Charter acceptance.
+
+## Phase 7-0 Architecture Freeze Gates
+
+| Gate | Requirement | Evidence | Status |
+| --- | --- | --- | --- |
+| P7-0-G1 | Current released architecture is audited without code changes | `docs/reports/phase-07/PHASE_7_ARCHITECTURE_AUDIT.md` records boundaries, stable contracts, Phase 7 gaps and blockers | PASS |
+| P7-0-G2 | Phase 7 target architecture and module boundaries are frozen | `docs/designs/phase-07/PHASE_7_TARGET_ARCHITECTURE.md` freezes service, core, infra and web responsibilities | PASS |
+| P7-0-G3 | Upstream and persisted-event contracts are frozen | `docs/designs/phase-07/PHASE_7_DATA_CONTRACTS.md` preserves Phase 4-6 schemas and defines the separate seven-field persisted projection | PASS |
+| P7-0-G4 | SQLite, snapshot, dashboard, source and alert decisions are recorded | SQLite-first, date-partitioned evidence, Streamlit V1, one `VideoSource` boundary and Console/Web/TTS adapters are frozen | PASS |
+| P7-0-G5 | Phase 7 risks are recorded | `docs/reports/phase-07/PHASE_7_RISK_REGISTER.md` and RISK-020 through RISK-026 cover persistence, UI, source, evidence, alert, identity and statistics risks | PASS |
+| P7-0-G6 | Implementation order is defined | Master Plan and the freeze report define 7-0 through 7-Release | PASS |
+| P7-0-G7 | Frozen assets and upstream interfaces remain unchanged | No code, tests, model, dataset, mapping, training configuration, evaluation artifact, Phase 5 tracking or Phase 6 event engine was modified | PASS |
+| P7-0-G8 | Validation is complete and release actions remain unauthorized | `git diff --check`, repository tests and compile checks are recorded in the freeze report; no commit, push or tag | PASS |
+
+Phase 7-0 result: `COMPLETE FOR HUMAN REVIEW / DESIGN ONLY`.
+
+At the conclusion of 7-0, Phase 7 implementation had not started. M-007/M-008
+and M-015 through M-020 remain `待实现`. The subsequent authorized step was
+Phase 7-1 Event Storage.
+
+Phase 7-0 was subsequently recorded as `COMPLETE / HUMAN REVIEW PASS`.
+
+## Phase 7-1 Event Storage Gates
+
+| Gate | Requirement | Evidence | Status |
+| --- | --- | --- | --- |
+| P7-1-G1 | SQLite schema and connection policy are implemented | `infra/database/migrations/0001_phase7_events.sql` defines `schema_migrations`, `workers`, `events`, `snapshots` and `statistics`; `Database` enables foreign keys, WAL, busy timeout and short transactions | PASS |
+| P7-1-G2 | Migrations are versioned, idempotent and checksum-protected | `infra/database/migrations/__init__.py` records migration checksums in `schema_migrations`, rejects checksum drift and records `PRAGMA user_version = 1`; empty-database and idempotency tests pass | PASS |
+| P7-1-G3 | Event repository supports restart-persistent writes and queries | `EventRepository` inserts, reads, filters, pages and updates event status with parameterized SQL; duplicate IDs fail explicitly and identical re-ingestion is idempotent | PASS |
+| P7-1-G4 | Ingestion preserves frozen event identity | `EventIngestService` maps `ComplianceEvent.event_id` directly, keeps the original numeric `source_timestamp` and uses a separate wall-clock `timestamp`; no event ID is regenerated | PASS |
+| P7-1-G5 | Phase 6 wire compatibility is preserved | `ComplianceEvent.to_dict()` remains exactly `type`, `track_id`, `confidence`, `timestamp`; integration tests read it back unchanged | PASS |
+| P7-1-G6 | Required tests pass | `python -m pytest`: `352 passed, 1 skipped`; `python -m compileall .`: PASS; `git diff --check`: PASS; Charter diff empty | PASS |
+| P7-1-G7 | Scope and frozen assets remain unchanged | No Phase 5/6 code, model, dataset, mapping, training configuration, evaluation artifact or frozen inference config was modified; no snapshot file writer, dashboard, alert, TTS/Camera/RTSP implementation was added | PASS |
+| P7-1-G8 | Release actions remain unauthorized | No commit, push or tag occurred; `docs/reports/phase-07/PHASE_7_1_EVENT_STORAGE_REPORT.md` records the handover | PASS |
+
+Phase 7-1 result: `COMPLETE FOR HUMAN REVIEW`. SQLite event storage is
+implemented and tested. `snapshots`, `statistics` and worker assignment are
+present as schema only; evidence file rendering, alert/dashboard integration,
+live sources and runtime acceptance remain for later subphases. M-015 through
+M-020 remain `待实现` in the locked Charter until their full acceptance
+criteria are met.
+
+Phase 7-1 was subsequently recorded as `COMPLETE / HUMAN REVIEW PASS`.
+
+## Phase 7-2 Evidence Snapshot Gates
+
+| Gate | Requirement | Evidence | Status |
+| --- | --- | --- | --- |
+| P7-2-G1 | Evidence files are written below the frozen root with UTC date partitions | `SnapshotStorage` writes `YYYYMMDD/event_<event-id>.jpg` below `artifacts/events/snapshots/` and rejects unsafe or absolute relative paths | PASS |
+| P7-2-G2 | Snapshot writes are atomic and integrity metadata is verified | JPEG payloads are written through a same-directory temporary file, atomically replaced, then checked for SHA256 and dimensions; `SnapshotReference` and `SnapshotRepository` persist metadata only | PASS |
+| P7-2-G3 | Phase 6 event identity is preserved and associated | `SnapshotService` queries the existing event, never regenerates `event_id`, and `EventRepository` joins `snapshots.relative_path` into `PersistedEvent.snapshot` | PASS |
+| P7-2-G4 | Duplicate behavior is deterministic | Repeating identical evidence returns the existing snapshot; different evidence for the same event is rejected rather than overwritten | PASS |
+| P7-2-G5 | Image handling is outside the repository | `SnapshotRepository` contains only SQLite metadata operations; encoding, inspection and file writes live in `SnapshotStorage` | PASS |
+| P7-2-G6 | Required tests pass | `python -m pytest`: `361 passed, 1 skipped`; `python -m compileall .`: PASS; `git diff --check`: PASS; Charter diff empty | PASS |
+| P7-2-G7 | Frozen model, dataset, training, inference, tracking and Phase 6 wire contracts remain unchanged | No model, dataset, mapping, training config, detector, tracker, association or Phase 6 event-engine file was modified; `ComplianceEvent.to_dict()` still has exactly four fields | PASS |
+| P7-2-G8 | Release actions remain unauthorized | No commit, push or tag occurred; evidence report and worklog record the handover | PASS |
+
+Phase 7-2 result: `COMPLETE FOR HUMAN REVIEW`. JPEG evidence files and
+relative-path metadata are associated with persisted events. Annotation
+rendering, reconciliation automation, retention, dashboard, alerts/TTS,
+Camera/RTSP and runtime acceptance remain pending. M-015 through M-020 remain
+`待实现` in the locked Charter. The next allowed step is
+the Phase 7-3 implementation review.
+
+Phase 7-2 was subsequently recorded as `COMPLETE / HUMAN REVIEW PASS`.
+
+## Phase 7-3 Dashboard & Alerts Gates
+
+| Gate | Requirement | Evidence | Status |
+| --- | --- | --- | --- |
+| P7-3-G1 | Dashboard page sources and explicit navigation exist | `web/Home.py` registers Overview, Event Explorer, Evidence Viewer and Statistics pages | PASS |
+| P7-3-G2 | Dashboard stays behind the service boundary | `web/dashboard_support.py` wires `EventQueryService`; page sources contain no direct SQL, detector, inference, tracking, association or compliance imports | PASS |
+| P7-3-G3 | Event filtering, pagination, sources and statistics are implemented | `EventQueryService` exposes validated `EventQuery` pages, aggregates, source discovery and `EventStatistics` projections | PASS |
+| P7-3-G4 | Evidence viewing uses verified metadata and file identity | `EventQueryService.evidence()` resolves `SnapshotReference`, verifies SHA256/dimensions and returns an explicit integrity state | PASS |
+| P7-3-G5 | Console and Web alerts share one idempotent contract | `AlertAdapter`, `AlertService`, `ConsoleAlertAdapter` and `WebAlertAdapter` preserve `event_id`, isolate failures and return structured results | PASS |
+| P7-3-G6 | Required tests pass | `python -m pytest`: `377 passed, 1 skipped`; `python -m compileall .`: PASS; `git diff --check`: PASS; Charter diff empty | PASS |
+| P7-3-G7 | Frozen upstream assets and contracts remain unchanged | No model, dataset, mapping, training, inference, tracking, association, compliance-engine or Phase 6 JSONL contract file was modified | PASS |
+| P7-3-G8 | Release actions remain unauthorized | No commit, push or tag occurred; review waits for human approval | PASS |
+
+Phase 7-3 result: `COMPLETE FOR HUMAN REVIEW`. Dashboard source, query and
+alert contracts are implemented and tested. Streamlit/Pandas/Plotly are not
+installed on this host, so actual browser rendering was not executed. TTS,
+Camera/RTSP and annotated evidence rendering remain pending. The next allowed
+step was Phase 7-4.
+
+Phase 7-3 was subsequently recorded as `COMPLETE / HUMAN REVIEW PASS`.
+
+## Phase 7-4 Camera / RTSP Input Gates
+
+| Gate | Requirement | Evidence | Status |
+| --- | --- | --- | --- |
+| P7-4-G1 | Unified `VideoSource` lifecycle exists | `core/video/video_source.py` defines `open`, `read`, `status`, `close` and the shared error hierarchy | PASS |
+| P7-4-G2 | MP4 adapter preserves the frozen reader path | `MP4VideoSource` delegates decoding to `VideoReader`, preserves frame order/timestamps and returns `None` at EOF | PASS |
+| P7-4-G3 | USB Camera lifecycle is bounded and observable | `USBCameraSource` validates a non-negative index, owns capture creation/release and reports open/read failures | PASS |
+| P7-4-G4 | RTSP lifecycle redacts stream identity | `RTSPVideoSource` validates `rtsp`/`rtsps`, strips credentials/query from status, records timeouts and reports disconnect failures | PASS |
+| P7-4-G5 | Business code cannot call `cv2.VideoCapture` directly | Static boundary tests scan `services`, `web`, `scripts` and non-video core modules; direct calls remain confined to source adapters | PASS |
+| P7-4-G6 | Required tests pass | `python -m pytest`: `390 passed, 1 skipped`; `python -m compileall .`: PASS; `git diff --check`: PASS; Charter diff empty | PASS |
+| P7-4-G7 | Frozen model, dataset, training, inference, tracking and event contracts remain unchanged | No model, dataset, mapping, training, detector, tracker, association, compliance-engine or Phase 6 JSONL contract file was modified | PASS |
+| P7-4-G8 | Real runtime claims remain bounded | No real USB Camera/RTSP connection was opened; M-008 remains `待实现`; no commit, push or tag occurred | PASS |
+
+Phase 7-4 result: `COMPLETE FOR HUMAN REVIEW`. The source adapter layer is
+implemented and tested with injected captures. Real-device/stream validation,
+reconnect orchestration and monitoring integration remain pending. The next
+allowed step is `WAIT FOR PHASE 7-4 HUMAN REVIEW`.
+
+Phase 7-4 was subsequently recorded as `COMPLETE / HUMAN REVIEW PASS`.
+
+## Phase 7-5 Runtime Validation Gates
+
+| Gate | Requirement | Evidence | Status |
+| --- | --- | --- | --- |
+| P7-5-G1 | Integrated MP4 runtime smoke path completes | Run `20260923T131111Z` processed 47/47 frames through the frozen checkpoint, tracking, association, compliance/event engine and Phase 6 JSONL with zero runtime errors | PASS |
+| P7-5-G2 | SQLite and snapshot persistence preserve event identity and integrity | One `PPE_UNKNOWN` event with `event_id` `EVT-630ed364e15a46919e58eb5080490cd1` was persisted once in SQLite, associated with one snapshot and reread through the verified evidence query | PASS |
+| P7-5-G3 | Dashboard pages execute against runtime evidence | Streamlit `AppTest` passed Overview, Event Explorer, Evidence Viewer and Statistics; a local server returned HTTP 200 for health and root page | PASS |
+| P7-5-G4 | Camera lifecycle evidence is recorded without overclaiming RTSP | Real USB Camera index `0` open/read/close passed with 640x480 metadata; injected disconnect produced `SOURCE_DISCONNECTED`; real RTSP was not run | PASS |
+| P7-5-G5 | Console and Web alerts preserve the Phase 6 identity | Console and in-process Web adapters both reported `delivered` for the persisted event and its original `event_id` | PASS |
+| P7-5-G6 | Frozen model, dataset, training and inference assets remain unchanged | Checkpoint `1c144eef...871f61`; processed `data.yaml` `45cc2717...d2878a`; training config `df6c55ae...cacff989`; inference config `0195c5f7...83f76c` | PASS |
+| P7-5-G7 | Full repository verification passes | `python -m pytest`: `390 passed, 1 skipped`; `python -m compileall .`: PASS; `git diff --check`: PASS; Charter diff empty | PASS |
+| P7-5-G8 | Release actions and unsupported claims remain excluded | No commit, push or tag; TTS, real RTSP, annotated rendering and M-007/M-008 final acceptance remain pending; Phase 7 release stays `WAITING` | PASS |
+
+Phase 7-5 result: `COMPLETE / HUMAN REVIEW PASS`. The integrated MP4 runtime
+smoke path, dashboard pages, real USB Camera lifecycle and Console/Web alerts
+were exercised successfully against Git-ignored evidence. Phase 7 release is
+not authorized because TTS, real RTSP runtime validation, annotated video
+rendering, monitoring/reconnect behavior and M-007/M-008 final acceptance
+remain pending.
+
+## Phase 7 Release Preparation Gates
+
+| Gate | Requirement | Evidence | Status |
+| --- | --- | --- | --- |
+| P7-REL-G1 | Repository change set is fully audited | Branch `main`, HEAD `b8aea3a3343da3342531e690b018fe5d37b3d379`; staged area empty; modified and untracked publication files are source, tests, configuration or documentation | PASS |
+| P7-REL-G2 | Forbidden artifacts are absent | No pending `.pt`, `.pth`, `.onnx`, `.mp4`, media, `.db`, `.sqlite3`, snapshot, archive or `.env` file | PASS |
+| P7-REL-G3 | Generated assets remain outside Git | `git check-ignore` confirms model checkpoints, processed/external datasets, validation evidence and P7-5 runtime outputs are ignored | PASS |
+| P7-REL-G4 | Large-file boundary passes | No tracked file exceeds 256 KB; the largest pending publication file is approximately 75 KB before this audit report is added | PASS |
+| P7-REL-G5 | Credential and token scan passes | No password, private key, access token or API credential value was found; matches are documentation placeholders and redaction tests only | PASS |
+| P7-REL-G6 | Phase 7 documentation is consistent | 7-0 through 7-5 are recorded as `HUMAN REVIEW PASS`; 7-Release is `AUDIT COMPLETE FOR HUMAN REVIEW / NOT PUBLISHED` | PASS |
+| P7-REL-G7 | Full repository verification passes | `python -m pytest`: `390 passed, 1 skipped`; `python -m compileall .`: PASS; `git diff --check`: PASS; Charter diff empty | PASS |
+| P7-REL-G8 | Publication actions remain unauthorized | No commit, push or tag; release audit waits for explicit human review | PASS |
+
+Phase 7 release-preparation result: `AUDIT COMPLETE FOR HUMAN REVIEW /
+NOT PUBLISHED`.

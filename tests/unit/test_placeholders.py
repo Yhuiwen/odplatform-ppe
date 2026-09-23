@@ -5,11 +5,8 @@ import pytest
 from core.detection.detector import Detector
 from core.events.event_state import EventStateManager
 from core.pipeline.inference_pipeline import InferencePipeline
-from infra.database.database import Database
-from infra.database.repository import ViolationRepository
 from infra.llm.fallback import TemplateFallback
 from infra.llm.llm_client import LLMClient
-from infra.storage.snapshot_storage import SnapshotStorage
 from infra.storage.video_storage import VideoStorage
 from infra.tts.tts_service import TTSService
 from services.agent_service import AgentService
@@ -30,9 +27,6 @@ PLACEHOLDER_CALLS = [
     ("tracking-service", lambda: TrackingService().track([])),
     ("report-service", lambda: ReportService().generate({})),
     ("agent-service", lambda: AgentService().ask("question")),
-    ("database", lambda: Database().connect("test.sqlite")),
-    ("repository", lambda: ViolationRepository().save(None)),
-    ("snapshot-storage", lambda: SnapshotStorage().save(None, Path("x.jpg"))),
     ("video-storage", lambda: VideoStorage().save_clip([], Path("x.mp4"))),
     ("tts", lambda: TTSService().speak("alert")),
     ("llm", lambda: LLMClient().complete("prompt")),

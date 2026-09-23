@@ -9,16 +9,167 @@ from __future__ import annotations
 
 import math
 from dataclasses import dataclass
+from enum import Enum
 from typing import Any
 
 from core.schemas.detection import DetectionResult
+from core.schemas.events import normalize_utc_timestamp
 
 __all__ = [
     "FrameData",
     "FrameInferenceResult",
+    "SourceMetadata",
+    "SourceState",
+    "SourceStatus",
+    "SourceType",
     "VideoInferenceResult",
     "VideoMetadata",
 ]
+
+
+class SourceType(str, Enum):
+    """Stable input-source categories for the Phase 7 source boundary."""
+
+    MP4 = "mp4"
+    USB_CAMERA = "usb_camera"
+    RTSP = "rtsp"
+
+
+class SourceState(str, Enum):
+    """Observable lifecycle states shared by every video source adapter."""
+
+    IDLE = "idle"
+    OPENING = "opening"
+    LIVE = "live"
+    DEGRADED = "degraded"
+    ENDED = "ended"
+    FAILED = "failed"
+    CLOSED = "closed"
+
+
+@dataclass(frozen=True, slots=True)
+class SourceMetadata:
+    """Immutable metadata reported after a source opens successfully."""
+
+    source_id: str
+    source_type: SourceType
+    display_name: str
+    width: int | None
+    height: int | None
+    fps: float | None
+    frame_count: int | None
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.source_id, str) or not self.source_id.strip():
+            raise ValueError("source_id cannot be empty")
+        if not isinstance(self.display_name, str) or not self.display_name.strip():
+            raise ValueError("display_name cannot be empty")
+        try:
+            source_type = SourceType(self.source_type)
+        except ValueError as exc:
+            raise ValueError("source_type must be mp4, usb_camera or rtsp") from exc
+        object.__setattr__(self, "source_id", self.source_id.strip())
+        object.__setattr__(self, "source_type", source_type)
+        object.__setattr__(self, "display_name", self.display_name.strip())
+
+        for field_name in ("width", "height"):
+            value = getattr(self, field_name)
+            if value is not None:
+                if isinstance(value, bool) or not isinstance(value, int):
+                    raise TypeError(f"{field_name} must be an integer or None")
+                if value <= 0:
+                    raise ValueError(f"{field_name} must be positive")
+
+        if self.fps is not None:
+            if isinstance(self.fps, bool) or not isinstance(self.fps, (int, float)):
+                raise TypeError("fps must be numeric or None")
+            normalized_fps = float(self.fps)
+            if not math.isfinite(normalized_fps) or normalized_fps <= 0:
+                raise ValueError("fps must be finite and positive")
+            object.__setattr__(self, "fps", normalized_fps)
+
+        if self.frame_count is not None:
+            if isinstance(self.frame_count, bool) or not isinstance(
+                self.frame_count, int
+            ):
+                raise TypeError("frame_count must be an integer or None")
+            if self.frame_count < 0:
+                raise ValueError("frame_count cannot be negative")
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "source_id": self.source_id,
+            "source_type": self.source_type.value,
+            "display_name": self.display_name,
+            "width": self.width,
+            "height": self.height,
+            "fps": self.fps,
+            "frame_count": self.frame_count,
+        }
+
+
+@dataclass(frozen=True, slots=True)
+class SourceStatus:
+    """Observable status for one source adapter without frame payloads."""
+
+    state: SourceState
+    last_frame_id: int | None = None
+    last_frame_at: str | None = None
+    error_code: str | None = None
+    error_message: str | None = None
+    reconnect_count: int = 0
+
+    def __post_init__(self) -> None:
+        try:
+            state = SourceState(self.state)
+        except ValueError as exc:
+            raise ValueError("state must be a supported source state") from exc
+        object.__setattr__(self, "state", state)
+
+        if self.last_frame_id is not None:
+            if isinstance(self.last_frame_id, bool) or not isinstance(
+                self.last_frame_id, int
+            ):
+                raise TypeError("last_frame_id must be an integer or None")
+            if self.last_frame_id < 0:
+                raise ValueError("last_frame_id cannot be negative")
+
+        if self.last_frame_at is not None:
+            object.__setattr__(
+                self,
+                "last_frame_at",
+                normalize_utc_timestamp(self.last_frame_at),
+            )
+
+        if self.error_code is not None and (
+            not isinstance(self.error_code, str) or not self.error_code.strip()
+        ):
+            raise ValueError("error_code must be a non-empty string or None")
+        if self.error_message is not None and (
+            not isinstance(self.error_message, str) or not self.error_message.strip()
+        ):
+            raise ValueError("error_message must be a non-empty string or None")
+        if state in {SourceState.DEGRADED, SourceState.FAILED} and (
+            self.error_code is None
+        ):
+            raise ValueError("degraded or failed sources require an error_code")
+
+        if isinstance(self.reconnect_count, bool) or not isinstance(
+            self.reconnect_count, int
+        ):
+            raise TypeError("reconnect_count must be an integer")
+        if self.reconnect_count < 0:
+            raise ValueError("reconnect_count cannot be negative")
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "state": self.state.value,
+            "last_frame_id": self.last_frame_id,
+            "last_frame_at": self.last_frame_at,
+            "error_code": self.error_code,
+            "error_message": self.error_message,
+            "reconnect_count": self.reconnect_count,
+        }
 
 
 @dataclass(frozen=True, slots=True)

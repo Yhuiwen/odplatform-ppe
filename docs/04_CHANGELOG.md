@@ -1,5 +1,156 @@
 # Changelog
 
+## 2026-09-23 — Phase 7 Release Preparation Audit
+
+- Audited the complete uncommitted Phase 7 change set: no staged files,
+  no model/media/database/snapshot/archive artifacts, no credentials or
+  tokens, and no pending file above approximately 75 KB.
+- Confirmed the release-boundary `.gitignore` coverage for model checkpoints,
+  processed/external datasets, validation evidence and generated event
+  outputs; all corresponding local assets remain outside Git.
+- Synchronized Phase 7 documentation so 7-0 through 7-5 are recorded as
+  human-reviewed PASS and 7-Release is `AUDIT COMPLETE FOR HUMAN REVIEW /
+  NOT PUBLISHED`.
+- Recorded the remaining V1 limitations without converting them into
+  completion claims: TTS is unimplemented, real RTSP is not runtime-tested,
+  annotated video rendering is pending, and M-007/M-008 final acceptance
+  remains open.
+- Full validation: `390 passed, 1 skipped`; `python -m compileall .`: PASS;
+  `git diff --check`: PASS; Charter diff: empty. The skip is the existing
+  optional Torch evaluation test.
+- No commit, push or tag was created; publication waits for explicit human
+  review.
+
+## 2026-09-23 — Phase 7-5 Runtime Validation
+
+- Added `scripts/run_phase7_runtime_validation.py` to compose the existing MP4
+  source, frozen inference service, person-only ByteTrack, Person-PPE
+  association, compliance/event engine, Phase 6 JSONL, SQLite ingestion,
+  evidence snapshot, dashboard query and Console/Web alert boundaries.
+- Added `scripts/validate_phase7_dashboard_runtime.py` and executed Overview,
+  Event Explorer, Evidence Viewer and Statistics with Streamlit `AppTest`
+  against the run-specific SQLite and snapshot evidence.
+- Run `20260923T131111Z` processed 47/47 MP4 frames on CPU with the frozen
+  EXP-001 checkpoint. It produced 77 detections, 66 track updates, one
+  unknown association, 66 compliance findings and one persisted
+  `PPE_UNKNOWN` event, with zero runtime errors.
+- Verified the generated event through JSONL, SQLite, a SHA256/dimension-checked
+  snapshot and dashboard query while preserving the original Phase 6
+  `event_id`; Console and in-process Web alerts both reported `delivered`.
+- Opened and read a real USB Camera device index `0`, then released it. The
+  injected disconnect lifecycle produced observable `SOURCE_DISCONNECTED`.
+  Real RTSP was not tested.
+- A local Streamlit server returned HTTP 200 for the health endpoint and root
+  page. Hosted/remote Web alert delivery and TTS remain unimplemented.
+- Full validation: `390 passed, 1 skipped`; `python -m compileall .`: PASS;
+  `git diff --check`: PASS; Charter diff: empty. The skip is the existing
+  optional Torch evaluation test.
+- At the time of that completion, Phase 7-5 was `COMPLETE FOR HUMAN REVIEW`
+  and release remained `WAITING`; it was subsequently recorded as
+  `COMPLETE / HUMAN REVIEW PASS`. Python 3.12.1 differs from frozen
+  `INF-RUNTIME-001` Python 3.10.4, real RTSP and TTS remain unvalidated, and
+  M-007/M-008 final acceptance is still pending. No commit, push or tag.
+
+## 2026-09-23 — Phase 7-4 Camera / RTSP Input
+
+- Added `SourceType`, `SourceState`, `SourceMetadata` and `SourceStatus`
+  contracts plus the unified `VideoSource` open/read/status/close protocol.
+- Added `MP4VideoSource` over the frozen sequential `VideoReader`, with
+  ordered frames, EOF handling and release cleanup.
+- Added `USBCameraSource` and `RTSPVideoSource` with injected capture
+  factories, live-source timestamps, open/read failure states, bounded timeout
+  settings and idempotent release behavior.
+- Added credential- and query-free RTSP URI projection so status and errors do
+  not expose stream secrets.
+- Added lifecycle, mock source, invalid source, disconnect and static
+  no-direct-capture tests. Business, dashboard and script layers do not call
+  `cv2.VideoCapture`.
+- Full validation: `390 passed, 1 skipped`; compileall, `git diff --check`
+  and Charter diff PASS. The skip is the existing optional Torch test.
+- Real Camera/RTSP devices or streams were not opened; reconnect
+  orchestration, monitoring integration, annotated rendering and M-008
+  acceptance remain pending. Phase 7-3 is recorded as human-reviewed PASS.
+  No commit, push or tag.
+
+## 2026-09-23 — Phase 7-3 Dashboard & Alerts
+
+- Added a read-only `EventQueryService` for dashboard filtering, pagination,
+  statistics, source discovery and verified evidence projection without
+  exposing SQL directly to Streamlit pages.
+- Added Streamlit navigation and page sources for Overview, Event Explorer,
+  Evidence Viewer and Statistics. Pages read SQLite/snapshot data only through
+  the dashboard support/service boundary and do not import inference,
+  tracking, association or compliance implementations.
+- Added `AlertMessage`, `AlertResult`, an `AlertAdapter` protocol,
+  `AlertService` fan-out, and Console/Web adapters. Delivery is idempotent by
+  the preserved Phase 6 `event_id`; adapter failures are isolated.
+- Added dashboard, event-query and alert-adapter tests plus structure/import
+  contracts. Streamlit, Pandas and Plotly are not installed on this host, so
+  actual browser rendering was not executed; source and service contracts are
+  covered by tests.
+- Full validation: `377 passed, 1 skipped`; compileall, `git diff --check`
+  and Charter diff PASS. The skip is the existing optional Torch test.
+- Phase 7-2 is recorded as human-reviewed PASS. TTS, Camera/RTSP, annotation
+  rendering, reconciliation automation and retention remain unimplemented.
+  No commit, push or tag.
+
+## 2026-09-23 — Phase 7-2 Evidence Snapshot
+
+- Added `SnapshotReference` metadata validation and the independent
+  `SnapshotRepository` boundary while preserving the frozen `event_id`.
+- Implemented atomic JPEG evidence storage below
+  `artifacts/events/snapshots/YYYYMMDD/`, with UTC date partition,
+  `event_<event-id>.jpg` filename, SHA256, dimensions, MIME type and
+  relative POSIX paths.
+- Added `SnapshotService` orchestration that verifies the event, reuses
+  identical evidence idempotently, rejects conflicting replacement evidence
+  and associates snapshot metadata so `PersistedEvent.snapshot` resolves to a
+  real file.
+- Added storage, repository, duplicate-policy and Phase 6 event-to-file
+  integration tests. A failed metadata write retains a possible orphan
+  evidence file rather than deleting it silently.
+- Full validation: `361 passed, 1 skipped`; compileall and
+  `git diff --check` PASS. The skip is the existing optional Torch test.
+- Phase 7-1 is recorded as human-reviewed PASS. Phase 7-2 is complete for
+  human review. Annotation rendering, reconciliation automation, retention,
+  dashboard, alerts/TTS and Camera/RTSP remain unimplemented. No commit, push
+  or tag.
+
+## 2026-09-23 — Phase 7-1 SQLite Event Storage
+
+- Added the persisted-event projection, status/query contracts and internal
+  storage row without changing the frozen Phase 6 JSONL wire contract.
+- Added checksummed SQLite migration `0001_phase7_events` with
+  `schema_migrations`, `workers`, `events`, `snapshots` and `statistics`
+  tables, the frozen indexes, foreign-key enforcement and UTC timestamp
+  policy.
+- Implemented `Database`, `EventRepository` and `EventIngestService` with
+  short `BEGIN IMMEDIATE` writes, idempotent `event_id` ingestion,
+  restart-persistent reads, query filters and lifecycle status updates.
+- Added unit tests for schemas, migrations, repository and ingestion, plus an
+  integration test from a real Phase 6 `ComplianceEvent` through SQLite and
+  database restart.
+- Full validation: `352 passed, 1 skipped`; compileall, `git diff --check`
+  and Charter diff PASS. Snapshot files, dashboard, alerts/TTS and
+  Camera/RTSP remain unimplemented. No commit, push or tag.
+
+## 2026-09-23 — Phase 7-0 Web & Alert Architecture Freeze
+
+- Added the Phase 7 pre-read, current-architecture audit, target architecture,
+  data contracts, risk register and architecture-freeze report under
+  `docs/reports/phase-07/` and `docs/designs/phase-07/`.
+- Added ADR-022 to freeze SQLite-first persistence, Streamlit V1, one
+  `VideoSource` interface for MP4/USB Camera/RTSP, date-partitioned evidence
+  snapshots and Console/Web/TTS alert adapters.
+- Defined a separate persisted-event projection with `id`, `timestamp`,
+  `track_id`, `type`, `confidence`, `snapshot` and `status`; the Phase 6
+  four-field JSONL wire contract remains unchanged.
+- Recorded RISK-020 through RISK-026 and froze Phase 7-0 through 7-Release in
+  the Master Plan and Phase 7 document.
+- No implementation, code, test, model, dataset, mapping, training,
+  evaluation, tracking or event-engine change occurred. No commit, push or
+  tag.
+
 ## 2026-09-23 — Phase 6 PPE Compliance Event Engine
 
 - Added `AssociationResult -> ComplianceInput -> ComplianceResult ->

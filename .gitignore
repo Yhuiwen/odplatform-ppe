@@ -44,6 +44,10 @@ artifacts/runs/*
 artifacts/reports/*
 !artifacts/reports/.gitkeep
 artifacts/validation/
+artifacts/events/*.sqlite3
+artifacts/events/*.sqlite3-*
+artifacts/events/*.db
+artifacts/events/*.db-*
 artifacts/events/snapshots/*
 !artifacts/events/snapshots/.gitkeep
 artifacts/events/videos/*

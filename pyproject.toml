@@ -15,6 +15,9 @@ dependencies = []
 where = ["."]
 include = ["core*", "infra*", "services*", "utils*", "web*"]
 
+[tool.setuptools.package-data]
+"infra.database.migrations" = ["*.sql"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["."]

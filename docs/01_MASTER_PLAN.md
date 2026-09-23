@@ -15,7 +15,7 @@
 | P4 | Offline Inference | 本地图片与 MP4 视频结构化推理流水线；Camera/RTSP 延期实施，仍保留 V1 MUST 归属 | 已经实现（Offline Inference COMPLETE；ADR-018） |
 | P5 | Tracking & Association | ByteTrack + Person-PPE Association | 已经实现（COMPLETE / RELEASED；tag `phase-5-tracking-association-complete`；P5-3-G5 historical `BLOCKED / NOT RUN` followed by explicit release authorization） |
 | P6 | Compliance & Events | PPE 合规规则、时序判断、Event Engine | 已经实现（COMPLETE / RELEASED；tag `phase-6-compliance-event-engine-complete`） |
-| P7 | Web & Alerts | SQLite + Snapshot + TTS + Streamlit | 待实现 |
+| P7 | Web & Alerts | SQLite + Snapshot + TTS + Streamlit | 实现中（7-0 至 7-5 PASS；7-Release audit complete for review；publication WAITING） |
 | P8 | LLM & Agent | LLM Report + Fallback + Basic Agent | 待实现 |
 | P9 | Integration & Delivery | 全链路测试、性能分析、文档、Demo、答辩交付 | 待实现 |
 
@@ -53,6 +53,47 @@ Charter acceptance. They are not Extensions. Existing phase statuses remain
 unchanged. For Phase 4 to Phase 5, the predecessor gate rule refers to the
 Offline Inference Gates, plus explicit deferred ownership and no frozen asset
 conflict; separate Phase 5 authorization remains required.
+
+### Phase 7 subphases (7-0 through 7-Release)
+
+Phase 7 remains locked to the goal `SQLite + Snapshot + TTS + Streamlit`.
+The following internal subphase order is frozen by ADR-022:
+
+| Subphase | Scope | Status |
+| --- | --- | --- |
+| 7-0 | Architecture Freeze: audit, target architecture, contracts, technology decision and risk review | COMPLETE / HUMAN REVIEW PASS |
+| 7-1 | Event Storage: SQLite schema, migrations, repository, event ingestion and query tests | COMPLETE / HUMAN REVIEW PASS |
+| 7-2 | Evidence Snapshot: atomic file write, relative path policy, integrity and event association | COMPLETE / HUMAN REVIEW PASS |
+| 7-3 | Dashboard and Alerts: Streamlit pages plus Console and Web alert adapters | COMPLETE / HUMAN REVIEW PASS |
+| 7-4 | Camera/RTSP: unified `VideoSource` input adapters and observable source lifecycle | COMPLETE / HUMAN REVIEW PASS |
+| 7-4b | Real-time monitoring integration and annotated video rendering for M-007/M-008 | WAITING |
+| 7-5 | Runtime Validation: integrated source-to-event-to-dashboard/alert evidence | COMPLETE / HUMAN REVIEW PASS |
+| 7-Release | Phase 7 release audit, tag and remote publication only after all gates pass | AUDIT COMPLETE FOR HUMAN REVIEW / NOT PUBLISHED |
+
+Console and Web alerts are the first implementation priority in 7-3, but TTS
+remains a required V1 adapter under M-017. Email, WeChat and SMS are future
+Extension adapters, not V1 acceptance dependencies.
+
+Phase 7-0 is design-only, Phase 7-1 implements SQLite event storage, Phase 7-2
+implements evidence-file persistence and metadata association, Phase 7-3
+implements the read-only dashboard query path plus Console/Web alert adapters,
+and Phase 7-4 implements the unified MP4/USB Camera/RTSP input adapters.
+Phase 7-5 validates one integrated MP4 runtime path through the frozen
+checkpoint, tracking, association, compliance/events, JSONL, SQLite, evidence
+snapshot, dashboard and Console/Web alert boundaries. It also validates a real
+USB Camera lifecycle and the four Streamlit pages. Real RTSP,
+reconnect/backoff, stale-frame detection, monitoring integration, annotation
+rendering, reconciliation automation, retention cleanup and TTS remain
+pending. These slices do not change the locked phase goal, camera deferral,
+M-007/M-008 ownership, M-015 through M-020 definitions, or any frozen
+model/data/training asset.
+
+Phase 7 Release Preparation Audit verifies the uncommitted release change set,
+ignored generated-artifact boundaries, absence of credential/model/media
+artifacts, documentation consistency for 7-0 through 7-5, and the complete
+repository test baseline. It does not authorize publication: commit, push and
+tag remain pending explicit human review, and the remaining V1 limitations
+are not converted into completion claims.
 
 ## 4. 状态规则
 
