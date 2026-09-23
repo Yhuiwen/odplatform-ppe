@@ -1,5 +1,24 @@
 # Changelog
 
+## 2026-09-23 — Phase 6 PPE Compliance Event Engine
+
+- Added `AssociationResult -> ComplianceInput -> ComplianceResult ->
+  ComplianceEvent` under the existing `core/`, `services/` and `infra/`
+  architecture.
+- Implemented conservative Helmet/Vest rules with `NO_HELMET`, `NO_VEST` and
+  `PPE_UNKNOWN`; missing, uncertain and conflicting evidence is never forced
+  into a person assignment.
+- Added five-frame and one-second temporal confirmation, event
+  deduplication, recovery, cooldown and append-only `outputs/events.jsonl`
+  storage.
+- Added a deterministic offline fixture/demo and focused adapter, rule,
+  temporal, event and storage tests. No Torch, YOLO, GPU, camera or RTSP use
+  is required.
+- Full validation: `332 passed, 1 skipped`; compileall and
+  `git diff --check` PASS. The skip is the existing optional Torch test.
+- Frozen model, dataset, mapping, training configuration and Phase 5 tracking
+  implementation remain unchanged.
+
 ## 2026-09-23 — Phase 5 Release Final Audit
 
 - Audited the complete uncommitted Phase 5 change set, staged contents,

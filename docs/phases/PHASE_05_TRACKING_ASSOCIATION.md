@@ -22,18 +22,24 @@ Phase 5-1 — Person-only ByteTrack Adapter 已人工审核 PASS。
 Phase 5-2 — Person-PPE Association 已人工审核 PASS。
 Phase 5-3 — Synthetic pipeline validation 已完成；真实 runtime validation
 已准备并完成静态 preflight，但当前主机缺少 `torch` / `ultralytics`，因此
-`BLOCKED / NOT RUN`。接口、输出 schema、tracker 配置和 association
+`BLOCKED / NOT RUN`。该门禁记录保留为历史事实。接口、输出 schema、
+tracker 配置和 association
 阈值继续保持冻结。
 
 Phase 5 Release Final Audit — Git 边界、冻结资产、测试和其他发布证据已
-完成审计，等待人工审核；由于真实 runtime Gate 未通过，状态为
-`NOT RELEASED`，不得创建 `phase-5-tracking-association-complete` tag。
+完成审计。审计当时由于真实 runtime Gate 未通过，文档状态为
+`NOT RELEASED`；后续人工明确授权发布，并创建 annotated tag
+`phase-5-tracking-association-complete`，指向提交
+`6da6213f0cc541765f231c81b4264a98f01d5f4a`。
+
+当前状态：Phase 5 `COMPLETE / RELEASED`。本次文档同步不改变 P5-3-G5 的
+历史 `BLOCKED / NOT RUN` 证据。
 
 实现层状态：M-009 和 M-010 为 `IMPLEMENTED / Runtime Evidence Pending`。
 Charter 锁定状态仍为 `待实现`，只有真实 checkpoint、inference 和
 ByteTrack runtime 验收通过后才能改为 `已经实现`。
 
-下一允许步骤：`WAIT FOR P5 RELEASE FINAL AUDIT HUMAN REVIEW`。
+下一允许步骤：`WAIT FOR PHASE 5 DOCUMENTATION SYNC REVIEW`。
 
 ## 4. 实现设计
 
@@ -136,12 +142,21 @@ Phase 5-3 validation gates:
 | P5-3-G6 | Frozen dataset, mapping, training config and checkpoint preserved | PASS |
 | P5-3-G7 | No model load, inference, training, commit, push or tag occurred | PASS |
 
+P5-3-G5 remains a historical `BLOCKED / NOT RUN` record. The Phase 5 release
+tag was created later under explicit human authorization; it does not rewrite
+the missing runtime evidence as PASS.
+
 ## 7. 已知问题
 
 遮挡、尺度变化和人员重叠会增加关联难度。
 
 ## 8. 开发记录
 
+- 2026-09-23: Phase 5 release documentation synchronized to `COMPLETE /
+  RELEASED` with tag `phase-5-tracking-association-complete` at commit
+  `6da6213f0cc541765f231c81b4264a98f01d5f4a`. The original P5-3-G5
+  `BLOCKED / NOT RUN` history is preserved, and this documentation-only sync
+  did not modify code, tests, models or datasets.
 - 2026-09-23: Phase 5 release final audit completed for human review. Audited
   Git status, staged/untracked contents, frozen hashes, release-file
   boundaries and the full test suite. M-009 and M-010 are recorded as

@@ -1,0 +1,372 @@
+[
+  {
+    "frame_id": 0,
+    "timestamp": 0.0,
+    "source": "offline:phase6-fixture",
+    "tracks": [
+      {
+        "track_id": 1,
+        "class_id": 0,
+        "class_name": "person",
+        "confidence": 0.95,
+        "bbox": {"x1": 0.0, "y1": 0.0, "x2": 100.0, "y2": 200.0}
+      },
+      {
+        "track_id": 2,
+        "class_id": 0,
+        "class_name": "person",
+        "confidence": 0.94,
+        "bbox": {"x1": 200.0, "y1": 0.0, "x2": 300.0, "y2": 200.0}
+      },
+      {
+        "track_id": 3,
+        "class_id": 0,
+        "class_name": "person",
+        "confidence": 0.93,
+        "bbox": {"x1": 400.0, "y1": 0.0, "x2": 500.0, "y2": 200.0}
+      }
+    ],
+    "associations": [
+      {
+        "track_id": 1,
+        "class_id": 2,
+        "class_name": "no_hardhat",
+        "confidence": 0.91,
+        "bbox": {"x1": 20.0, "y1": 10.0, "x2": 50.0, "y2": 40.0},
+        "status": "associated",
+        "method": "containment",
+        "containment_ratio": 1.0,
+        "iou": 0.12
+      },
+      {
+        "track_id": 1,
+        "class_id": 4,
+        "class_name": "no_vest",
+        "confidence": 0.89,
+        "bbox": {"x1": 20.0, "y1": 70.0, "x2": 80.0, "y2": 180.0},
+        "status": "associated",
+        "method": "containment",
+        "containment_ratio": 1.0,
+        "iou": 0.30
+      },
+      {
+        "track_id": 2,
+        "class_id": 1,
+        "class_name": "hardhat",
+        "confidence": 0.96,
+        "bbox": {"x1": 220.0, "y1": 10.0, "x2": 250.0, "y2": 40.0},
+        "status": "associated",
+        "method": "containment",
+        "containment_ratio": 1.0,
+        "iou": 0.12
+      },
+      {
+        "track_id": 2,
+        "class_id": 3,
+        "class_name": "vest",
+        "confidence": 0.93,
+        "bbox": {"x1": 220.0, "y1": 70.0, "x2": 280.0, "y2": 180.0},
+        "status": "associated",
+        "method": "containment",
+        "containment_ratio": 1.0,
+        "iou": 0.30
+      }
+    ]
+  },
+  {
+    "frame_id": 1,
+    "timestamp": 0.25,
+    "source": "offline:phase6-fixture",
+    "tracks": [
+      {
+        "track_id": 1,
+        "class_id": 0,
+        "class_name": "person",
+        "confidence": 0.95,
+        "bbox": {"x1": 0.0, "y1": 0.0, "x2": 100.0, "y2": 200.0}
+      },
+      {
+        "track_id": 2,
+        "class_id": 0,
+        "class_name": "person",
+        "confidence": 0.94,
+        "bbox": {"x1": 200.0, "y1": 0.0, "x2": 300.0, "y2": 200.0}
+      },
+      {
+        "track_id": 3,
+        "class_id": 0,
+        "class_name": "person",
+        "confidence": 0.93,
+        "bbox": {"x1": 400.0, "y1": 0.0, "x2": 500.0, "y2": 200.0}
+      }
+    ],
+    "associations": [
+      {
+        "track_id": 1,
+        "class_id": 2,
+        "class_name": "no_hardhat",
+        "confidence": 0.91,
+        "bbox": {"x1": 20.0, "y1": 10.0, "x2": 50.0, "y2": 40.0},
+        "status": "associated",
+        "method": "containment",
+        "containment_ratio": 1.0,
+        "iou": 0.12
+      },
+      {
+        "track_id": 1,
+        "class_id": 4,
+        "class_name": "no_vest",
+        "confidence": 0.89,
+        "bbox": {"x1": 20.0, "y1": 70.0, "x2": 80.0, "y2": 180.0},
+        "status": "associated",
+        "method": "containment",
+        "containment_ratio": 1.0,
+        "iou": 0.30
+      },
+      {
+        "track_id": 2,
+        "class_id": 1,
+        "class_name": "hardhat",
+        "confidence": 0.96,
+        "bbox": {"x1": 220.0, "y1": 10.0, "x2": 250.0, "y2": 40.0},
+        "status": "associated",
+        "method": "containment",
+        "containment_ratio": 1.0,
+        "iou": 0.12
+      },
+      {
+        "track_id": 2,
+        "class_id": 3,
+        "class_name": "vest",
+        "confidence": 0.93,
+        "bbox": {"x1": 220.0, "y1": 70.0, "x2": 280.0, "y2": 180.0},
+        "status": "associated",
+        "method": "containment",
+        "containment_ratio": 1.0,
+        "iou": 0.30
+      }
+    ]
+  },
+  {
+    "frame_id": 2,
+    "timestamp": 0.5,
+    "source": "offline:phase6-fixture",
+    "tracks": [
+      {
+        "track_id": 1,
+        "class_id": 0,
+        "class_name": "person",
+        "confidence": 0.95,
+        "bbox": {"x1": 0.0, "y1": 0.0, "x2": 100.0, "y2": 200.0}
+      },
+      {
+        "track_id": 2,
+        "class_id": 0,
+        "class_name": "person",
+        "confidence": 0.94,
+        "bbox": {"x1": 200.0, "y1": 0.0, "x2": 300.0, "y2": 200.0}
+      },
+      {
+        "track_id": 3,
+        "class_id": 0,
+        "class_name": "person",
+        "confidence": 0.93,
+        "bbox": {"x1": 400.0, "y1": 0.0, "x2": 500.0, "y2": 200.0}
+      }
+    ],
+    "associations": [
+      {
+        "track_id": 1,
+        "class_id": 2,
+        "class_name": "no_hardhat",
+        "confidence": 0.91,
+        "bbox": {"x1": 20.0, "y1": 10.0, "x2": 50.0, "y2": 40.0},
+        "status": "associated",
+        "method": "containment",
+        "containment_ratio": 1.0,
+        "iou": 0.12
+      },
+      {
+        "track_id": 1,
+        "class_id": 4,
+        "class_name": "no_vest",
+        "confidence": 0.89,
+        "bbox": {"x1": 20.0, "y1": 70.0, "x2": 80.0, "y2": 180.0},
+        "status": "associated",
+        "method": "containment",
+        "containment_ratio": 1.0,
+        "iou": 0.30
+      },
+      {
+        "track_id": 2,
+        "class_id": 1,
+        "class_name": "hardhat",
+        "confidence": 0.96,
+        "bbox": {"x1": 220.0, "y1": 10.0, "x2": 250.0, "y2": 40.0},
+        "status": "associated",
+        "method": "containment",
+        "containment_ratio": 1.0,
+        "iou": 0.12
+      },
+      {
+        "track_id": 2,
+        "class_id": 3,
+        "class_name": "vest",
+        "confidence": 0.93,
+        "bbox": {"x1": 220.0, "y1": 70.0, "x2": 280.0, "y2": 180.0},
+        "status": "associated",
+        "method": "containment",
+        "containment_ratio": 1.0,
+        "iou": 0.30
+      }
+    ]
+  },
+  {
+    "frame_id": 3,
+    "timestamp": 0.75,
+    "source": "offline:phase6-fixture",
+    "tracks": [
+      {
+        "track_id": 1,
+        "class_id": 0,
+        "class_name": "person",
+        "confidence": 0.95,
+        "bbox": {"x1": 0.0, "y1": 0.0, "x2": 100.0, "y2": 200.0}
+      },
+      {
+        "track_id": 2,
+        "class_id": 0,
+        "class_name": "person",
+        "confidence": 0.94,
+        "bbox": {"x1": 200.0, "y1": 0.0, "x2": 300.0, "y2": 200.0}
+      },
+      {
+        "track_id": 3,
+        "class_id": 0,
+        "class_name": "person",
+        "confidence": 0.93,
+        "bbox": {"x1": 400.0, "y1": 0.0, "x2": 500.0, "y2": 200.0}
+      }
+    ],
+    "associations": [
+      {
+        "track_id": 1,
+        "class_id": 2,
+        "class_name": "no_hardhat",
+        "confidence": 0.91,
+        "bbox": {"x1": 20.0, "y1": 10.0, "x2": 50.0, "y2": 40.0},
+        "status": "associated",
+        "method": "containment",
+        "containment_ratio": 1.0,
+        "iou": 0.12
+      },
+      {
+        "track_id": 1,
+        "class_id": 4,
+        "class_name": "no_vest",
+        "confidence": 0.89,
+        "bbox": {"x1": 20.0, "y1": 70.0, "x2": 80.0, "y2": 180.0},
+        "status": "associated",
+        "method": "containment",
+        "containment_ratio": 1.0,
+        "iou": 0.30
+      },
+      {
+        "track_id": 2,
+        "class_id": 1,
+        "class_name": "hardhat",
+        "confidence": 0.96,
+        "bbox": {"x1": 220.0, "y1": 10.0, "x2": 250.0, "y2": 40.0},
+        "status": "associated",
+        "method": "containment",
+        "containment_ratio": 1.0,
+        "iou": 0.12
+      },
+      {
+        "track_id": 2,
+        "class_id": 3,
+        "class_name": "vest",
+        "confidence": 0.93,
+        "bbox": {"x1": 220.0, "y1": 70.0, "x2": 280.0, "y2": 180.0},
+        "status": "associated",
+        "method": "containment",
+        "containment_ratio": 1.0,
+        "iou": 0.30
+      }
+    ]
+  },
+  {
+    "frame_id": 4,
+    "timestamp": 1.0,
+    "source": "offline:phase6-fixture",
+    "tracks": [
+      {
+        "track_id": 1,
+        "class_id": 0,
+        "class_name": "person",
+        "confidence": 0.95,
+        "bbox": {"x1": 0.0, "y1": 0.0, "x2": 100.0, "y2": 200.0}
+      },
+      {
+        "track_id": 2,
+        "class_id": 0,
+        "class_name": "person",
+        "confidence": 0.94,
+        "bbox": {"x1": 200.0, "y1": 0.0, "x2": 300.0, "y2": 200.0}
+      },
+      {
+        "track_id": 3,
+        "class_id": 0,
+        "class_name": "person",
+        "confidence": 0.93,
+        "bbox": {"x1": 400.0, "y1": 0.0, "x2": 500.0, "y2": 200.0}
+      }
+    ],
+    "associations": [
+      {
+        "track_id": 1,
+        "class_id": 2,
+        "class_name": "no_hardhat",
+        "confidence": 0.91,
+        "bbox": {"x1": 20.0, "y1": 10.0, "x2": 50.0, "y2": 40.0},
+        "status": "associated",
+        "method": "containment",
+        "containment_ratio": 1.0,
+        "iou": 0.12
+      },
+      {
+        "track_id": 1,
+        "class_id": 4,
+        "class_name": "no_vest",
+        "confidence": 0.89,
+        "bbox": {"x1": 20.0, "y1": 70.0, "x2": 80.0, "y2": 180.0},
+        "status": "associated",
+        "method": "containment",
+        "containment_ratio": 1.0,
+        "iou": 0.30
+      },
+      {
+        "track_id": 2,
+        "class_id": 1,
+        "class_name": "hardhat",
+        "confidence": 0.96,
+        "bbox": {"x1": 220.0, "y1": 10.0, "x2": 250.0, "y2": 40.0},
+        "status": "associated",
+        "method": "containment",
+        "containment_ratio": 1.0,
+        "iou": 0.12
+      },
+      {
+        "track_id": 2,
+        "class_id": 3,
+        "class_name": "vest",
+        "confidence": 0.93,
+        "bbox": {"x1": 220.0, "y1": 70.0, "x2": 280.0, "y2": 180.0},
+        "status": "associated",
+        "method": "containment",
+        "containment_ratio": 1.0,
+        "iou": 0.30
+      }
+    ]
+  }
+]

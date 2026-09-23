@@ -9,7 +9,7 @@ Status values: `OPEN`, `MITIGATED`, `MONITORING`, `CLOSED`.
 | RISK-003 | 多源数据潜在重复 | Medium | High | MD5 精确去重 + perceptual hash 近重复检查 + 人工抽样复核 | OPEN |
 | RISK-004 | PPE 遮挡导致漏检 | High | High | 数据增强、困难样本分析、置信度与未关联分类处理；报告限制 | OPEN |
 | RISK-005 | Person-PPE Association 错配 | High | High | P5-2 已实现 containment/IoU/confidence、ambiguity margin 和显式 `unknown`，禁止 nearest-distance forced assignment；仍需 P5-3 使用真实检测/跟踪输出覆盖小目标、重叠和遮挡边界测试 | OPEN |
-| RISK-006 | 视频单帧检测抖动导致假告警 | High | High | 连续帧/持续时间确认、恢复规则、冷却和事件去重 | OPEN |
+| RISK-006 | 视频单帧检测抖动导致假告警 | High | High | Phase 6 已实现连续 5 帧 + 1.0 秒确认、恢复、冷却和事件去重；仍需真实 runtime 端到端证据 | OPEN |
 | RISK-007 | GPU/显存不足 | Medium | High | 自适应 batch、冻结/较小模型、CPU 小样本验证；集中记录环境 | OPEN |
 | RISK-008 | RTSP 不稳定 | High | Medium | 超时、重连、帧丢弃策略和可观察状态；不得伪造正常流 | OPEN |
 | RISK-009 | LLM API 不可用 | Medium | Medium | 本地模板降级、超时和错误状态；报告明确数据来源 | OPEN |

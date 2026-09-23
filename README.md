@@ -18,9 +18,9 @@ LLM 安全分析报告和基础 Agent。
 
 ## 当前开发状态
 
-- 当前 Phase：Phase 5 — Tracking & Association
-- 当前 Subphase：P5 Release Final Audit
-- Phase 状态：IN PROGRESS / FINAL AUDIT COMPLETE FOR HUMAN REVIEW
+- 当前 Phase：Phase 6 — PPE Compliance Event Engine
+- 当前 Subphase：Phase 6 Final Release
+- Phase 状态：COMPLETE / RELEASED
 - Phase 4 — Offline Inference：COMPLETE / Camera-RTSP Deferred MUST
 - EXP-001 Training：COMPLETED / M-004 已经实现
 - Phase 3 Evaluation：PASS / M-005 已经实现
@@ -38,6 +38,10 @@ LLM 安全分析报告和基础 Agent。
 - Camera / RTSP：DEFERRED MUST / M-008 PENDING
 - M-009 Tracking：IMPLEMENTED / Runtime Evidence Pending
 - M-010 Association：IMPLEMENTED / Runtime Evidence Pending
+- M-011 Helmet Rule：IMPLEMENTED / Offline Validated
+- M-012 Vest Rule：IMPLEMENTED / Offline Validated
+- M-013 Temporal Confirmation：IMPLEMENTED / Offline Validated
+- M-014 Event Deduplication：IMPLEMENTED / Offline Validated
 - 已完成准备：Phase 0 工程基线、Phase 1 数据工程，以及 P2-4 AutoDL
   runtime、依赖和数据集完整性验证
 
@@ -53,6 +57,10 @@ LLM 安全分析报告和基础 Agent。
 - Person-only ByteTrack adapter implementation with a fail-closed boundary
 - Conservative Person-PPE association implementation with explicit unknown
   outcomes
+- Conservative Helmet/Vest/Unknown compliance rules
+- Five-frame and one-second temporal confirmation
+- Active-cycle event deduplication with recovery and cooldown
+- Append-only JSONL compliance event storage
 
 ## Current Runtime
 
@@ -99,10 +107,16 @@ bytes；最佳 checkpoint SHA256 为
 `1c144eef0dfa06b984dde760ea5501a11746b99c1f8a9ae581790241c3871f61`。
 完整训练证据见 `docs/reports/EXP-001_TRAINING_EXECUTION_REPORT.md`。
 
-当前尚未形成可交付的 PPE 检测业务闭环。基础图片和本地 MP4 推理链路已实现
-并完成真实 checkpoint 验证，但 Camera/RTSP、人员跟踪、Person-PPE
-关联、Helmet/Vest 合规判断、事件管理、告警、Web 业务页面、LLM 报告和
-Agent 均尚未实现。未来阶段占位接口会明确抛出 `NotImplementedError`，
+Phase 6 已实现离线
+`AssociationResult -> ComplianceInput -> ComplianceResult ->
+ComplianceEvent -> events.jsonl` 链路，包含保守的 Helmet/Vest/Unknown
+规则、多帧确认、事件去重、恢复和冷却。该链路使用确定性 JSON fixture 验证，
+不需要 Torch、YOLO、GPU、Camera 或 RTSP。
+
+当前仍未形成包含真实 runtime 跟踪、告警、留证和 Web 查询的可交付业务
+闭环。Camera/RTSP、告警、Web 业务页面、LLM 报告和 Agent 尚未实现；
+Phase 5 的真实 checkpoint/inference/ByteTrack runtime evidence 也仍为
+`BLOCKED / NOT RUN`。未来阶段占位接口会明确抛出 `NotImplementedError`，
 不会返回伪造业务结果。Phase 4A 完成推理架构设计、输入/检测器边界和
 `DetectionResult` 数据结构；Phase 4B-0 完成 CPU runtime、checkpoint、
 device、threshold、input/output 和错误处理边界冻结；Phase 4B-1 已实现单图
@@ -288,13 +302,11 @@ git status --short
 当前下一允许步骤是：
 
 ```text
-WAIT FOR P5 RELEASE FINAL AUDIT HUMAN REVIEW
+WAIT FOR PHASE 6 RELEASE REVIEW
 ```
 
-Phase 5-0、Phase 5-1 和 Phase 5-2 已通过人工审核；P5-3 synthetic
-tracking/association integration 和 release final audit 已完成。Phase 5
-release package 等待人工审核，但真实 checkpoint/video runtime validation
-尚未执行，因此状态为 `NOT RELEASED`，不得创建 Phase 5 completion tag。
-当前仍不执行模型加载、真实 ByteTrack 或端到端视频关联，不实现规则、
-事件或告警，也不修改冻结 dataset、mapping、训练配置或 EXP-001 release
-model。
+Phase 6 release 包含 compliance schema、AssociationAdapter、规则引擎、
+时序过滤、Event Engine、JSONL storage、离线 demo 和 focused tests。
+Phase 5 的历史 P5-3-G5 `BLOCKED / NOT RUN` 与 M-009/M-010 runtime evidence
+pending 继续保留；Phase 6 release 不把这些限制改写为 PASS，也不修改冻结
+dataset、mapping、训练配置或 EXP-001 release model。Phase 7 尚未开始。

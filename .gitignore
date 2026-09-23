@@ -51,6 +51,9 @@ artifacts/events/videos/*
 artifacts/logs/*
 !artifacts/logs/.gitkeep
 
+outputs/*.json
+outputs/*.jsonl
+
 experiments/runs/*
 !experiments/runs/.gitkeep
 experiments/reports/*

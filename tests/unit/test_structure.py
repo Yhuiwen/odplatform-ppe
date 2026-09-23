@@ -7,6 +7,7 @@ REQUIRED_DIRECTORIES = [
     "core/detection",
     "core/tracking",
     "core/association",
+    "core/adapters",
     "core/rules",
     "core/events",
     "core/pipeline",
@@ -37,6 +38,7 @@ REQUIRED_DIRECTORIES = [
     "tests/e2e",
     "tests/regression",
     "tests/fixtures",
+    "examples",
     "docs/phases",
 ]
 
@@ -63,6 +65,8 @@ REQUIRED_FILES = [
     "scripts/run_demo.py",
     "core/detection/detector.py",
     "core/detection/schemas.py",
+    "core/adapters/association_adapter.py",
+    "core/schemas/compliance.py",
     "core/tracking/tracker.py",
     "core/tracking/interfaces.py",
     "core/tracking/bytetrack_adapter.py",
@@ -72,6 +76,7 @@ REQUIRED_FILES = [
     "core/rules/temporal_filter.py",
     "core/events/event_engine.py",
     "core/events/event_state.py",
+    "infra/storage/json_event_store.py",
     "core/pipeline/inference_pipeline.py",
     "services/dataset_service.py",
     "services/dataset_conversion_service.py",
@@ -113,6 +118,12 @@ REQUIRED_FILES = [
     "tests/unit/test_logging_utils.py",
     "tests/unit/test_system_utils.py",
     "tests/unit/test_imports.py",
+    "examples/phase6_demo.py",
+    "tests/fixtures/phase6_association_sample.json",
+    "tests/test_association_adapter.py",
+    "tests/test_compliance_engine.py",
+    "tests/test_event_engine.py",
+    "tests/test_event_store.py",
 ]
 
 

@@ -649,3 +649,21 @@ release authorization.
 Phase 5 final audit result: `FINAL AUDIT COMPLETE FOR HUMAN REVIEW /
 NOT RELEASED`. Real checkpoint, YOLO11 inference and ByteTrack runtime
 evidence remains `BLOCKED / NOT RUN`.
+
+## Phase 6 Compliance Event Engine Gates
+
+| Gate | Requirement | Evidence | Status |
+| --- | --- | --- | --- |
+| P6-G1 | Helmet/Vest rules meet acceptance and boundary tests | Conservative associated `hardhat`/`no_hardhat` and `vest`/`no_vest` rules are covered by `tests/test_compliance_engine.py` | PASS |
+| P6-G2 | Multi-frame confirmation suppresses single-frame jitter | `TemporalViolationFilter` requires 5 consecutive frames and 1.0 second; single-frame tests pass | PASS |
+| P6-G3 | Deduplication, recovery and cooldown are reproducible | `EventEngine` keys state by `(track_id, event_type)`, emits once per active cycle, recovers after 5 compliant frames and applies a 30 second cooldown | PASS |
+| P6-F1 | Association adapter contract is frozen and tested | `AssociationAdapter` maps immutable `AssociationResult` to `ComplianceInput`; `tests/test_association_adapter.py` passes | PASS |
+| P6-F2 | Conservative Unknown behavior is implemented | Missing, uncertain and conflicting evidence maps to `PPE_UNKNOWN`; forced unknown assignment is disabled in `configs/rules.yaml` | PASS |
+| P6-F3 | JSONL wire contract is frozen | `JSONEventStore` writes exactly `type`, `track_id`, `confidence`, `timestamp`; `tests/test_event_store.py` passes | PASS |
+| P6-F4 | Offline demo uses no model runtime | `examples/phase6_demo.py` consumes only project-owned JSON and does not import Torch, Ultralytics, camera or RTSP code | PASS |
+| P6-F5 | Frozen assets remain unchanged | No dataset, mapping, training config, checkpoint or Phase 5 tracking implementation was modified | PASS |
+| P6-F6 | Full repository verification | `python -m pytest`: `332 passed, 1 skipped`; compileall, `git diff --check` and Charter diff checks are recorded in the Phase 6 reports | PASS |
+
+Phase 6 result: `COMPLETE / RELEASED`. The offline compliance/event path is
+implemented and reproducible without model runtime dependencies. M-011 through
+M-014 remain `待实现` until full Charter acceptance.

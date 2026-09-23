@@ -1,13 +1,24 @@
-# Planned structure only. Rules are not implemented in Phase 0.
+# Frozen Phase 6 compliance rule contract.
+schema_version: compliance-rules-freeze-v1
 rules:
   phase: 6
-  status: planned
+  subphase: 6-0
+  status: frozen
+  execution_enabled: true
+  event_types:
+    - NO_HELMET
+    - NO_VEST
+    - PPE_UNKNOWN
   helmet:
     enabled: true
     required: true
+    positive_classes: [hardhat]
+    violation_classes: [no_hardhat]
   vest:
     enabled: true
     required: true
+    positive_classes: [vest]
+    violation_classes: [no_vest]
   temporal_confirmation:
     enabled: true
     min_consecutive_frames: 5
@@ -18,3 +29,12 @@ rules:
   cooldown:
     enabled: true
     seconds: 30
+  output:
+    schema: core/schemas/compliance.py
+    result_type: ComplianceResult
+    event_type: ComplianceEvent
+    wire_fields: [type, track_id, confidence, timestamp]
+  errors:
+    fail_closed: true
+    single_frame_confirmation: false
+    forced_unknown_assignment: false

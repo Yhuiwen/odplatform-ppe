@@ -315,7 +315,7 @@ This file is an append-only ADR log. Historical entries must not be deleted.
 | Phase 3 | tag: `phase-3-evaluation-complete`           |
 | Phase 4 | tag: `phase-4-inference-complete`            |
 | Phase 5 | tag: `phase-5-tracking-association-complete` |
-| Phase 6 | tag: `phase-6-compliance-events-complete`    |
+| Phase 6 | tag: `phase-6-compliance-event-engine-complete` |
 | Phase 7 | tag: `phase-7-web-alerts-complete`           |
 | Phase 8 | tag: `phase-8-llm-agent-complete`            |
 | Phase 9 | GitHub Release + final tag                   |
@@ -510,3 +510,61 @@ Threshold or schema changes require explicit review and updated evidence.
 Phase 5-0 does not implement tracking or association, does not load a model,
 does not modify the dataset, mapping, training configuration or checkpoint,
 and does not change M-009 or M-010 from `待实现`.
+
+## ADR-021
+
+- Date: 2026-09-23
+- Status: Accepted
+- Title: PPE compliance events are conservatively temporally confirmed
+
+### Decision
+
+Phase 6 consumes immutable Phase 5 `AssociationResult` values through a
+dedicated `AssociationAdapter`. The frozen rule path is:
+
+```text
+AssociationResult
+-> ComplianceInput
+-> ComplianceResult
+-> temporal confirmation
+-> ComplianceEvent
+```
+
+`NO_HELMET` and `NO_VEST` are emitted only from associated `no_hardhat` and
+`no_vest` evidence. Missing, unassigned-unknown or conflicting evidence is
+reported as `PPE_UNKNOWN`; it is never converted into a confident violation or
+compliant result.
+
+An event requires at least `5` consecutive candidate frames and `1.0` second
+of duration under the frozen configuration. Event identity is isolated by
+`(track_id, event_type)`. An active cycle emits one event, recovers after
+`5` compliant frames, and applies a `30` second cooldown before another event
+for the same key.
+
+The JSONL wire contract is exactly:
+
+```text
+type
+track_id
+confidence
+timestamp
+```
+
+### Context
+
+Phase 5 deliberately leaves uncertain Person-PPE ownership unassigned.
+Forcing those records onto a nearest person would create unsafe alerts.
+Likewise, treating an absent or uncertain PPE observation as compliance would
+hide missing evidence. Compliance therefore needs an explicit unknown state
+and temporal evidence rather than single-frame rule triggers.
+
+### Consequences
+
+The original Phase 5 schemas and tracking implementation remain unchanged.
+Phase 6 stores deterministic offline evidence under `outputs/events.jsonl`,
+which is Git-ignored. Its rule and event behavior is testable without Torch,
+Ultralytics, a checkpoint, a camera or a network stream.
+
+This ADR does not close the historical P5-3-G5 real-runtime block and does not
+change M-011 through M-014 from `待实现`; runtime acceptance requires separate
+evidence.
