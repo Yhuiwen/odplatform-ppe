@@ -234,8 +234,8 @@ explicit instruction and Phase 2 entry conditions authorize it.
 | Gate | Requirement | Evidence | Status |
 | --- | --- | --- | --- |
 | P2-0-G1 | Environment audited | `docs/reports/phase-02/P2-0_TRAINING_READINESS.md` records OS, Python, pip, PyTorch, Ultralytics, CUDA, GPU, RAM, and CPU without installation | PASS |
-| P2-0-G2 | Dependency strategy documented | `docs/reports/P2-0_DEPENDENCY_STRATEGY.md` compares Windows NVIDIA, WSL2 CUDA, cloud GPU, and CPU fallback | PASS |
-| P2-0-G3 | Version matrix documented | `docs/reports/P2-0_VERSION_MATRIX.md` records compatibility policy and pending states | PASS |
+| P2-0-G2 | Dependency strategy documented | `docs/designs/phase-02/P2-0_DEPENDENCY_STRATEGY.md` compares Windows NVIDIA, WSL2 CUDA, cloud GPU, and CPU fallback | PASS |
+| P2-0-G3 | Version matrix documented | `docs/designs/phase-02/P2-0_VERSION_MATRIX.md` records compatibility policy and pending states | PASS |
 | P2-0-G4 | Training readiness documented | Dataset `PASS`, Experiment `PASS`, Environment `NOT READY`, GPU `PENDING`, Dependencies `PENDING` | PASS |
 | P2-0-G5 | No training executed | No dependency, weight, run, evaluation, or dataset mutation was created | PASS |
 | P2-0-G6 | Charter unchanged | `git diff charter-v1 -- docs/00_PROJECT_CHARTER.md` is empty | PASS |
@@ -247,9 +247,9 @@ remains `NOT READY FOR TRAINING`.
 
 | Gate | Requirement | Evidence | Status |
 | --- | --- | --- | --- |
-| P2-1-G1 | Environment decision documented | `docs/reports/P2-1_ENVIRONMENT_DECISION.md` selects controlled cloud GPU and records alternatives | PASS |
-| P2-1-G2 | Dependency specification documented | `docs/reports/P2-1_DEPENDENCY_SPECIFICATION.md` records planned Python, PyTorch, CUDA, torchvision, Ultralytics, NumPy, and key supporting versions as `PLANNED VERSION` | PASS |
-| P2-1-G3 | Setup plan documented | `docs/reports/P2-1_SETUP_PLAN.md` defines installation order, verification, rollback, and freeze outputs as design only | PASS |
+| P2-1-G1 | Environment decision documented | `docs/designs/phase-02/P2-1_ENVIRONMENT_DECISION.md` selects controlled cloud GPU and records alternatives | PASS |
+| P2-1-G2 | Dependency specification documented | `docs/designs/phase-02/P2-1_DEPENDENCY_SPECIFICATION.md` records planned Python, PyTorch, CUDA, torchvision, Ultralytics, NumPy, and key supporting versions as `PLANNED VERSION` | PASS |
+| P2-1-G3 | Setup plan documented | `docs/designs/phase-02/P2-1_SETUP_PLAN.md` defines installation order, verification, rollback, and freeze outputs as design only | PASS |
 | P2-1-G4 | No training executed | No cloud instance, dependency installation, model weight, run output, evaluation, dataset mutation, or class mapping change was created | PASS |
 | P2-1-G5 | Charter unchanged | `git diff charter-v1 -- docs/00_PROJECT_CHARTER.md` is empty; M-001 and M-004 remain `待实现` | PASS |
 

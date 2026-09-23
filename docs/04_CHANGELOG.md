@@ -226,9 +226,9 @@ phase-based log rather than claiming semantic-release completeness.
 
 ### P2-0 Training Environment Preparation & Dependency Boundary Review
 
-- Added `docs/reports/P2-0_DEPENDENCY_STRATEGY.md` comparing a Windows NVIDIA
+- Added `docs/designs/phase-02/P2-0_DEPENDENCY_STRATEGY.md` comparing a Windows NVIDIA
   GPU environment, WSL2 with CUDA, a controlled cloud GPU, and CPU fallback.
-- Added `docs/reports/P2-0_VERSION_MATRIX.md` for Python, PyTorch, CUDA,
+- Added `docs/designs/phase-02/P2-0_VERSION_MATRIX.md` for Python, PyTorch, CUDA,
   Ultralytics, and YOLO11 version decisions. Exact versions and the model
   weight source remain pending and no installation was performed.
 - Added `docs/reports/phase-02/P2-0_TRAINING_READINESS.md` with Dataset `PASS`,
@@ -252,13 +252,13 @@ phase-based log rather than claiming semantic-release completeness.
 
 - Selected `D. Controlled Cloud GPU` as the EXP-001 environment architecture
   because the current host has no NVIDIA GPU or CUDA support.
-- Added `docs/reports/P2-1_ENVIRONMENT_DECISION.md` with the selected option,
+- Added `docs/designs/phase-02/P2-1_ENVIRONMENT_DECISION.md` with the selected option,
   rejected alternatives, cost/risk controls, and the impact on EXP-001.
-- Added `docs/reports/P2-1_DEPENDENCY_SPECIFICATION.md` with planned versions
+- Added `docs/designs/phase-02/P2-1_DEPENDENCY_SPECIFICATION.md` with planned versions
   for Python `3.11.16`, PyTorch `2.11.0+cu128`, CUDA `12.8`, torchvision
   `0.26.0+cu128`, Ultralytics `8.4.158`, NumPy `2.2.6`, and key supporting
   packages.
-- Added `docs/reports/P2-1_SETUP_PLAN.md` with provisioning, installation,
+- Added `docs/designs/phase-02/P2-1_SETUP_PLAN.md` with provisioning, installation,
   non-training verification, rollback, and runtime-freeze procedures.
 - Updated the P2-0 readiness record with `Environment Decision: SELECTED`,
   `Provisioning: NOT STARTED`, and `Dependency Freeze: PENDING`.
