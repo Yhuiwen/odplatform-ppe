@@ -8,19 +8,38 @@ reviews; the statuses below reflect the current accepted records.
 
 ## Current Phase
 
-- Phase 4 — `Offline Inference COMPLETE` for its offline release scope.
-- Current subphase: Phase 4 Release Preparation / Phase 5 handover.
-- Phase 5 WAITING — Tracking & Association; work has not started.
-- `WAIT FOR PHASE 5 AUTHORIZATION` remains the next allowed step.
+- Phase 5 IN PROGRESS — Tracking & Association; current subphase is
+  Phase 5 Release Final Audit.
+- P5-0, P5-1 and P5-2 are human-reviewed PASS. P5-3 synthetic pipeline
+  validation is PASS. The frozen-checkpoint/video runtime validation is
+  prepared with an execution-disabled config and passed static preflight, but
+  is `BLOCKED / NOT RUN` because this host has no `torch` or `ultralytics`.
+- The final release audit is complete for human review, but Phase 5 is
+  `NOT RELEASED`. The completion tag is not authorized while the real runtime
+  gate is blocked.
+- Phase 4 remains `Offline Inference COMPLETE` for its released offline scope.
+- Current next allowed step: `WAIT FOR P5 RELEASE FINAL AUDIT HUMAN REVIEW`.
 
 ## Last Completed
 
 - Phase 2 Training: `已经实现`; EXP-001 baseline training completed using its
-  single authorized run. M-004 is `已经实现`.
+  single authorized run. M-004：已经实现.
 - Phase 3 Evaluation: `已经实现`; model comparison, selection and independent
-  evaluation were completed and human review passed. M-005 is `已经实现`.
+  evaluation were completed and human review passed. M-005：已经实现.
 - Phase 4 Offline Inference: `已经实现` for the scope in ADR-018; offline release
   gates are PASS. Full M-006/M-007 acceptance was not implied by that release.
+- Phase 5 Tracking & Association: `实现中`; P5-0 froze `TrackResult`,
+  `AssociationResult`, person-only ByteTrack boundaries and unknown-safe
+  containment/IoU policy. P5-1 implements the person-only ByteTrack adapter
+  behind that boundary. P5-2 implements conservative Person-PPE association
+  with explicit `unknown`. P5-3 validates the complete adapter composition
+  with deterministic synthetic frames; real runtime and integrated video
+  verification remain blocked by missing runtime dependencies. At the
+  implementation-audit layer, M-009 and M-010 are
+  `IMPLEMENTED / Runtime Evidence Pending`; the locked Charter statuses remain
+  `待实现` until real runtime acceptance is proven. The final release audit
+  consolidates P5-0 through P5-3 evidence without claiming real-runtime
+  acceptance.
 - Phase 1 Data remains `实现中` in the Master Plan. M-001, M-002 and M-003
   remain `待实现` in the Charter; completed data substeps are not a claim of
   their final acceptance.
@@ -35,8 +54,28 @@ reviews; the statuses below reflect the current accepted records.
   `YOLODetector`; real-image validation used the frozen checkpoint.
 - Sequential local MP4 structured inference through `VideoReader` and
   `VideoInferenceService`; real validation processed all 47/47 source frames.
+- P5-1 person-only ByteTrack adapter: lazy backend isolation, class-0 filtering,
+  confidence filtering, fail-closed errors and project-owned `TrackResult`
+  output. Adapter behavior is tested with an injected backend; real
+  Ultralytics ByteTrack execution is not verified.
+- P5-2 conservative Person-PPE association: containment `0.50`, IoU `0.10`,
+  confidence `0.25`, ambiguity margin `0.10`, deterministic ranking and
+  explicit `unknown`. Synthetic tests cover single/multiple people, wrong
+  candidates, ambiguity, missing PPE and empty input; real video integration
+  is not verified.
+- P5-3 integrated synthetic validation: the full
+  `DetectionResult -> TrackResult -> AssociationResult` adapter chain passes
+  single-person, multi-person, PPE-present, missing-PPE and ambiguous cases.
+  A validation-only config and script prepare frozen checkpoint/video
+  execution and report dependency readiness without loading the model.
+- P5 release final audit: completed evidence, frozen identities, limitations
+  and gates are consolidated in the Phase 5 final audit report. M-009 and
+  M-010 are implemented at the audit layer, but release remains blocked until
+  real runtime validation passes.
 - Camera/RTSP, ByteTrack, Person-PPE association, compliance rules, events,
   alerts, business Web pages, LLM and Agent remain outside completed scope.
+  ByteTrack and association adapters are implemented and synthetically
+  integrated; real runtime acceptance remains unverified.
 
 ## Current Runtime
 
@@ -44,6 +83,9 @@ reviews; the statuses below reflect the current accepted records.
   PyTorch `2.5.1+cpu`, torchvision `0.20.1`, Ultralytics `8.4.157`.
 - Runtime policy: CPU only. Frozen `configs/inference.yaml` keeps
   `execution_enabled: false`; real validation used separate explicit configs.
+- The P5-3 preflight host is Python `3.13.6` with OpenCV `5.0.0`; `torch`,
+  `torchvision` and `ultralytics` are not installed. The frozen P5-3
+  validation config remains `execution_enabled: false`.
 - Training used a separately frozen AutoDL RTX 4090 environment. The
   EXP-001 one-run authorization is `CONSUMED`; it does not authorize retraining.
 
@@ -85,6 +127,14 @@ reviews; the statuses below reflect the current accepted records.
 
 ## Latest Reports
 
+- [P5 final release preparation](reports/phase-05/P5_FINAL_RELEASE_REPORT.md).
+- [P5 release final audit](reports/phase-05/P5_RELEASE_FINAL_AUDIT.md).
+- [P5 release final audit worklog](worklogs/2026/09/2026-09-23-07-phase5-release-final-audit.md).
+- [P5 final release worklog](worklogs/2026/09/2026-09-23-06-phase5-final-release-preparation.md).
+- [P5-3 tracking and association validation](reports/phase-05/P5-3_VALIDATION_REPORT.md).
+- [P5-3 validation worklog](worklogs/2026/09/2026-09-23-05-phase5-p5-3-validation.md).
+- [P5-2 Person-PPE association implementation](reports/phase-05/P5-2_IMPLEMENTATION_REPORT.md).
+- [P5-1 ByteTrack adapter implementation](reports/phase-05/P5-1_IMPLEMENTATION_REPORT.md).
 - [Phase 4C-1 real-image validation](reports/phase-04/PHASE_04C1_IMAGE_VALIDATION_REPORT.md).
 - [Phase 4C-2 real-MP4 validation](reports/phase-04/PHASE_04C2_VIDEO_VALIDATION_REPORT.md).
 - [Phase 4 scope clarification](reports/maintenance/PHASE_SCOPE_CLARIFICATION_REPORT.md)
@@ -98,9 +148,11 @@ reviews; the statuses below reflect the current accepted records.
 
 ## Next Allowed Step
 
-`WAIT FOR PHASE 5 AUTHORIZATION`.
+`WAIT FOR P5 RELEASE FINAL AUDIT HUMAN REVIEW`.
 
-Before starting Phase 5, confirm its [entry conditions](phases/PHASE_05_TRACKING_ASSOCIATION.md):
-Phase 4 offline gates PASS, deferred MUST ownership recorded, stable person/PPE
-detection output, no frozen asset conflict and separate authorization.
-This documentation change does not perform that asset check or begin Phase 5.
+P5-0, P5-1 and P5-2 passed human review. P5-3 completed synthetic adapter
+integration and prepared the frozen checkpoint/video runtime validation
+without loading `best.pt`, executing inference or using real ByteTrack output.
+The final release package is audited but NOT RELEASED. M-009 and M-010 are
+implemented at the audit layer; real runtime evidence remains pending until
+the frozen dependencies and separate authorization are available.

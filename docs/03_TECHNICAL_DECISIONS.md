@@ -465,3 +465,48 @@ Phase 4 status remains `Offline Inference COMPLETE`. Camera/RTSP implementation
 and annotated video rendering remain deferred MUST work. MUST definitions,
 acceptance criteria and statuses are unchanged. Phase 5 remains `WAITING`.
 No code, tests, configuration, model or dataset changes are authorized here.
+
+## ADR-020
+
+- Date: 2026-09-23
+- Status: Accepted
+- Title: Phase 5 tracking and association interfaces are frozen before implementation
+
+### Decision
+
+Phase 5 uses explicit project-owned contracts:
+
+- `DetectionResult -> PersonTrackingAdapter -> TrackResult`;
+- `TrackResult + PPE DetectionResult -> PPEAssociationAdapter ->
+  AssociationResult`.
+
+ByteTrack is used through the mature Ultralytics `8.4.157` integration and
+tracks person class ID `0` only. The repository does not copy ByteTrack source.
+
+Person-PPE association may use bbox containment, IoU and confidence
+thresholds. Nearest-distance or forced assignment is prohibited. If no
+candidate satisfies the frozen geometry/confidence rules, or the leading
+candidates are ambiguous, the output status is `unknown`.
+
+The tracker and association policy is frozen in `configs/tracker.yaml` and
+`configs/association.yaml`; schemas and adapter protocols are frozen under
+`core/schemas/` and the `core/tracking` and `core/association` packages.
+
+### Context
+
+Phase 4 returns only structured `DetectionResult` values. Phase 5 must add
+stateful tracking and person attribution without returning Ultralytics Results
+objects or silently inventing ownership. Overlapping people and PPE occlusion
+make nearest-centre matching unsafe, while association errors would corrupt
+all downstream compliance and event logic.
+
+### Consequences
+
+Phase 5-1 implements the person-only tracker adapter. Phase 5-2 implements the
+association adapter. Phase 5-3 verifies single-person, multi-person, overlap,
+missing-PPE and uncertain-association behavior.
+
+Threshold or schema changes require explicit review and updated evidence.
+Phase 5-0 does not implement tracking or association, does not load a model,
+does not modify the dataset, mapping, training configuration or checkpoint,
+and does not change M-009 or M-010 from `待实现`.

@@ -1,0 +1,26 @@
+# Phase 5-3 validation-only configuration. This file is not a replacement
+# for the frozen inference, tracker or association contracts.
+schema_version: tracking-association-validation-config-v1
+validation:
+  id: P5-3
+  mode: tracking_association_video
+  status: PREPARED_NOT_EXECUTED
+  execution_enabled: false
+  authorization: REQUIRED
+  components:
+    inference_config: configs/inference.yaml
+    tracker_config: configs/tracker.yaml
+    association_config: configs/association.yaml
+  model:
+    checkpoint: models/checkpoints/EXP-001/best.pt
+    checkpoint_sha256: 1c144eef0dfa06b984dde760ea5501a11746b99c1f8a9ae581790241c3871f61
+  input:
+    source: artifacts/validation/P4C-2/input/construction-workers-public-domain.mp4
+    source_label: external:know-your-nailer-public-domain
+    video_sha256: b630d851f9441aaaac23f75d8be3fa9307cc87201d1bb0972f4508356125b852
+    video_size_bytes: 409461
+  output:
+    directory: artifacts/validation/P5-3
+    result: tracking_association_validation.json
+    frame_summary: frame_summary.json
+    report: validation_report.json

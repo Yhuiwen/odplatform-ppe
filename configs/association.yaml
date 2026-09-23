@@ -1,0 +1,30 @@
+# Phase 5-2 Person-PPE association policy. Thresholds remain the P5-0 freeze.
+schema_version: association-policy-freeze-v1
+association:
+  phase: 5
+  subphase: 5-2
+  status: frozen
+  execution_enabled: true
+  input:
+    person_class_id: 0
+    ppe_classes:
+      hardhat: 1
+      no_hardhat: 2
+      vest: 3
+      no_vest: 4
+  thresholds:
+    min_detection_confidence: 0.25
+    min_containment_ratio: 0.50
+    min_iou: 0.10
+    ambiguity_margin: 0.10
+  selection:
+    priority: [containment, iou]
+    allow_nearest_distance: false
+    max_assignments_per_ppe: 1
+  output:
+    schema: core/schemas/association.py
+    result_type: AssociationResult
+    uncertain_status: unknown
+  errors:
+    fail_closed: true
+    synthetic_assignment: false

@@ -1,18 +1,7 @@
-"""Person tracking boundary.
+"""Compatibility name for the Phase 5 person tracking adapter."""
 
-NOT IMPLEMENTED - FUTURE PHASE
-"""
+from core.tracking.bytetrack_adapter import ByteTrackPersonTrackingAdapter
 
-from __future__ import annotations
+PersonTracker = ByteTrackPersonTrackingAdapter
 
-from typing import Any
-
-
-class PersonTracker:
-    """Contract for ByteTrack-backed person tracking."""
-
-    def update(self, detections: list[Any], frame: Any) -> list[Any]:
-        raise NotImplementedError(
-            "ByteTrack integration belongs to Phase 5 "
-            "(NOT IMPLEMENTED - FUTURE PHASE)"
-        )
+__all__ = ["PersonTracker"]

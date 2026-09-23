@@ -18,10 +18,10 @@ LLM 安全分析报告和基础 Agent。
 
 ## 当前开发状态
 
-- 当前 Phase：Phase 4 — Offline Inference
-- 当前 Subphase：Phase 4 Release Preparation
-- Phase 状态：Offline Inference COMPLETE / Camera-RTSP Deferred MUST /
-  Phase 5 Waiting
+- 当前 Phase：Phase 5 — Tracking & Association
+- 当前 Subphase：P5 Release Final Audit
+- Phase 状态：IN PROGRESS / FINAL AUDIT COMPLETE FOR HUMAN REVIEW
+- Phase 4 — Offline Inference：COMPLETE / Camera-RTSP Deferred MUST
 - EXP-001 Training：COMPLETED / M-004 已经实现
 - Phase 3 Evaluation：PASS / M-005 已经实现
 - Release model：`models/checkpoints/EXP-001/best.pt`
@@ -36,6 +36,8 @@ LLM 安全分析报告和基础 Agent。
 - Single Image Inference：VALIDATED / FROZEN CHECKPOINT
 - Video：VALIDATED / FROZEN CHECKPOINT
 - Camera / RTSP：DEFERRED MUST / M-008 PENDING
+- M-009 Tracking：IMPLEMENTED / Runtime Evidence Pending
+- M-010 Association：IMPLEMENTED / Runtime Evidence Pending
 - 已完成准备：Phase 0 工程基线、Phase 1 数据工程，以及 P2-4 AutoDL
   runtime、依赖和数据集完整性验证
 
@@ -48,6 +50,9 @@ LLM 安全分析报告和基础 Agent。
 - Sequential MP4 inference
 - Real image validation
 - Real MP4 validation
+- Person-only ByteTrack adapter implementation with a fail-closed boundary
+- Conservative Person-PPE association implementation with explicit unknown
+  outcomes
 
 ## Current Runtime
 
@@ -69,6 +74,23 @@ Phase 4 的完成声明仅覆盖 structured offline inference。Camera/RTSP、
 real-time source behavior、M-008、tracking、association、compliance、
 events、alerts、Web、LLM 和 annotated video rendering 不在本次 release
 scope 内。
+
+P5-0 已人工审核 PASS，并冻结 `DetectionResult -> TrackResult ->
+AssociationResult` 接口、person-only ByteTrack 边界和
+containment/IoU/confidence association policy。P5-1 已实现 person-only
+`ByteTrackPersonTrackingAdapter`：真实 Ultralytics backend 保持 lazy/private，
+只接收 class `0` / `person`，输出项目自有 `TrackResult`。当前环境未安装
+Ultralytics/Torch，因此真实 ByteTrack 执行和 track ID 连续性尚未验证。
+P5-2 已实现 `PPEPersonAssociationAdapter`：仅关联已有 person track，使用
+containment `0.50`、IoU `0.10`、confidence `0.25` 和 ambiguity margin
+`0.10`，无法确定时输出 `unknown`，不存在 nearest-distance 强制归属。
+P5-3 已用 synthetic pipeline 验证完整的
+`DetectionResult -> TrackResult -> AssociationResult` adapter 组合；真实
+checkpoint/MP4 validation 配置与脚本已准备，但当前主机缺少 Torch 和
+Ultralytics，preflight 状态为 `BLOCKED_RUNTIME_DEPENDENCIES`，尚未执行
+真实 detector、tracker 与视频端到端关联。最终发布审计将 M-009 和 M-010
+记录为 `IMPLEMENTED / Runtime Evidence Pending`；Charter 锁定状态仍保持
+`待实现`，真实运行验收通过前不得改写为 `已经实现`。
 
 EXP-001 已完成一轮授权 YOLO11n baseline 训练：95/100 epochs，
 best epoch 75，validation precision `0.899`、recall `0.649`、mAP50
@@ -266,9 +288,13 @@ git status --short
 当前下一允许步骤是：
 
 ```text
-WAIT FOR PHASE 5 AUTHORIZATION
+WAIT FOR P5 RELEASE FINAL AUDIT HUMAN REVIEW
 ```
 
-Phase 4 Offline Inference 已经完成并准备发布；Phase 5 保持等待。在明确
-授权前，不执行 Camera/RTSP，不实现 ByteTrack/PPE 关联/规则/事件/告警/Web，
-也不修改冻结 dataset、mapping、训练配置或 EXP-001 release model。
+Phase 5-0、Phase 5-1 和 Phase 5-2 已通过人工审核；P5-3 synthetic
+tracking/association integration 和 release final audit 已完成。Phase 5
+release package 等待人工审核，但真实 checkpoint/video runtime validation
+尚未执行，因此状态为 `NOT RELEASED`，不得创建 Phase 5 completion tag。
+当前仍不执行模型加载、真实 ByteTrack 或端到端视频关联，不实现规则、
+事件或告警，也不修改冻结 dataset、mapping、训练配置或 EXP-001 release
+model。

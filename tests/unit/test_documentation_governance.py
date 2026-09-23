@@ -253,7 +253,7 @@ def test_deferred_ownership_and_status_agree(requirement: str, topic: str) -> No
         re.M,
     ), f"{requirement} must remain pending in its own status entry"
     assert re.search(r"Offline\s+Inference\s+COMPLETE", status)
-    assert re.search(r"Phase\s+5\s+WAITING", status)
+    assert re.search(r"Phase\s+5\s+(?:WAITING|IN PROGRESS)", status)
 
 
 def test_governance_documents_do_not_downgrade_deferred_musts() -> None:

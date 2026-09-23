@@ -2,14 +2,12 @@ from pathlib import Path
 
 import pytest
 
-from core.association.ppe_person_association import PPEPersonAssociator
 from core.detection.detector import Detector
 from core.events.event_engine import EventEngine
 from core.events.event_state import EventStateManager
 from core.pipeline.inference_pipeline import InferencePipeline
 from core.rules.compliance_engine import ComplianceEngine
 from core.rules.temporal_filter import TemporalViolationFilter
-from core.tracking.tracker import PersonTracker
 from infra.database.database import Database
 from infra.database.repository import ViolationRepository
 from infra.llm.fallback import TemplateFallback
@@ -29,8 +27,6 @@ from services.train_service import TrainService
 
 PLACEHOLDER_CALLS = [
     ("detector", lambda: Detector().detect(None, None)),
-    ("tracker", lambda: PersonTracker().update([], None)),
-    ("association", lambda: PPEPersonAssociator().associate([], [])),
     ("compliance", lambda: ComplianceEngine().evaluate([])),
     ("temporal", lambda: TemporalViolationFilter().update([], None)),
     ("events", lambda: EventEngine().process([])),

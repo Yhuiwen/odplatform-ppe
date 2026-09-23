@@ -17,10 +17,10 @@ Before any development work, read these files in order:
 8. `docs/08_RISK_REGISTER.md`
 9. The most recent worklog under `docs/worklogs/`, if one exists; otherwise use
    the latest entry in `docs/04_CHANGELOG.md` as the handover summary.
-10. The current phase document under `docs/phases/`
-11. `docs/06_DATASET_CARD.md`
-12. `docs/07_OPEN_SOURCE_USAGE.md`
-13. `docs/09_REFERENCE_ASSETS.md`
+10. `docs/07_OPEN_SOURCE_USAGE.md`
+11. `docs/09_REFERENCE_ASSETS.md`
+12. The current phase document under `docs/phases/`
+13. `docs/06_DATASET_CARD.md`
 
 After reading, output a PRE-READ REPORT before editing:
 

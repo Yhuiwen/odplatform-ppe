@@ -13,7 +13,7 @@
 | P2 | Training | YOLO11 baseline 训练与实验归档 | 已经实现 |
 | P3 | Evaluation | 模型评估、对照实验、模型选择 | 已经实现 |
 | P4 | Offline Inference | 本地图片与 MP4 视频结构化推理流水线；Camera/RTSP 延期实施，仍保留 V1 MUST 归属 | 已经实现（Offline Inference COMPLETE；ADR-018） |
-| P5 | Tracking & Association | ByteTrack + Person-PPE Association | 待实现 |
+| P5 | Tracking & Association | ByteTrack + Person-PPE Association | 实现中（P5-3 synthetic integration complete; real runtime validation prepared but blocked by missing Torch/Ultralytics dependencies） |
 | P6 | Compliance & Events | PPE 合规规则、时序判断、Event Engine | 待实现 |
 | P7 | Web & Alerts | SQLite + Snapshot + TTS + Streamlit | 待实现 |
 | P8 | LLM & Agent | LLM Report + Fallback + Basic Agent | 待实现 |

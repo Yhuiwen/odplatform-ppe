@@ -79,7 +79,7 @@ def test_exp001_authorization_is_consumed_and_cannot_run_again() -> None:
         )
 
 
-def test_m004_is_implemented_and_m005_remains_pending() -> None:
+def test_m004_and_m005_are_implemented() -> None:
     charter = CHARTER_PATH.read_text(encoding="utf-8")
     status = CURRENT_STATUS_PATH.read_text(encoding="utf-8")
     gates = TEST_GATES_PATH.read_text(encoding="utf-8")
@@ -92,7 +92,7 @@ def test_m004_is_implemented_and_m005_remains_pending() -> None:
     )
     assert expected_m004 in charter
     assert "M-004：已经实现" in status
-    assert "M-005：待实现" in status
+    assert "M-005：已经实现" in status
     assert "P2-5.5-G9" in gates
     assert "EXP-001 TRAINING COMPLETED" in strategy
 

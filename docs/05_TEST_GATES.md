@@ -550,3 +550,102 @@ Phase 5 remains `WAITING`; no commit, push or tag was performed.
 Phase 4 Offline Inference result: `COMPLETE`. This release covers only the
 structured local image and sequential MP4 inference paths. Camera/RTSP and the
 remaining downstream capabilities remain deferred or unimplemented.
+
+## Phase 5-0 Tracking & Association Interface Freeze Gates
+
+| Gate | Requirement | Evidence | Status |
+| --- | --- | --- | --- |
+| P5-0-G1 | Phase 4 and Phase 5 entry state reviewed | Phase 4 Offline Inference is COMPLETE; explicit Phase 5 authorization is recorded in Current Status and the P5-0 worklog | PASS |
+| P5-0-G2 | Frozen assets verified without mutation | `best.pt` SHA256 `1c144eef...871f61`; canonical config SHA256 `df6c55ae...cacff989`; processed `data.yaml` SHA256 `45cc2717...d2878a`; source `data.yaml` SHA256 `5c393e74...d21b34` | PASS |
+| P5-0-G3 | Tracking and association contracts frozen | `TrackResult`, `AssociationResult`, person-only adapter and association adapter protocols exist and are tested without model runtime dependencies | PASS |
+| P5-0-G4 | Person-only ByteTrack policy frozen | `configs/tracker.yaml` freezes Ultralytics `8.4.157` BYTETracker parameters and class `0 person` only | PASS |
+| P5-0-G5 | Unknown-safe association policy frozen | `configs/association.yaml` freezes confidence `0.25`, containment `0.50`, IoU `0.10`, ambiguity margin `0.10`; nearest-distance assignment is prohibited and uncertainty maps to `unknown` | PASS |
+| P5-0-G6 | No runtime implementation or protected mutation | No ByteTrack execution, association execution, model loading, inference, dataset mutation, training or checkpoint change occurred | PASS |
+
+P5-0 result: `COMPLETE FOR HUMAN REVIEW`. Phase 5 remains `实现中`; M-009 and
+M-010 remain `待实现`; Phase 5-1 is waiting for review.
+
+## Phase 5-1 ByteTrack Adapter Gates
+
+| Gate | Requirement | Evidence | Status |
+| --- | --- | --- | --- |
+| P5-1-G1 | Person-only adapter implemented behind the frozen interface | `ByteTrackPersonTrackingAdapter` implements `PersonTrackingAdapter` and returns project-owned `TrackResult` values | PASS |
+| P5-1-G2 | Only class `0` / `person` reaches the tracker | Invalid class input is rejected before backend update; low-confidence person detections are filtered at `0.25` | PASS |
+| P5-1-G3 | Schema/runtime boundary preserved | `DetectionResult` is unchanged; core schemas have no Ultralytics dependency; tracker rows and Ultralytics objects remain behind the private backend | PASS |
+| P5-1-G4 | Required adapter tests pass | Focused tests cover continuous, multiple, enter/leave, missing-frame and invalid-class scenarios; focused suite `36 passed` | PASS |
+| P5-1-G5 | Frozen assets remain unchanged | Checkpoint SHA256 `1c144eef...871f61`; training config SHA256 `df6c55ae...cacff989`; processed `data.yaml` SHA256 `45cc2717...d2878a`; source `data.yaml` SHA256 `5c393e74...d21b34` | PASS |
+| P5-1-G6 | Prohibited execution and release actions excluded | No model load, inference, real ByteTrack run, association, training, commit, push or tag occurred | PASS |
+| P5-1-G7 | Full repository verification | `python -m pytest`: `286 passed, 1 skipped`; `python -m compileall .`: PASS; `git diff --check`: PASS | PASS |
+
+P5-1 result: `COMPLETE FOR HUMAN REVIEW`. The adapter contract is implemented
+and tested with an injected backend. Real Ultralytics ByteTrack execution was
+not available in the current workspace, so real track-ID continuity remains
+unverified. Phase 5-2 is waiting for P5-1 human review.
+
+## Phase 5-2 Person-PPE Association Gates
+
+| Gate | Requirement | Evidence | Status |
+| --- | --- | --- | --- |
+| P5-2-G1 | Association adapter implemented behind the frozen protocol | `PPEPersonAssociationAdapter` implements `PPEAssociationAdapter` and returns project-owned `AssociationResult` values | PASS |
+| P5-2-G2 | Only existing person tracks are assignment targets | Candidates come only from input `TrackResult` values; associated records must reference one of those result tracks | PASS |
+| P5-2-G3 | Frozen thresholds are preserved | Confidence `0.25`, containment `0.50`, IoU `0.10`, ambiguity margin `0.10`; containment priority before IoU | PASS |
+| P5-2-G4 | Unsafe assignment paths are excluded | Nearest-distance is rejected by configuration; no candidate or an ambiguity gap below `0.10` produces `unknown` | PASS |
+| P5-2-G5 | Required association tests pass | Focused tests cover helmet, vest, multiple people, wrong candidate, ambiguity, missing PPE, empty input, IoU-only, confidence, invalid class and context | PASS |
+| P5-2-G6 | Frozen assets remain unchanged | Checkpoint SHA256 `1c144eef...871f61`; training config SHA256 `df6c55ae...cacff989`; processed `data.yaml` SHA256 `45cc2717...d2878a`; source `data.yaml` SHA256 `5c393e74...d21b34` | PASS |
+| P5-2-G7 | Prohibited execution and release actions excluded | No model load, inference, real ByteTrack run, training, commit, push or tag occurred | PASS |
+| P5-2-G8 | Full repository verification | `python -m pytest`: `300 passed, 1 skipped`; `python -m compileall .`: PASS; `git diff --check`: PASS | PASS |
+
+P5-2 result: `COMPLETE FOR HUMAN REVIEW`. Association behavior is verified
+with deterministic project schemas and synthetic geometry. Real detector,
+tracker and video integration remain unverified until Phase 5-3. M-009 and
+M-010 remain `待实现`.
+
+## Phase 5-3 Tracking & Association Validation Gates
+
+| Gate | Requirement | Evidence | Status |
+| --- | --- | --- | --- |
+| P5-3-G1 | Integrated synthetic pipeline validation exists | `tests/test_phase5_pipeline_validation.py` runs the frozen adapter composition with a deterministic tracking backend and the real association adapter | PASS |
+| P5-3-G2 | Required synthetic scenarios pass | Single-person, multi-person, PPE-present, missing-PPE and ambiguous-association cases are covered | PASS |
+| P5-3-G3 | Frozen schemas and adapter boundaries remain unchanged | Synthetic outputs are project-owned `TrackResult` and `AssociationResult` values; no runtime object crosses the boundary | PASS |
+| P5-3-G4 | Real-runtime validation is prepared | `configs/p5_3_validation.yaml` and `scripts/run_tracking_association_validation.py` freeze checkpoint/video identity, outputs and preflight checks | PASS |
+| P5-3-G5 | Real checkpoint/video runtime validation executed | Preflight returns `BLOCKED_RUNTIME_DEPENDENCIES`; `torch`, `torchvision` and `ultralytics` are not installed | BLOCKED / NOT RUN |
+| P5-3-G6 | Frozen assets remain unchanged | Checkpoint SHA256 `1c144eef...871f61`; training config SHA256 `df6c55ae...cacff989`; processed `data.yaml` SHA256 `45cc2717...d2878a`; source `data.yaml` SHA256 `5c393e74...d21b34` | PASS |
+| P5-3-G7 | Prohibited execution and release actions excluded | No model load, real inference, ByteTrack execution, training, commit, push or tag occurred | PASS |
+| P5-3-G8 | Full repository verification | `python -m pytest`: `307 passed, 1 skipped`; `python -m compileall .`: PASS; `git diff --check`: PASS; Charter diff empty | PASS |
+
+P5-3 result: `COMPLETE FOR HUMAN REVIEW`. Synthetic tracking/association
+integration passes. Real runtime validation is prepared but not executed
+because the current host lacks the frozen Torch/Ultralytics runtime. M-009 and
+M-010 remain `待实现`.
+
+## Phase 5 Final Release Preparation Gates
+
+| Gate | Requirement | Evidence | Status |
+| --- | --- | --- | --- |
+| P5-FR-1 | P5-0 through P5-3 synthetic evidence is complete | Interface freeze, adapter, association and synthetic pipeline reports are present and consistent | PASS |
+| P5-FR-2 | Release artifacts are traceable | Frozen schemas, tracker/association configs, validation config/script and reports identify the implemented scope | PASS |
+| P5-FR-3 | Final release report records completed scope and limitations | `docs/reports/phase-05/P5_FINAL_RELEASE_REPORT.md` explicitly separates completed work from missing runtime evidence | PASS |
+| P5-FR-4 | Real runtime validation is complete | No `best.pt` load, YOLO11 inference or real ByteTrack execution; P5-3 preflight returned `BLOCKED_RUNTIME_DEPENDENCIES` | BLOCKED / NOT RUN |
+| P5-FR-5 | Frozen model, dataset and training assets are preserved | Checkpoint SHA256 `1c144eef...871f61`; training config SHA256 `df6c55ae...cacff989`; processed `data.yaml` SHA256 `45cc2717...d2878a`; source `data.yaml` SHA256 `5c393e74...d21b34` | PASS |
+| P5-FR-6 | Full repository verification | `python -m pytest`: `307 passed, 1 skipped`; `python -m compileall .`: PASS; `git diff --check`: PASS; Charter diff empty | PASS |
+| P5-FR-7 | Phase release gate | Real runtime validation is blocked, so the Phase 5 completion tag is not created | BLOCKED / NOT RELEASED |
+
+Phase 5 final release result: `PREPARED FOR HUMAN REVIEW / NOT RELEASED`.
+M-009 and M-010 remain `待实现`. The release package is ready for review, but
+full Phase 5 release requires real runtime validation and a later explicit
+release authorization.
+
+## Phase 5 Release Final Audit Gates
+
+| Gate | Requirement | Evidence | Status |
+| --- | --- | --- | --- |
+| P5-AUDIT-G1 | Git status, diff, staged and untracked files audited | Staged area is empty; all Phase 5 changes remain uncommitted; `git diff --check` passes | PASS |
+| P5-AUDIT-G2 | No forbidden release artifacts | No model, dataset, video, database or credential path appears in the release change set | PASS |
+| P5-AUDIT-G3 | Implementation status corrected without changing the Charter | M-009 and M-010 are `IMPLEMENTED / Runtime Evidence Pending`; locked Charter statuses remain `待实现` | PASS |
+| P5-AUDIT-G4 | Frozen assets remain unchanged | Checkpoint `1c144eef...871f61`; training config `df6c55ae...cacff989`; processed `data.yaml` `45cc2717...d2878a`; source `data.yaml` `5c393e74...d21b34`; video `b630d851...b852` | PASS |
+| P5-AUDIT-G5 | Full repository verification | `python -m pytest`: `307 passed, 1 skipped`; `python -m compileall .`: PASS; `git diff --check`: PASS | PASS |
+| P5-AUDIT-G6 | Release actions remain unauthorized | No commit, push or Phase 5 completion tag occurred | PASS |
+
+Phase 5 final audit result: `FINAL AUDIT COMPLETE FOR HUMAN REVIEW /
+NOT RELEASED`. Real checkpoint, YOLO11 inference and ByteTrack runtime
+evidence remains `BLOCKED / NOT RUN`.

@@ -1,5 +1,112 @@
 # Changelog
 
+## 2026-09-23 — Phase 5 Release Final Audit
+
+- Audited the complete uncommitted Phase 5 change set, staged contents,
+  untracked files, frozen asset hashes and release-file boundaries.
+- Confirmed no model, dataset, video, database or credential artifact is
+  included in the release change set; the staged area is empty.
+- Corrected implementation-level documentation to record M-009 and M-010 as
+  `IMPLEMENTED / Runtime Evidence Pending` while preserving their locked
+  Charter status as `待实现`.
+- Added `docs/reports/phase-05/P5_RELEASE_FINAL_AUDIT.md` and the corresponding
+  worklog. Phase 5 remains NOT RELEASED because real checkpoint, inference and
+  ByteTrack runtime evidence is still blocked.
+- Full validation: `307 passed, 1 skipped`; compileall and
+  `git diff --check` PASS; Charter working-tree diff empty.
+- No commit, push or tag occurred.
+
+## 2026-09-23 — Phase 5 Final Release Preparation
+
+- Added `docs/reports/phase-05/P5_FINAL_RELEASE_REPORT.md`, consolidating the
+  Interface Freeze, ByteTrack adapter, Person-PPE association and synthetic
+  pipeline evidence.
+- Recorded real runtime validation as `BLOCKED / NOT RUN`: `best.pt` was not
+  loaded, YOLO11 inference was not executed, and real ByteTrack was not run.
+- Kept Phase 5 at `PREPARED FOR HUMAN REVIEW / NOT RELEASED`; the
+  `phase-5-tracking-association-complete` tag is not authorized while
+  P5-FR-4 is blocked.
+- Full validation: `307 passed, 1 skipped`; compileall and
+  `git diff --check` PASS; Charter working-tree diff empty.
+- M-009 and M-010 remain `待实现`. No model, dataset or training
+  configuration was modified; no commit, push or tag occurred.
+
+## 2026-09-23 — P5-3 Tracking & Association Validation
+
+- Added an integrated synthetic pipeline suite for
+  `DetectionResult -> PersonTrackingAdapter -> TrackResult ->
+  PPEAssociationAdapter -> AssociationResult`.
+- Covered single-person, multiple-person, PPE-present, missing-PPE and
+  ambiguous-association paths with a scripted ByteTrack backend and the real
+  conservative association adapter.
+- Added `configs/p5_3_validation.yaml` and
+  `scripts/run_tracking_association_validation.py` for frozen checkpoint,
+  validated MP4, statistics and runtime-fingerprint preparation.
+- Static preflight verified the checkpoint SHA256
+  `1c144eef...871f61` and validated video SHA256 `b630d851...b852` without
+  loading either asset; it returned `BLOCKED_RUNTIME_DEPENDENCIES` because
+  `torch` and `ultralytics` are not installed.
+- Full validation: `307 passed, 1 skipped`; compileall and
+  `git diff --check` PASS; Charter working-tree diff empty.
+- P5-3 is complete for human review. Real runtime validation is prepared but
+  NOT RUN; M-009 and M-010 remain `待实现`. No model load, real inference,
+  ByteTrack execution, dataset mutation, training, checkpoint change, commit,
+  push or tag occurred.
+
+## 2026-09-23 — P5-2 Person-PPE Association
+
+- Replaced the association placeholder with `PPEPersonAssociationAdapter`
+  behind the frozen `PPEAssociationAdapter` contract.
+- Preserved confidence `0.25`, containment `0.50`, IoU `0.10`, ambiguity
+  margin `0.10`, containment-before-IoU priority and one assignment per PPE.
+- Restricted assignment targets to existing person `TrackResult` values and
+  PPE classes `1` through `4`; person/unsupported PPE input fails closed.
+- Added deterministic candidate ranking, explicit `unknown` for missing
+  candidates or ambiguous leading candidates, and no nearest-distance path.
+- Added focused tests for helmet, vest, multiple people, wrong candidates,
+  ambiguity, missing PPE, empty input, IoU-only geometry, confidence,
+  invalid class/frame context and disabled execution.
+- Full validation: `300 passed, 1 skipped`; compileall and
+  `git diff --check` PASS; Charter working-tree diff empty.
+- M-009 and M-010 remain `待实现`; P5-2 is complete for human review and
+  P5-3 has not started. No model load, inference, real ByteTrack execution,
+  dataset mutation, training, checkpoint change, commit, push or tag occurred.
+
+## 2026-09-23 — P5-1 Person-only ByteTrack Adapter
+
+- Added `ByteTrackPersonTrackingAdapter` behind the frozen
+  `PersonTrackingAdapter` contract, with a lazy private Ultralytics backend and
+  an injectable backend for deterministic tests.
+- Restricted tracking input to `class_id=0` / `person`, applied the frozen
+  `0.25` confidence threshold, rejected invalid class/frame context, and
+  returned only project-owned `TrackResult` values.
+- Preserved the P5-0 ByteTrack thresholds, enabled the adapter runtime state
+  and added `fuse_score: true` to the frozen configuration boundary.
+- Added focused tests for continuous single-person tracks, multiple people,
+  enter/leave, missing frames, invalid classes, duplicate backend matches and
+  disabled execution.
+- Full validation: `286 passed, 1 skipped`; compileall and
+  `git diff --check` PASS; Charter working-tree diff empty.
+- Real Ultralytics ByteTrack execution was not performed because the current
+  workspace lacks `ultralytics` and `torch`. M-009 and M-010 remain `待实现`;
+  P5-1 is complete for human review and P5-2 has not started.
+- No model load, inference, dataset mutation, mapping change, training,
+  checkpoint change, commit, push or tag occurred.
+
+## 2026-09-23 — P5-0 Tracking & Association Interface Freeze
+
+- Added model-independent `TrackResult` and `AssociationResult` contracts,
+  explicit `associated` / `unknown` status and person-only tracking boundary.
+- Froze `configs/tracker.yaml` for Ultralytics `8.4.157` ByteTrack and added
+  `configs/association.yaml` with containment `0.50`, IoU `0.10`, confidence
+  `0.25`, ambiguity margin `0.10`, no nearest-distance assignment and explicit
+  unknown output.
+- Added ADR-020, Phase 5 design/report/worklog and focused schema/config tests.
+- Phase 5 is now `IN PROGRESS`; P5-0 is complete for human review. M-009 and
+  M-010 remain `待实现`.
+- No ByteTrack execution, association run, model load, inference, dataset
+  mutation, training or checkpoint change occurred. No commit/push/tag.
+
 ## 2026-09-23 — Document Governance Optimization Phase B
 
 - Added the Phase 4 → Phase 5 handover at

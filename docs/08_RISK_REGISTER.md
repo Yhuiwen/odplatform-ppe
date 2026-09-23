@@ -8,7 +8,7 @@ Status values: `OPEN`, `MITIGATED`, `MONITORING`, `CLOSED`.
 | RISK-002 | 数据集类别不完全一致 | High | High | 已冻结 Roboflow CSS v27；其 25 个源类别包含 Person、Hardhat、NO-Hardhat、Safety Vest、NO-Safety Vest，其余类别必须在 Phase 1C 显式映射、丢弃并统计 | OPEN |
 | RISK-003 | 多源数据潜在重复 | Medium | High | MD5 精确去重 + perceptual hash 近重复检查 + 人工抽样复核 | OPEN |
 | RISK-004 | PPE 遮挡导致漏检 | High | High | 数据增强、困难样本分析、置信度与未关联分类处理；报告限制 | OPEN |
-| RISK-005 | Person-PPE Association 错配 | High | High | 使用 IoU/包含关系/人体区域约束；小目标边界测试；输出未关联结果 | OPEN |
+| RISK-005 | Person-PPE Association 错配 | High | High | P5-2 已实现 containment/IoU/confidence、ambiguity margin 和显式 `unknown`，禁止 nearest-distance forced assignment；仍需 P5-3 使用真实检测/跟踪输出覆盖小目标、重叠和遮挡边界测试 | OPEN |
 | RISK-006 | 视频单帧检测抖动导致假告警 | High | High | 连续帧/持续时间确认、恢复规则、冷却和事件去重 | OPEN |
 | RISK-007 | GPU/显存不足 | Medium | High | 自适应 batch、冻结/较小模型、CPU 小样本验证；集中记录环境 | OPEN |
 | RISK-008 | RTSP 不稳定 | High | Medium | 超时、重连、帧丢弃策略和可观察状态；不得伪造正常流 | OPEN |
