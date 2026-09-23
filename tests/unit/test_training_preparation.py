@@ -51,7 +51,7 @@ DEPENDENCY_FREEZE_REPORT_PATH = (
     PROJECT_ROOT / "P2-5.3_DEPENDENCY_FREEZE_REPORT.md"
 )
 AUTHORIZATION_CHECKLIST_PATH = (
-    REPORTS_ROOT / "P2-2_TRAINING_AUTHORIZATION.md"
+    REPORTS_ROOT / "phase-02" / "P2-2_TRAINING_AUTHORIZATION.md"
 )
 CONTRACT_AUDIT_PATH = REPORTS_ROOT / "P1E-1_TRAINING_CONTRACT_AUDIT.md"
 CONFIG_AUDIT_PATH = REPORTS_ROOT / "P1E-1_EXPERIMENT_CONFIG_AUDIT.md"
@@ -479,8 +479,8 @@ def test_p2_5_3_dependency_freeze_locks_and_fingerprint_are_complete() -> None:
 
 
 def test_p2_3_provider_selection_keeps_training_unauthorized() -> None:
-    report_path = REPORTS_ROOT / "P2-3_CLOUD_PROVIDER_SELECTION.md"
-    authorization_path = REPORTS_ROOT / "P2-2_TRAINING_AUTHORIZATION.md"
+    report_path = REPORTS_ROOT / "phase-02" / "P2-3_CLOUD_PROVIDER_SELECTION.md"
+    authorization_path = REPORTS_ROOT / "phase-02" / "P2-2_TRAINING_AUTHORIZATION.md"
 
     assert report_path.is_file()
     report = report_path.read_text(encoding="utf-8")

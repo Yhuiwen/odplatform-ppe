@@ -279,7 +279,7 @@ phase-based log rather than claiming semantic-release completeness.
 - Added `docs/reports/phase-02/P2-2_EXP001_EXECUTION_REVIEW.md`. Verified the canonical
   EXP-001 dataset, model, seven-class output, paths, logging settings, and
   eight required metrics without modifying the configuration.
-- Added `docs/reports/P2-2_TRAINING_AUTHORIZATION.md`. Dataset, mapping, and
+- Added `docs/reports/phase-02/P2-2_TRAINING_AUTHORIZATION.md`. Dataset, mapping, and
   experiment review pass; environment, dependencies, and GPU remain pending;
   authorization is `NOT GRANTED`.
 - No cloud instance was provisioned; no dependency, wheel, or model weight was
@@ -289,7 +289,7 @@ phase-based log rather than claiming semantic-release completeness.
 
 ### P2-3 Cloud Provider Selection & Cost Review
 
-- Added `docs/reports/P2-3_CLOUD_PROVIDER_SELECTION.md` comparing AutoDL,
+- Added `docs/reports/phase-02/P2-3_CLOUD_PROVIDER_SELECTION.md` comparing AutoDL,
   Alibaba Cloud GPU ECS, Tencent Cloud GPU, and RunPod/Vast.ai-style
   alternatives.
 - Selected AutoDL with an RTX 4090 24GB design target; RTX 3090 24GB is

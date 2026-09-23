@@ -265,7 +265,7 @@ remain pending. The next allowed step is
 | P2-2-G1 | Cloud environment reviewed | `docs/reports/phase-02/P2-2_CLOUD_ENVIRONMENT_REVIEW.md` records provider, region, GPU, VRAM, CUDA capability, image, storage, cost, and retention as `PENDING_SELECTION` | PASS |
 | P2-2-G2 | Dependencies reviewed | `docs/reports/phase-02/P2-2_DEPENDENCY_FREEZE.md` records the planned versions, missing installation evidence, missing lock, missing runtime fingerprint, and `Dependency Freeze: PENDING` | PASS |
 | P2-2-G3 | EXP-001 reviewed | `docs/reports/phase-02/P2-2_EXP001_EXECUTION_REVIEW.md` verifies dataset, model, class count, seed state, output/logging paths, metrics, and `execution_enabled: false` without changing the config | PASS |
-| P2-2-G4 | Authorization checklist created | `docs/reports/P2-2_TRAINING_AUTHORIZATION.md` records Dataset/Mapping/Experiment `PASS`, Environment/Dependencies/GPU `PENDING`, and Authorization `NOT GRANTED` | PASS |
+| P2-2-G4 | Authorization checklist created | `docs/reports/phase-02/P2-2_TRAINING_AUTHORIZATION.md` records Dataset/Mapping/Experiment `PASS`, Environment/Dependencies/GPU `PENDING`, and Authorization `NOT GRANTED` | PASS |
 | P2-2-G5 | No training executed | No cloud instance, package installation, weight download, training, evaluation, dataset mutation, or class mapping change was created | PASS |
 | P2-2-G6 | Charter unchanged | `git diff charter-v1 -- docs/00_PROJECT_CHARTER.md` is empty; M-001 and M-004 remain `待实现` | PASS |
 
@@ -277,10 +277,10 @@ P2-2 result: `COMPLETED / REVIEW COMPLETE`. Authorization remains
 
 | Gate | Requirement | Evidence | Status |
 | --- | --- | --- | --- |
-| P2-3-G1 | Candidate providers compared | `docs/reports/P2-3_CLOUD_PROVIDER_SELECTION.md` compares AutoDL, Alibaba Cloud GPU ECS, Tencent Cloud GPU, and other options | PASS |
+| P2-3-G1 | Candidate providers compared | `docs/reports/phase-02/P2-3_CLOUD_PROVIDER_SELECTION.md` compares AutoDL, Alibaba Cloud GPU ECS, Tencent Cloud GPU, and other options | PASS |
 | P2-3-G2 | Recommended provider and GPU selected | AutoDL is selected as the primary design target with RTX 4090 24GB and a documented RTX 3090 contingency boundary | PASS |
 | P2-3-G3 | Cost, upload, and retention risks reviewed | Planning cost envelope, 40 GPU-hour cap, CNY 150 ceiling, dataset upload boundary, and cleanup/retention rules are recorded | PASS |
-| P2-3-G4 | Authorization remains NOT GRANTED | `docs/reports/P2-2_TRAINING_AUTHORIZATION.md` records Environment/GPU as `DESIGN SELECTED / NOT PROVISIONED` and Authorization as `NOT GRANTED` | PASS |
+| P2-3-G4 | Authorization remains NOT GRANTED | `docs/reports/phase-02/P2-2_TRAINING_AUTHORIZATION.md` records Environment/GPU as `DESIGN SELECTED / NOT PROVISIONED` and Authorization as `NOT GRANTED` | PASS |
 | P2-3-G5 | No instance, dependency, weight, or training was created | No cloud resource, package installation, dataset upload, model weight, run output, evaluation, or training was created | PASS |
 | P2-3-G6 | Charter unchanged | `git diff charter-v1 -- docs/00_PROJECT_CHARTER.md` is empty; M-001 and M-004 remain `待实现` | PASS |
 
@@ -377,7 +377,7 @@ P2-5.1 result: `CONFIGURATION FREEZE COMPLETE`. Training remains
 | P2-5.2-G3 | Checkpoint structure verified | File is a PyTorch checkpoint ZIP with 507 members and `data.pkl` | PASS |
 | P2-5.2-G4 | Weight manifest created | `docs/weights/EXP-001_WEIGHT_MANIFEST.yaml` records source, path, size, hashes, and initialization-only role | PASS |
 | P2-5.2-G5 | Binary excluded from Git | `.gitignore` rule `*.pt` covers `models/pretrained/yolo11n.pt`; the file is untracked | PASS |
-| P2-5.2-G6 | Authorization checklist updated | `docs/reports/P2-2_TRAINING_AUTHORIZATION.md` records Weights `REGISTERED`, remote copy `NOT TRANSFERRED`, and Authorization `NOT GRANTED` | PASS |
+| P2-5.2-G6 | Authorization checklist updated | `docs/reports/phase-02/P2-2_TRAINING_AUTHORIZATION.md` records Weights `REGISTERED`, remote copy `NOT TRANSFERRED`, and Authorization `NOT GRANTED` | PASS |
 | P2-5.2-G7 | Protected state preserved | No training, dataset modification, mapping modification, or EXP-001 configuration modification occurred | PASS |
 | P2-5.2-G8 | Execution remains disabled | `execution_enabled: false`; training authorization remains `NOT GRANTED` | PASS |
 | P2-5.2-G9 | Charter unchanged | `git diff charter-v1 -- docs/00_PROJECT_CHARTER.md` is empty | PASS |
@@ -396,7 +396,7 @@ the remote training environment.
 | P2-5.3-G4 | Runtime fingerprint recorded | `locks/EXP-001/runtime-fingerprint.yaml` records instance, machine ID, OS, kernel, GPU, driver, CUDA, cuDNN, and runtime versions | PASS |
 | P2-5.3-G5 | Exported locks match remote environment | Conda environment, conda explicit, and pip freeze outputs match the live `ppe-exp001` environment line-for-line | PASS |
 | P2-5.3-G6 | Runtime dependency consistency verified | `python -m pip check` reports no broken requirements | PASS |
-| P2-5.3-G7 | Authorization checklist updated | `docs/reports/P2-2_TRAINING_AUTHORIZATION.md` records Dependencies `FROZEN / VERIFIED` and lock paths | PASS |
+| P2-5.3-G7 | Authorization checklist updated | `docs/reports/phase-02/P2-2_TRAINING_AUTHORIZATION.md` records Dependencies `FROZEN / VERIFIED` and lock paths | PASS |
 | P2-5.3-G8 | Protected state preserved | No training, package installation, dataset modification, mapping modification, or canonical configuration modification occurred | PASS |
 | P2-5.3-G9 | Execution remains disabled | `execution_enabled: false`; training authorization remains `NOT GRANTED` | PASS |
 | P2-5.3-G10 | Charter unchanged | `git diff charter-v1 -- docs/00_PROJECT_CHARTER.md` is empty | PASS |
@@ -414,7 +414,7 @@ weight transfer and explicit human training authorization remain outstanding.
 | P2-5.4-G4 | File size matches | Local and remote sizes are both `5,613,764` bytes | PASS |
 | P2-5.4-G5 | SHA256 matches | Local and remote SHA256 are both `0ebbc80d...7644ee1` | PASS |
 | P2-5.4-G6 | Machine-readable state updated | `docs/weights/EXP-001_WEIGHT_MANIFEST.yaml` records `remote_training_copy: VERIFIED` and the remote path/hash | PASS |
-| P2-5.4-G7 | Authorization checklist updated | `docs/reports/P2-2_TRAINING_AUTHORIZATION.md` records the remote weight copy as `VERIFIED` | PASS |
+| P2-5.4-G7 | Authorization checklist updated | `docs/reports/phase-02/P2-2_TRAINING_AUTHORIZATION.md` records the remote weight copy as `VERIFIED` | PASS |
 | P2-5.4-G8 | No protected-state mutation | No training, model execution, dataset modification, mapping modification, or EXP-001 canonical configuration modification occurred | PASS |
 | P2-5.4-G9 | Execution remains disabled | `execution_enabled: false`; training authorization remains `NOT GRANTED` | PASS |
 | P2-5.4-G10 | Charter unchanged | `git diff charter-v1 -- docs/00_PROJECT_CHARTER.md` is empty | PASS |
