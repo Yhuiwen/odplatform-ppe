@@ -506,7 +506,7 @@ acceptance or permission to begin Phase 4. No commit/push performed.
 
 | Gate | Requirement | Evidence | Status |
 | --- | --- | --- | --- |
-| P3-FR-1 | P3-G1 through P3-G4 evidence complete | PHASE_3_FINAL_RELEASE_REPORT.md binds EVAL-001, CMP-001 and SEL-001 | PASS |
+| P3-FR-1 | P3-G1 through P3-G4 evidence complete | docs/reports/phase-03/PHASE_3_FINAL_RELEASE_REPORT.md binds EVAL-001, CMP-001 and SEL-001 | PASS |
 | P3-FR-2 | Selected release model identity fixed | best.pt epoch 75 matches EXP-001_RELEASE_MODEL.yaml and Phase 2 SHA256 | PASS |
 | P3-FR-3 | Artifact inventory and hash references | Final report inventories documents, implementation/config/tests and ignored runtime outputs | PASS |
 | P3-FR-4 | Existing results verifiable | EVAL-001 and CMP-001 offline replay; selection evidence hashes verified in freeze task | PASS |

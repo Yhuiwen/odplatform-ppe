@@ -189,7 +189,7 @@ authorization. It must:
 Phase 4C-1 completed the image path. Phase 4C-2 completed the MP4 path with
 47/47 sequential frames, no frame skipping, no batch inference, no async
 processing and no CUDA migration. The detailed evidence is recorded in
-`PHASE_04C2_VIDEO_VALIDATION_REPORT.md`.
+`docs/reports/phase-04/PHASE_04C2_VIDEO_VALIDATION_REPORT.md`.
 
 ## 8. Phase 4C-0 gates
 

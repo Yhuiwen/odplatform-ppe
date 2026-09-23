@@ -19,7 +19,7 @@ checkpoint 对照。P3-G4 已形成 SEL-001 正式选择记录，保留 best.pt�
 技术门禁 P3-G1～P3-G4 PASS，人工审核 PASS；Phase 3 已完成。
 
 当前子阶段为 Phase 3 Release Freeze：发布证据已冻结，报告为
-`PHASE_3_FINAL_RELEASE_REPORT.md`。Freeze COMPLETED；human review PASS；
+`docs/reports/phase-03/PHASE_3_FINAL_RELEASE_REPORT.md`。Freeze COMPLETED；human review PASS；
 M-005 正式状态同步为 `已经实现`。
 
 ## 4. 实现设计
@@ -100,7 +100,7 @@ AP confidence floor=0.001、IoU=0.50:0.05:0.95。参数在实测前确定，没�
 
 - 2026-09-22：冻结 EVAL-001、CMP-001、SEL-001 的报告、配置、实现、测试和
   运行产物哈希引用；选定模型保持 best.pt（epoch 75）。
-- 最终报告：`PHASE_3_FINAL_RELEASE_REPORT.md`。P3-G1～P3-G4 技术 PASS；
+- 最终报告：`docs/reports/phase-03/PHASE_3_FINAL_RELEASE_REPORT.md`。P3-G1～P3-G4 技术 PASS；
   freeze COMPLETED / AWAITING HUMAN REVIEW，未执行 GitHub 发布。
 - M-005 技术证据完整；Charter 正式状态未改写，等待人工验收。
 - Phase 4 需完成 Phase 3 人工审核、确认选定模型及推理配置，并取得明确开始指令。

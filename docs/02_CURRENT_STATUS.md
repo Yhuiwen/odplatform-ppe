@@ -85,12 +85,12 @@ reviews; the statuses below reflect the current accepted records.
 
 ## Latest Reports
 
-- [Phase 4C-1 real-image validation](../PHASE_04C1_IMAGE_VALIDATION_REPORT.md).
-- [Phase 4C-2 real-MP4 validation](../PHASE_04C2_VIDEO_VALIDATION_REPORT.md).
+- [Phase 4C-1 real-image validation](reports/phase-04/PHASE_04C1_IMAGE_VALIDATION_REPORT.md).
+- [Phase 4C-2 real-MP4 validation](reports/phase-04/PHASE_04C2_VIDEO_VALIDATION_REPORT.md).
 - [Phase 4 scope clarification](reports/maintenance/PHASE_SCOPE_CLARIFICATION_REPORT.md)
   and [Phase 4 phase document](phases/PHASE_04_INFERENCE.md).
 - [Phase 2 training execution](reports/EXP-001_TRAINING_EXECUTION_REPORT.md)
-  and [Phase 3 final release](../PHASE_3_FINAL_RELEASE_REPORT.md).
+  and [Phase 3 final release](reports/phase-03/PHASE_3_FINAL_RELEASE_REPORT.md).
 - [Phase 4 → Phase 5 handover](worklogs/2026/09/2026-09-23-01-phase4-phase5-handover.md)
   preserves the former 753-line status document in full.
 - This documentation cleanup is recorded in

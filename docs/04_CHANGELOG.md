@@ -118,7 +118,7 @@
 ## 2026-09-23 — Phase 4B-2a Video Inference Architecture Design
 
 - 新增 `docs/phases/PHASE_04B2_VIDEO_DESIGN.md` 和
-  `PHASE_04B2_VIDEO_DESIGN_REPORT.md`，定义本地 MP4 顺序推理、
+  `docs/reports/phase-04/PHASE_04B2_VIDEO_DESIGN_REPORT.md`，定义本地 MP4 顺序推理、
   `VideoReader -> FrameProcessor -> InferenceService -> Result Writer`
   流水线、runtime policy、错误处理和非目标。
 - 新增 `core/schemas/video.py`，只定义 `FrameData`、`VideoMetadata`、
@@ -167,7 +167,7 @@ mapping、training artifact 或 checkpoint，未 commit/push/tag。
 
 - 完成 Phase 3 人工审核 PASS 后的状态同步：Phase 3 COMPLETE，M-005
   `已经实现`，Phase 4A 进入 design-only 工作。
-- 新增 `PHASE_4A_PRECHECK_REPORT.md`，审计现有 inference 占位接口、
+- 新增 `docs/reports/phase-04/PHASE_4A_PRECHECK_REPORT.md`，审计现有 inference 占位接口、
   `configs/inference.yaml`、detection schemas、缺失模块和风险。
 - 新增 `docs/phases/PHASE_04_INFERENCE_DESIGN.md`，定义 Input Adapter、
   YOLO11 detector wrapper、统一 `DetectionResult`、未来 P5-P7 集成边界和
@@ -182,7 +182,7 @@ mapping、training artifact 或 checkpoint，未 commit/push/tag。
 
 ## 2026-09-22 — Phase 3 Final Release Freeze
 
-- 创建 `PHASE_3_FINAL_RELEASE_REPORT.md`，汇总 P3-G1～G4 技术 PASS、M-005
+- 创建 `docs/reports/phase-03/PHASE_3_FINAL_RELEASE_REPORT.md`，汇总 P3-G1～G4 技术 PASS、M-005
   技术完成/人工验收待定、最终 best.pt 模型、artifact 清单、SHA256 和限制。
 - 冻结现有 EVAL-001、CMP-001、SEL-001 证据及实现/配置/测试哈希；不改写既有
   报告或 EXP-001_RELEASE_MODEL.yaml，不新增模型实测或调优。

@@ -19,14 +19,14 @@ evaluation are complete; Phase 1 remains `实现中`. Phase 5 is `WAITING`.
 
 - Phase 4 plan and gates: `docs/phases/PHASE_04_INFERENCE.md` and
   `docs/05_TEST_GATES.md`.
-- Real image validation: `PHASE_04C1_IMAGE_VALIDATION_REPORT.md` and ignored
+- Real image validation: `docs/reports/phase-04/PHASE_04C1_IMAGE_VALIDATION_REPORT.md` and ignored
   `artifacts/validation/P4C-1/`.
-- Real MP4 validation: `PHASE_04C2_VIDEO_VALIDATION_REPORT.md` and ignored
+- Real MP4 validation: `docs/reports/phase-04/PHASE_04C2_VIDEO_VALIDATION_REPORT.md` and ignored
   `artifacts/validation/P4C-2/` (47/47 frames).
 - Scope and ownership: ADR-018 and ADR-019 in
   `docs/03_TECHNICAL_DECISIONS.md`.
 - Training and evaluation history: `docs/reports/EXP-001_TRAINING_EXECUTION_REPORT.md`,
-  `PHASE_3_FINAL_RELEASE_REPORT.md`, and the preserved status archive below.
+  `docs/reports/phase-03/PHASE_3_FINAL_RELEASE_REPORT.md`, and the preserved status archive below.
 
 ## Deferred
 

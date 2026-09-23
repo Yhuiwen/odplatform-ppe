@@ -23,7 +23,7 @@ checkpoint、device、threshold、input/output schema 和错误处理边界记�
 Phase 4B-1 — Single Image Inference 已实现并保持 execution disabled。
 `core/inference/detector.py`、`services/inference_service.py` 和
 `scripts/run_image_inference.py` 完成 `Image -> YOLO11 -> DetectionResult`
-链路；报告见 `docs/phases/PHASE_04B1_IMAGE_INFERENCE_REPORT.md`。Camera
+链路；报告见 `docs/reports/phase-04/PHASE_04B1_IMAGE_INFERENCE_REPORT.md`。Camera
 和 RTSP 仍未实现。
 
 Phase 4B-2a — Video Inference Architecture Design 已完成。设计记录见
@@ -137,7 +137,7 @@ Charter acceptance 仍需独立审核。
   training artifacts/checkpoint；Phase 4B-2 等待授权。
 - 2026-09-23: Phase 4B-2a 完成本地 MP4 视频推理架构设计。新增
   `docs/phases/PHASE_04B2_VIDEO_DESIGN.md`、
-  `PHASE_04B2_VIDEO_DESIGN_REPORT.md` 和纯数据 schema
+  `docs/reports/phase-04/PHASE_04B2_VIDEO_DESIGN_REPORT.md` 和纯数据 schema
   `core/schemas/video.py`。设计固定 sequential processing、CPU-only、
   no frame skipping、no async、fail-closed errors 和 Camera/RTSP non-goals；
   未修改 detector/service，未加载模型、未执行真实视频推理。Phase 4B-2b
