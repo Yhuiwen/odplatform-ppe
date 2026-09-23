@@ -319,7 +319,7 @@ independent Phase 3 evaluation required by M-005.
   `NOT STARTED`，等待独立 training authorization。未执行 `yolo train`、
   `python train.py`、model download、benchmark 或 evaluation。
 - 2026-09-22: 完成 P2-5 EXP-001 Training Execution Authorization Review。
-  生成 `P2-5_TRAINING_AUTHORIZATION_REPORT.md`，结果为 `BLOCKED`；记录配置
+  生成 `docs/reports/phase-02/P2-5_TRAINING_AUTHORIZATION_REPORT.md`，结果为 `BLOCKED`；记录配置
   参数、权重二进制、完整环境 freeze 和人工授权缺失项。未训练、未下载权重、
   未修改 dataset/mapping/configuration。
 - 2026-09-22: 完成 P2-5.1 EXP-001 Configuration Freeze Review。冻结 canonical
@@ -366,7 +366,7 @@ independent Phase 3 evaluation required by M-005.
 ### P2-7 Training Result Freeze
 
 - 2026-09-22: 冻结 `EXP-001` 已完成训练的结果；报告位于
-  `docs/reports/P2-7_TRAINING_RESULT_FREEZE_REPORT.md`，机器清单位于
+  `docs/reports/phase-02/P2-7_TRAINING_RESULT_FREEZE_REPORT.md`，机器清单位于
   `docs/weights/EXP-001_BEST_MODEL_MANIFEST.yaml`。
 - source 5,601 项与 processed 5,602 项 checksum manifest 全部匹配；
   config、initial weight、best/last checkpoint 和 dependency locks 哈希匹配。

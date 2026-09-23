@@ -233,7 +233,7 @@ explicit instruction and Phase 2 entry conditions authorize it.
 
 | Gate | Requirement | Evidence | Status |
 | --- | --- | --- | --- |
-| P2-0-G1 | Environment audited | `docs/reports/P2-0_TRAINING_READINESS.md` records OS, Python, pip, PyTorch, Ultralytics, CUDA, GPU, RAM, and CPU without installation | PASS |
+| P2-0-G1 | Environment audited | `docs/reports/phase-02/P2-0_TRAINING_READINESS.md` records OS, Python, pip, PyTorch, Ultralytics, CUDA, GPU, RAM, and CPU without installation | PASS |
 | P2-0-G2 | Dependency strategy documented | `docs/reports/P2-0_DEPENDENCY_STRATEGY.md` compares Windows NVIDIA, WSL2 CUDA, cloud GPU, and CPU fallback | PASS |
 | P2-0-G3 | Version matrix documented | `docs/reports/P2-0_VERSION_MATRIX.md` records compatibility policy and pending states | PASS |
 | P2-0-G4 | Training readiness documented | Dataset `PASS`, Experiment `PASS`, Environment `NOT READY`, GPU `PENDING`, Dependencies `PENDING` | PASS |
@@ -262,9 +262,9 @@ remain pending. The next allowed step is
 
 | Gate | Requirement | Evidence | Status |
 | --- | --- | --- | --- |
-| P2-2-G1 | Cloud environment reviewed | `docs/reports/P2-2_CLOUD_ENVIRONMENT_REVIEW.md` records provider, region, GPU, VRAM, CUDA capability, image, storage, cost, and retention as `PENDING_SELECTION` | PASS |
-| P2-2-G2 | Dependencies reviewed | `docs/reports/P2-2_DEPENDENCY_FREEZE.md` records the planned versions, missing installation evidence, missing lock, missing runtime fingerprint, and `Dependency Freeze: PENDING` | PASS |
-| P2-2-G3 | EXP-001 reviewed | `docs/reports/P2-2_EXP001_EXECUTION_REVIEW.md` verifies dataset, model, class count, seed state, output/logging paths, metrics, and `execution_enabled: false` without changing the config | PASS |
+| P2-2-G1 | Cloud environment reviewed | `docs/reports/phase-02/P2-2_CLOUD_ENVIRONMENT_REVIEW.md` records provider, region, GPU, VRAM, CUDA capability, image, storage, cost, and retention as `PENDING_SELECTION` | PASS |
+| P2-2-G2 | Dependencies reviewed | `docs/reports/phase-02/P2-2_DEPENDENCY_FREEZE.md` records the planned versions, missing installation evidence, missing lock, missing runtime fingerprint, and `Dependency Freeze: PENDING` | PASS |
+| P2-2-G3 | EXP-001 reviewed | `docs/reports/phase-02/P2-2_EXP001_EXECUTION_REVIEW.md` verifies dataset, model, class count, seed state, output/logging paths, metrics, and `execution_enabled: false` without changing the config | PASS |
 | P2-2-G4 | Authorization checklist created | `docs/reports/P2-2_TRAINING_AUTHORIZATION.md` records Dataset/Mapping/Experiment `PASS`, Environment/Dependencies/GPU `PENDING`, and Authorization `NOT GRANTED` | PASS |
 | P2-2-G5 | No training executed | No cloud instance, package installation, weight download, training, evaluation, dataset mutation, or class mapping change was created | PASS |
 | P2-2-G6 | Charter unchanged | `git diff charter-v1 -- docs/00_PROJECT_CHARTER.md` is empty; M-001 and M-004 remain `待实现` | PASS |
@@ -293,7 +293,7 @@ authorization remains `NOT GRANTED`. The next allowed step is
 
 | Gate | Requirement | Evidence | Status |
 | --- | --- | --- | --- |
-| P2-4-G3-G1 | AutoDL instance identity recorded | `docs/P2-4-G3_DEPENDENCY_VERIFICATION_REPORT.md` records instance `bcb849a74f-38320766`, RTX 4090 24GB, Ubuntu 20.04.5, and GPU UUID | PASS |
+| P2-4-G3-G1 | AutoDL instance identity recorded | `docs/reports/phase-02/P2-4-G3_DEPENDENCY_VERIFICATION_REPORT.md` records instance `bcb849a74f-38320766`, RTX 4090 24GB, Ubuntu 20.04.5, and GPU UUID | PASS |
 | P2-4-G3-G2 | Isolated `ppe-exp001` environment created | Remote `conda info --envs` lists base and `/root/miniconda3/envs/ppe-exp001`; base dependencies were not modified | PASS |
 | P2-4-G3-G3 | PyTorch CUDA stack installed | `torch 2.5.1+cu124`, `torchvision 0.20.1+cu124`, and `torchaudio 2.5.1+cu124` are installed | PASS |
 | P2-4-G3-G4 | Ultralytics and runtime dependencies installed | `ultralytics 8.4.157`, `opencv-python 5.0.0.93`, NumPy 2.2.6, PyYAML, tqdm, matplotlib, and psutil are installed | PASS |
@@ -327,7 +327,7 @@ authorization.
 | Gate | Requirement | Evidence | Status |
 | --- | --- | --- | --- |
 | P2-4-G1 | Instance created | AutoDL instance `bcb849a74f-38320766` is reachable on an RTX 4090 24GB host | PASS |
-| P2-4-G2 | Runtime fingerprint recorded | `docs/P2-4_FINAL_PROVISIONING_REPORT.md` records OS, Python, conda, PyTorch, CUDA, driver, and GPU identity | PASS |
+| P2-4-G2 | Runtime fingerprint recorded | `docs/reports/phase-02/P2-4_FINAL_PROVISIONING_REPORT.md` records OS, Python, conda, PyTorch, CUDA, driver, and GPU identity | PASS |
 | P2-4-G3 | Dependencies installed and verified | `ppe-exp001` contains verified PyTorch, torchvision, torchaudio, Ultralytics, OpenCV, NumPy, and supporting runtime packages | PASS |
 | P2-4-G4 | Dataset transferred and verified | `CSS-PPE-10-V1` is remote at `/root/autodl-tmp/datasets/css-ppe-10-v1/` with 5,604 files and full manifest PASS | PASS |
 | P2-4-G5 | Training not executed | No `yolo train`, `python train.py`, benchmark, evaluation, or experiment run occurred | PASS |
@@ -340,7 +340,7 @@ training remains `NOT STARTED` pending explicit authorization.
 
 | Gate | Requirement | Evidence | Status |
 | --- | --- | --- | --- |
-| P2-5-G1 | Authorization report exists | `P2-5_TRAINING_AUTHORIZATION_REPORT.md` records the review scope and result | PASS |
+| P2-5-G1 | Authorization report exists | `docs/reports/phase-02/P2-5_TRAINING_AUTHORIZATION_REPORT.md` records the review scope and result | PASS |
 | P2-5-G2 | Configuration completeness reviewed | Canonical EXP-001 fields and unresolved execution values are listed | PASS |
 | P2-5-G3 | Output paths reviewed | Run, log, report, and checkpoint paths match the schema | PASS |
 | P2-5-G4 | Runtime fingerprint reviewed | P2-4 AutoDL, GPU, CUDA, Python, PyTorch, and Ultralytics evidence is recorded | PASS |

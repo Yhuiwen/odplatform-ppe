@@ -244,7 +244,7 @@ git status --short
 - `docs/06_DATASET_CARD.md`：冻结数据集、mapping 与质量证据
 - `docs/07_OPEN_SOURCE_USAGE.md`：开源依赖、参考和许可证记录
 - `docs/08_RISK_REGISTER.md`：风险登记册
-- `docs/P2-4_FINAL_PROVISIONING_REPORT.md`：P2-4 runtime、依赖和数据集验证
+- `docs/reports/phase-02/P2-4_FINAL_PROVISIONING_REPORT.md`：P2-4 runtime、依赖和数据集验证
 - `docs/reports/EXP-001_TRAINING_EXECUTION_REPORT.md`：EXP-001 训练结果、
   指标、产物和披露
 - `docs/reports/P2-5.1_CONFIGURATION_FREEZE.md`：EXP-001 配置冻结记录

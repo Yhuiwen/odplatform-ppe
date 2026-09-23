@@ -231,7 +231,7 @@ phase-based log rather than claiming semantic-release completeness.
 - Added `docs/reports/P2-0_VERSION_MATRIX.md` for Python, PyTorch, CUDA,
   Ultralytics, and YOLO11 version decisions. Exact versions and the model
   weight source remain pending and no installation was performed.
-- Added `docs/reports/P2-0_TRAINING_READINESS.md` with Dataset `PASS`,
+- Added `docs/reports/phase-02/P2-0_TRAINING_READINESS.md` with Dataset `PASS`,
   Experiment `PASS`, Environment `NOT READY`, GPU `PENDING`, Dependencies
   `PENDING`, and recorded P2-0-G1 through P2-0-G6 as PASS.
 - Re-audited the live environment: Windows 11 `10.0.22631`, Python `3.13.6`,
@@ -270,13 +270,13 @@ phase-based log rather than claiming semantic-release completeness.
 
 ### P2-2 Training Execution Authorization Review
 
-- Added `docs/reports/P2-2_CLOUD_ENVIRONMENT_REVIEW.md`. Provider, region,
+- Added `docs/reports/phase-02/P2-2_CLOUD_ENVIRONMENT_REVIEW.md`. Provider, region,
   GPU, VRAM, CUDA capability, OS image, storage, cost estimate, and retention
   policy are explicitly `PENDING_SELECTION`.
-- Added `docs/reports/P2-2_DEPENDENCY_FREEZE.md`. Python, PyTorch, CUDA,
+- Added `docs/reports/phase-02/P2-2_DEPENDENCY_FREEZE.md`. Python, PyTorch, CUDA,
   torchvision, Ultralytics, and NumPy remain planned and uninstalled, so the
   dependency freeze remains `PENDING`.
-- Added `docs/reports/P2-2_EXP001_EXECUTION_REVIEW.md`. Verified the canonical
+- Added `docs/reports/phase-02/P2-2_EXP001_EXECUTION_REVIEW.md`. Verified the canonical
   EXP-001 dataset, model, seven-class output, paths, logging settings, and
   eight required metrics without modifying the configuration.
 - Added `docs/reports/P2-2_TRAINING_AUTHORIZATION.md`. Dataset, mapping, and
@@ -319,7 +319,7 @@ phase-based log rather than claiming semantic-release completeness.
   successful PyTorch, Ultralytics, OpenCV, and NumPy imports.
 - Recorded that planned Ultralytics `8.4.158` was not published by the
   configured index and pinned the resolved `8.4.157` instead.
-- Added `docs/P2-4-G3_DEPENDENCY_VERIFICATION_REPORT.md`.
+- Added `docs/reports/phase-02/P2-4-G3_DEPENDENCY_VERIFICATION_REPORT.md`.
 - No dataset transfer, model weight download, training execution, dataset
   mutation, mapping change, experiment change, or source-code change occurred.
 
@@ -347,7 +347,7 @@ phase-based log rather than claiming semantic-release completeness.
 
 ### P2-4 Final AutoDL Provisioning Gate
 
-- Added `docs/P2-4_FINAL_PROVISIONING_REPORT.md` consolidating instance,
+- Added `docs/reports/phase-02/P2-4_FINAL_PROVISIONING_REPORT.md` consolidating instance,
   runtime, dependency, dataset, safety, and final-gate evidence.
 - Marked P2-4-G1 through P2-4-G6 PASS.
 - Recorded Environment `READY`, Dataset `READY`, and Training
@@ -361,7 +361,7 @@ phase-based log rather than claiming semantic-release completeness.
 
 ### P2-5 EXP-001 Training Execution Authorization Review
 
-- Added `P2-5_TRAINING_AUTHORIZATION_REPORT.md` with a `BLOCKED` result.
+- Added `docs/reports/phase-02/P2-5_TRAINING_AUTHORIZATION_REPORT.md` with a `BLOCKED` result.
 - Recorded that the dataset, mapping, fingerprints, output paths, and runtime
   fingerprint were present, while unresolved training parameters, weight
   binary provenance, complete environment freeze, and explicit human
