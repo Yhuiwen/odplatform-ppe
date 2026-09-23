@@ -13,6 +13,17 @@
 
 未开始。计划实现持久化、截图留证、TTS、实时监控、历史查询和数据大屏。
 
+
+### Deferred MUST delivery ownership (ADR-019)
+
+Phase 7 owns M-007 annotated video rendering through video page/service
+integration and M-008 live-input integration for real-time monitoring.
+These are deferred MUST implementations from Phase 4, not Extensions.
+Deliver and verify them before accepting the corresponding page integrations;
+retain the Charter's Camera OR RTSP criterion and observable failure behavior.
+Phase 9 performs final full-Charter acceptance. This allocation does not change
+this phase's locked goal or current not-started status.
+
 ## 4. 实现设计
 
 Repository 隔离数据库访问；事件与截图文件保持一致引用；TTS 失败不阻塞

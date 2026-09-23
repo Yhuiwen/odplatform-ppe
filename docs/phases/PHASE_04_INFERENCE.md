@@ -3,7 +3,7 @@
 ## 1. 阶段目标
 
 【LOCKED】本地图片与 MP4 视频结构化离线推理流水线。Camera/RTSP 与实时源
-由 ADR-018 延期为 Extension，不属于本离线阶段完成声明。
+由 ADR-018 延期实施，仍保留 V1 MUST 归属，不属于本离线阶段完成声明。
 
 ## 2. 进入条件
 
@@ -57,14 +57,23 @@ compliance、events、alerts、Web 和 LLM 未执行。Phase 5 等待授权。
 
 Phase 4 release boundary 已由 ADR-018 正式调整为
 `Offline Inference COMPLETE`。Camera/RTSP、实时源行为、M-008 和 annotated
-video rendering 保持 `Deferred Extension`，不得被本 release tag 宣称为已完成。
+video rendering 保持 `Deferred MUST`，不得被本 release tag 宣称为已完成。
+
+### ADR-019 scope clarification
+
+Completed scope: offline image inference, offline MP4 sequential inference,
+and real validation evidence. Camera/RTSP and annotated video rendering are
+deferred from this phase, not deleted or downgraded to Extensions. M-007 and
+M-008 remain unchanged. Phase 7 owns their implementation and integration;
+Phase 9 owns final Charter acceptance. Phase 5 uses the Offline Inference
+Gates and ADR-019 entry conditions. P4-G3 remains deferred, not PASS.
 
 ## 4. 实现设计
 
 共享检测器与帧元数据 schema，按输入源实现逐帧处理、绘制和结构化输出；
 Camera/RTSP 路径必须具备超时、断流和失败状态。
 
-Camera/RTSP 与 annotated rendering 当前是 deferred extension。未来恢复该
+Camera/RTSP 与 annotated rendering 当前是 deferred MUST implementation。未来恢复该
 工作时必须使用真实流或经批准的测试端点，并保留超时、断流和失败证据；
 不得用本地 MP4 冒充实时源。
 
@@ -72,7 +81,7 @@ Camera/RTSP 与 annotated rendering 当前是 deferred extension。未来恢复�
 
 - 小图片 fixture 的检测结构测试。
 - 短本地视频顺序、帧数和输出测试。
-- RTSP 协议解析/失败路径测试属于 deferred extension，不允许用本地视频
+- RTSP 协议解析/失败路径测试属于 deferred MUST implementation，不允许用本地视频
   冒充 RTSP。
 
 ## 6. Gate
@@ -81,7 +90,7 @@ Camera/RTSP 与 annotated rendering 当前是 deferred extension。未来恢复�
 | --- | --- | --- |
 | P4-G1 | 图片检测输出框、类别、置信度和结构结果 | PASS（structured output） |
 | P4-G2 | 视频检测顺序正确并输出统计结果 | PASS（structured output；annotated rendering deferred） |
-| P4-G3 | Camera/RTSP 路径真实可用且失败可观察 | DEFERRED EXTENSION / ADR-018 |
+| P4-G3 | Camera/RTSP 路径真实可用且失败可观察 | DEFERRED MUST / ADR-018 |
 
 Offline release gates:
 
@@ -97,10 +106,16 @@ Offline release gates:
 ## 7. 已知问题
 
 实时源、网络、Camera/RTSP 和 GPU 推理速度尚未验证。Camera/RTSP、M-008
-与 annotated video rendering 保持 deferred extension；M-006/M-007 的完整
+与 annotated video rendering 保持 deferred MUST implementation；M-006/M-007 的完整
 Charter acceptance 仍需独立审核。
 
 ## 8. 开发记录
+
+- 2026-09-23: ADR-019 corrects the prior Extension classification without
+  deleting the ADR-018 release record. Deferred MUST ownership is Phase 7
+  implementation/integration and Phase 9 final acceptance. Phase 4 completion
+  and Phase 5 waiting status are unchanged.
+
 
 - 2026-09-21: 计划建立，未开始实现。
 - 2026-09-23: Phase 4A 完成 PRE-READ 和 repository audit；确认现有
@@ -158,5 +173,5 @@ Charter acceptance 仍需独立审核。
   mapping、training config 或 checkpoint，未 commit/push/tag。
 - 2026-09-23: ADR-018 正式调整 Phase 4 scope 为 Offline Inference。Image、
   MP4 structured inference 和两类真实 validation 构成 release scope；
-Camera/RTSP、M-008 和 annotated rendering 明确延期为 Extension，Phase 4
+Camera/RTSP、M-008 和 annotated rendering 明确延期实施，仍保留 V1 MUST 归属，Phase 4
 release tag 明确为 `phase-4-offline-inference-complete`。Phase 5 仍未开始。

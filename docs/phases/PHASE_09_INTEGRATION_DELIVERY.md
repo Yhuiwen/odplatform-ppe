@@ -13,6 +13,16 @@
 
 未开始。计划执行全链路、性能、文档、Demo 和答辩证据交付。
 
+
+### Deferred MUST final acceptance ownership (ADR-019)
+
+Phase 9 owns final Charter acceptance of M-007, including annotated video
+output, and M-008, including Camera OR RTSP live detection/display and observable
+failure behavior. Phase 7 owns implementation and page/service integration.
+Phase 4 offline completion is not evidence of full M-007/M-008 acceptance.
+Missing evidence blocks final V1 delivery; these requirements cannot be waived
+or treated as Extensions. The phase goal and current status are unchanged.
+
 ## 4. 实现设计
 
 固定演示环境与数据；端到端覆盖输入、检测、跟踪、关联、事件、留证、查询、

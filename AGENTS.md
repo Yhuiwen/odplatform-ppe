@@ -12,11 +12,15 @@ Before any development work, read these files in order:
 3. `docs/01_MASTER_PLAN.md`
 4. `docs/02_CURRENT_STATUS.md`
 5. `docs/03_TECHNICAL_DECISIONS.md`
-6. `docs/05_TEST_GATES.md`
-7. `docs/06_DATASET_CARD.md`
-8. `docs/07_OPEN_SOURCE_USAGE.md`
-9. `docs/09_REFERENCE_ASSETS.md`
+6. `docs/04_CHANGELOG.md`
+7. `docs/05_TEST_GATES.md`
+8. `docs/08_RISK_REGISTER.md`
+9. The most recent worklog under `docs/worklogs/`, if one exists; otherwise use
+   the latest entry in `docs/04_CHANGELOG.md` as the handover summary.
 10. The current phase document under `docs/phases/`
+11. `docs/06_DATASET_CARD.md`
+12. `docs/07_OPEN_SOURCE_USAGE.md`
+13. `docs/09_REFERENCE_ASSETS.md`
 
 After reading, output a PRE-READ REPORT before editing:
 
@@ -87,3 +91,50 @@ If code, `docs/00_PROJECT_CHARTER.md`, and `docs/01_MASTER_PLAN.md` conflict:
 4. Wait for user direction.
 
 Never "fix" governance documents merely to agree with code.
+
+## Documentation Lifecycle
+
+For every development task, follow the mandatory reading order above before
+editing. Read the current phase's most recent report when one exists. Use the
+Charter for final goals, the Master Plan for phase goals, Current Status for
+the latest state, ADRs for decisions, Changelog and the latest worklog for
+history, Test Gates for acceptance, and Risk Register for open risks. Check
+the requested change against these sources and include the result in the
+PRE-READ REPORT. If they conflict, apply the Conflict Rule before editing.
+
+After implementation and verification, update the applicable phase document,
+Current Status, Changelog, and Test Gates in the Completion Order. Record the
+handover using the template below. A documentation-only task updates only the
+records relevant to its authorized scope; it does not change requirement or
+phase status without the existing acceptance evidence.
+
+## New Markdown Output Rules
+
+- Development handovers: `docs/worklogs/YYYY/MM/YYYY-MM-DD-NN-topic.md`.
+- Phase designs: `docs/designs/phase-NN/`.
+- Phase validation and acceptance reports: `docs/reports/phase-NN/`.
+- Repository governance and maintenance reports: `docs/reports/maintenance/`.
+- Do not create temporary Markdown reports in the repository root.
+- Keep existing historical reports at their current paths until a separate
+  migration updates all references. Do not overwrite or delete history.
+
+See `docs/README.md` for the document map and directory responsibilities.
+
+## Handover Record
+
+At the end of each development task, record these fields in its worklog:
+
+```text
+Changed:
+Reason:
+Validation:
+Evidence:
+Risk:
+Not Verified:
+Next Step:
+```
+
+Use repository-relative evidence paths and distinguish completed verification
+from work not verified. Link the handover from Current Status when it affects
+the active phase. A worklog is a handover record, not a substitute for test
+results, Gate evidence, or an ADR.

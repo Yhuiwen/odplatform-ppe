@@ -16,6 +16,10 @@ ADR_DOC = PROJECT_ROOT / "docs" / "03_TECHNICAL_DECISIONS.md"
 RISK_DOC = PROJECT_ROOT / "docs" / "08_RISK_REGISTER.md"
 PHASE_DOC = PROJECT_ROOT / "docs" / "phases" / "PHASE_01_DATA.md"
 CURRENT_STATUS = PROJECT_ROOT / "docs" / "02_CURRENT_STATUS.md"
+PHASE_HANDOVER = (
+    PROJECT_ROOT / "docs" / "worklogs" / "2026" / "09"
+    / "2026-09-23-01-phase4-phase5-handover.md"
+)
 
 CLASS_NAMES = (
     "person",
@@ -140,11 +144,21 @@ def test_p1d1_governance_state_records_real_validation_without_data_changes() ->
     assert "| P1D-0-G7 |" in phase
     assert "| G1D1-1 |" in phase
     assert "| G1D1-10 |" in phase
-    assert "P1D-1 已完成真实数据集质量验证" in status
-    assert "P1E-1 — Baseline Training Preparation Review" in status
-    assert "实现状态：COMPLETED / REVIEW PASS" in status
-    assert "数据修改：NONE" in status
-    assert "M-001 保持 `待实现`" in status
+    assert "## Current Phase" in status
+    assert "## Completed Capabilities" in status
+    assert "## Latest Reports" in status
+    assert "data quality was assessed without source mutation" in status
+    assert "M-001, M-002 and M-003" in status
+    assert "remain `待实现`" in status
+    assert "worklogs/2026/09/2026-09-23-01-phase4-phase5-handover.md" in status
+
+    assert PHASE_HANDOVER.is_file()
+    handover = PHASE_HANDOVER.read_text(encoding="utf-8")
+    assert "# Phase 4 → Phase 5 Handover" in handover
+    assert "## Historical Current Status Snapshot" in handover
+    assert "P1D-1 已完成真实数据集质量验证" in handover
+    assert "P1E-1 — Baseline Training Preparation Review" in handover
+    assert "数据修改：NONE" in handover
 
 
 def test_real_quality_report_records_required_p1d1_evidence() -> None:

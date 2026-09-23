@@ -1,18 +1,44 @@
 # Changelog
 
+## 2026-09-23 — Document Governance Optimization Phase B
+
+- Added the Phase 4 → Phase 5 handover at
+  `docs/worklogs/2026/09/2026-09-23-01-phase4-phase5-handover.md`,
+  establishing the worklog handover workflow and preserving the former
+  Current Status text verbatim as a dated historical snapshot.
+- Simplified `docs/02_CURRENT_STATUS.md` to a concise current-state entry with
+  links to detailed reports, risks, frozen assets and the handover.
+- Phase and MUST statuses, deferred requirement ownership and the next allowed
+  step remain unchanged. No training, implementation or release occurred.
+
+## 2026-09-23 — Phase 4 Scope Boundary Clarification
+
+- Added ADR-019: M-008 remains V1 MUST; annotated video rendering remains
+  M-007 acceptance work. Corrected the prior Extension classification while
+  retaining ADR-018's offline release decision and historical records.
+- Assigned delivery to Phase 7 integration and final acceptance to Phase 9.
+- Clarified Phase 5 entry: offline gates PASS, deferred ownership recorded,
+  no frozen asset conflict, existing input prerequisite and user authorization.
+- Synchronized scope wording in status, plan, gates, phase documents and README.
+- Charter, MUST statuses and phase completion statuses are unchanged.
+- Documentation only; no runtime tests, training, commit or push.
+- Known limitation: the unchanged documentation governance test still requires
+  the superseded Extension wording; no full-suite PASS is claimed.
+
 ## 2026-09-23 — Phase 4 Scope Adjustment and Offline Inference Release
 
 - Added ADR-018 to re-scope Phase 4 as `Offline Inference`: structured image
   inference, sequential local MP4 inference, frozen runtime/checkpoint, and
   real validation evidence.
 - Deferred Camera, RTSP, real-time/network behavior, M-008 and annotated video
-  rendering as Extension work; Charter M-008 remains `待实现`.
+  rendering from Phase 4; Charter M-008 remains `待实现`. ADR-019 clarifies
+  that these remain MUST obligations; this historical release record is retained.
 - Updated the Phase 4 milestone name to
   `phase-4-offline-inference-complete`; the original
   `phase-4-inference-complete` name is explicitly not used.
 - Updated README, Master Plan, current status, Phase 4 document and test-gate
   records to report `Phase 4: Offline Inference COMPLETE`,
-  `Camera/RTSP: Deferred Extension`, and `Phase 5: WAITING`.
+  `Camera/RTSP: Deferred MUST`, and `Phase 5: WAITING`.
 - No detector or tracker behavior was changed, no model or dataset was
   modified, and Phase 5 was not started.
 

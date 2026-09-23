@@ -20,7 +20,7 @@ LLM 安全分析报告和基础 Agent。
 
 - 当前 Phase：Phase 4 — Offline Inference
 - 当前 Subphase：Phase 4 Release Preparation
-- Phase 状态：Offline Inference COMPLETE / Camera-RTSP Deferred Extension /
+- Phase 状态：Offline Inference COMPLETE / Camera-RTSP Deferred MUST /
   Phase 5 Waiting
 - EXP-001 Training：COMPLETED / M-004 已经实现
 - Phase 3 Evaluation：PASS / M-005 已经实现
@@ -35,7 +35,7 @@ LLM 安全分析报告和基础 Agent。
 - Inference Runtime：FROZEN / `INF-RUNTIME-001`
 - Single Image Inference：VALIDATED / FROZEN CHECKPOINT
 - Video：VALIDATED / FROZEN CHECKPOINT
-- Camera / RTSP：DEFERRED EXTENSION / M-008 PENDING
+- Camera / RTSP：DEFERRED MUST / M-008 PENDING
 - 已完成准备：Phase 0 工程基线、Phase 1 数据工程，以及 P2-4 AutoDL
   runtime、依赖和数据集完整性验证
 
@@ -114,7 +114,7 @@ Git-ignored `artifacts/validation/P4C-2/`。RTSP、Camera、tracking、
 association、compliance、events、alerts、Web 和 LLM 未执行。
 
 Phase 4 scope 已由 ADR-018 正式调整为 `Offline Inference COMPLETE`。
-Camera/RTSP、M-008 和 annotated video rendering 保持 `Deferred Extension`；
+Camera/RTSP、M-008 和 annotated video rendering 保持 `Deferred MUST`；
 本 release 不使用 `phase-4-inference-complete`，而使用准确的
 `phase-4-offline-inference-complete`。
 

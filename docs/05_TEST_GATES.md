@@ -542,7 +542,7 @@ Phase 5 remains `WAITING`; no commit, push or tag was performed.
 | P4-OFF-G2 | Image inference evidence complete | Architecture, implementation, frozen runtime/checkpoint, and real image validation are recorded | PASS |
 | P4-OFF-G3 | MP4 inference evidence complete | Sequential implementation processed 47/47 external frames and emitted structured evidence | PASS |
 | P4-OFF-G4 | Real validation evidence recorded | Image and MP4 validation both PASS against checkpoint SHA256 `1c144eef...871f61` | PASS |
-| P4-OFF-G5 | Deferred scope explicit | Camera/RTSP, real-time behavior, M-008 and annotated rendering are Extension work, not release claims | PASS |
+| P4-OFF-G5 | Deferred scope explicit | Camera/RTSP, real-time behavior, M-008 and annotated rendering are deferred MUST work under ADR-019, not release claims | PASS |
 | P4-OFF-G6 | Charter status preserved | M-008 remains `待实现`; no locked MUST status was silently changed | PASS |
 | P4-OFF-G7 | Release identity accurate | Milestone tag is `phase-4-offline-inference-complete`, not the original broad Phase 4 tag | PASS |
 | P4-OFF-G8 | Phase boundary preserved | Phase 5 remains `WAITING`; detector and tracker behavior were not changed by scope adjustment | PASS |

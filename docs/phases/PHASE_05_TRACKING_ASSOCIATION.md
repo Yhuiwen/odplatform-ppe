@@ -6,7 +6,12 @@
 
 ## 2. 进入条件
 
-- Phase 4 Gate 全部 PASS。
+- Phase 4 Offline Inference Gates PASS（Phase 4 文档与 TEST_GATES 的离线门禁）。
+- Deferred requirements ownership clarified：M-007 标注视频、M-008 Camera/RTSP
+  由 Phase 7 实现并集成，Phase 9 按 Charter 最终验收，详见 ADR-019。
+- 无冻结资产冲突；开始任务时检查 dataset、mapping、checkpoint、training
+  assets 与 inference configuration，不能将本次文档澄清视为资产验证。
+- 已获得独立 Phase 5 开发授权；本次任务不启动 Phase 5。
 - 检测输出包含稳定的人与 PPE 类别及置信度。
 
 ## 3. 当前子任务

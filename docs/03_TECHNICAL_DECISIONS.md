@@ -337,6 +337,10 @@ This file is an append-only ADR log. Historical entries must not be deleted.
 - Supersedes: the original Phase 4 scope and `phase-4-inference-complete`
   milestone name from ADR-017 are superseded by this ADR.
 
+> Clarification (2026-09-23, ADR-019): the former Extension classification
+> is corrected below. The offline release decision, evidence, date and tag
+> remain unchanged; no historical ADR is removed.
+
 ### Decision
 
 Phase 4 is re-scoped to **Offline Inference**:
@@ -353,8 +357,9 @@ phase-4-offline-inference-complete
 ```
 
 Camera, RTSP, real-time/network source behavior, M-008, and annotated video
-rendering are deferred as Extension work. They are not claimed as complete by
-this phase release.
+rendering are deferred from Phase 4 scope. M-008 remains a V1 MUST, and
+annotated video rendering remains part of M-007 acceptance. Neither is an
+Extension or claimed complete by this release. ADR-019 clarifies ownership.
 
 ### Original scope
 
@@ -385,10 +390,78 @@ video or a simulated stream would violate the M-008 acceptance boundary.
 ### New phase boundary
 
 - Phase 4 release status: `Offline Inference COMPLETE`.
-- Camera/RTSP and M-008: `Deferred Extension`, still `待实现` in the Charter.
-- Annotated video rendering: deferred Extension; not claimed by this release.
+- Camera/RTSP and M-008: `Deferred MUST`, still `待实现` in the Charter.
+- Annotated video rendering: deferred from Phase 4 scope, remaining M-007
+  acceptance requirement; not claimed complete by this release.
 - M-006 and M-007 Charter acceptance remain subject to their own full
   acceptance review; the offline inference evidence is not a silent status
   change for those MUST items.
 - Phase 5 remains `WAITING` and requires a separate authorization.
 - No detector or tracker behavior is changed by this scope adjustment.
+
+
+## ADR-019 Phase 4 Deferred Requirement Ownership
+
+- Date: 2026-09-23
+- Status: Accepted
+- Clarifies: ADR-018 deferred requirement classification and ownership only.
+- Authorization: user instruction for Phase 4 Scope Boundary Clarification.
+
+### Context
+
+Phase 4's accepted release scope covers offline inference delivery. Its original
+broader plan also included live inputs, as retained in ADR-018's Original scope.
+During implementation, image inference, MP4 sequential inference and real
+validation completed. Camera/RTSP and annotated video rendering were not
+implemented in Phase 4. The offline release does not complete M-007 or M-008.
+
+### Decision
+
+#### Camera / RTSP
+
+M-008 remains a V1 MUST requirement. Phase 4 does not deliver Camera/RTSP.
+It is deferred to later integration work, NOT an Extension. It is a deferred
+MUST implementation, with the original Charter acceptance criteria unchanged.
+
+#### Annotated Video Rendering
+
+M-007 remains a V1 MUST requirement. Phase 4 delivers structured offline video
+inference evidence. Annotated video rendering is deferred from Phase 4 and
+remains part of M-007 acceptance. It is NOT an Extension.
+
+#### Deferred requirement ownership
+
+| Requirement | Delivery owner and phase | Final acceptance |
+| --- | --- | --- |
+| M-007 annotated video rendering | Phase 7 Web & Alerts: video page/service integration, building on Phase 4 structured output | Phase 9 Integration & Delivery checks full M-007 evidence against the unchanged Charter |
+| M-008 Camera/RTSP | Phase 7 Web & Alerts: live-input service and real-time monitoring integration | Phase 9 Integration & Delivery checks full M-008 evidence against the unchanged Charter |
+
+Phase 7 must deliver and verify these dependencies before declaring its related
+video/real-time monitoring integration accepted. M-008 retains the Charter's
+Camera OR RTSP acceptance wording; this allocation does not require both.
+Phase 9 is the final acceptance owner, not permission to omit the Phase 7
+integration dependencies. Neither requirement may be waived for V1 delivery.
+
+#### Phase 5 Entry Condition
+
+Phase 5 may start only when:
+
+1. Phase 4 Offline Inference Gates PASS: the offline release tables in
+   `docs/phases/PHASE_04_INFERENCE.md` and `docs/05_TEST_GATES.md`.
+2. Deferred requirements have explicit ownership and a future delivery phase,
+   as assigned above and acknowledged in Phase 7 and Phase 9 documents.
+3. No frozen asset conflict exists; verify the frozen dataset, mapping,
+   checkpoint, training assets and inference configuration at task entry.
+4. Existing Phase 5 detection-output prerequisites and separate user
+   authorization are satisfied.
+
+P4-G3 remains deferred, not PASS, and is not an offline-release entry gate.
+Its M-008 obligation remains assigned above. This clarification does not start
+Phase 5 or certify a new frozen-asset verification.
+
+### Consequence
+
+Phase 4 status remains `Offline Inference COMPLETE`. Camera/RTSP implementation
+and annotated video rendering remain deferred MUST work. MUST definitions,
+acceptance criteria and statuses are unchanged. Phase 5 remains `WAITING`.
+No code, tests, configuration, model or dataset changes are authorized here.

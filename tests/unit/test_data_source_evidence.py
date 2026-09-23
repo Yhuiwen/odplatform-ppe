@@ -7,6 +7,10 @@ EVIDENCE_DOC = PROJECT_ROOT / "docs" / "10_DATA_SOURCE_EVIDENCE.md"
 DATASET_CARD = PROJECT_ROOT / "docs" / "06_DATASET_CARD.md"
 PHASE_DOC = PROJECT_ROOT / "docs" / "phases" / "PHASE_01_DATA.md"
 CURRENT_STATUS = PROJECT_ROOT / "docs" / "02_CURRENT_STATUS.md"
+PHASE_HANDOVER = (
+    PROJECT_ROOT / "docs" / "worklogs" / "2026" / "09"
+    / "2026-09-23-01-phase4-phase5-handover.md"
+)
 MASTER_PLAN = PROJECT_ROOT / "docs" / "01_MASTER_PLAN.md"
 CHARTER = PROJECT_ROOT / "docs" / "00_PROJECT_CHARTER.md"
 ADR_DOC = PROJECT_ROOT / "docs" / "03_TECHNICAL_DECISIONS.md"
@@ -264,7 +268,8 @@ def test_candidate_gate_history_and_current_conversion_status_are_consistent() -
         "| P1D | Deduplication & Quality Validation | "
         "已经实现 / QUALITY ASSESSED |"
     ) in phase
-    assert "M-001 保持 `待实现`" in status
+    assert "M-001, M-002 and M-003" in status
+    assert "remain `待实现`" in status
 
 
 def test_annotation_count_is_not_frozen_without_direct_total_evidence() -> None:
@@ -307,16 +312,23 @@ def test_phase_1a_is_complete_and_phase_1b_needs_freeze_correction() -> None:
     assert "P1C-2 已生成未跟踪的 processed dataset" in phase
 
     status = _read(CURRENT_STATUS)
-    assert "Phase 1 — Data Engineering" in status
-    assert "Phase 1 仍记为 `实现中`" in status
-    assert "P1D-1 已完成真实数据集质量验证" in status
-    assert "P1C-2 已从不可变 source 生成 7 类 processed" in status
-    assert "P1E-1 — Baseline Training Preparation Review" in status
-    assert "实现状态：COMPLETED / REVIEW PASS" in status
-    assert "数据修改：NONE" in status
-    assert "M-001 保持 `待实现`" in status
-    assert "P1D" in status
-    assert "P1B dataset freeze completed" in status
+    assert "# Current Status" in status
+    assert "## Current Phase" in status
+    assert "## Completed Capabilities" in status
+    assert "## Latest Reports" in status
+    assert "Phase 1 Data remains `实现中`" in status
+    assert "M-001, M-002 and M-003" in status
+    assert "remain `待实现`" in status
+    assert "worklogs/2026/09/2026-09-23-01-phase4-phase5-handover.md" in status
+
+    assert PHASE_HANDOVER.is_file()
+    handover = _read(PHASE_HANDOVER)
+    assert "# Phase 4 → Phase 5 Handover" in handover
+    assert "## Historical Current Status Snapshot" in handover
+    assert "P1D-1 已完成真实数据集质量验证" in handover
+    assert "P1C-2 已从不可变 source 生成 7 类 processed" in handover
+    assert "P1E-1 — Baseline Training Preparation Review" in handover
+    assert "P1B dataset freeze completed" in handover
 
     master_plan = _read(MASTER_PLAN)
     assert "| P1 | Data | 数据获取、格式统一、质量检查、数据报告 | 实现中 |" in master_plan
