@@ -1238,3 +1238,69 @@ is `HUMAN REVIEW PASS`.
 | P8-6-CP-G6 | Full repository validation passes | `632 passed, 1 skipped`; `compileall` PASS; `git diff --check` PASS | PASS |
 | P8-6-CP-G7 | Release identity is explicit | Interim annotated tag `phase-8-controlled-agent-complete` records the Agent implementation checkpoint | PASS |
 | P8-6-CP-G8 | Scope boundary remains accurate | This is not the Phase 8 final product release; real provider planning, durable audit, reasoning and Phase 9 remain not implemented | PASS |
+
+## Phase 8 Final Integration API Boundary Gates
+
+| Gate | Requirement | Evidence | Status |
+| --- | --- | --- | --- |
+| P8-FI-API-G1 | Versioned application contract is bounded and caller-selected internals are rejected | `phase8-agent-api-v1` exposes only request identity, operation, question, period and filters; tool, role, capability, principal, provider and audit fields are rejected | PASS |
+| P8-FI-API-G2 | Trusted identity is the only identity source | Missing, invalid or failed `TrustedIdentityProvider` resolution fails closed before `AgentService.execute()` | PASS |
+| P8-FI-API-G3 | The existing Agent execution path is preserved | The facade constructs `AgentRequest`, calls `AgentService` once and never calls a planner, handler or `ToolRegistry` directly | PASS |
+| P8-FI-API-G4 | Response projection excludes internals | Raw candidates, prompts, provider output, planner/tool identifiers, audit metadata, SQL, shell, absolute paths and tracebacks are absent from `AgentApiResponse` | PASS |
+| P8-FI-API-G5 | All outcomes map to bounded presentation states | Tests cover `ANSWERED`, `INSUFFICIENT_DATA`, `OUT_OF_SCOPE`, `REFUSED`, `TOOL_ERROR` and `AUDIT_UNAVAILABLE` | PASS |
+| P8-FI-API-G6 | Non-success outcomes release no result data | API tests verify empty facts, metrics, references and report on non-answered outcomes | PASS |
+| P8-FI-API-G7 | Unsafe lower-level data and errors are redacted | Unsafe projection returns bounded `UNSAFE_AGENT_RESULT`; unsafe error detail is replaced with fixed safe text | PASS |
+| P8-FI-API-G8 | Focused tests and frozen checkpoint checks pass | API/Web/integration focused suite is `27 passed`; `phase-8-controlled-agent-complete` and frozen contracts remain unchanged | PASS / HUMAN REVIEW PASS |
+
+Phase 8 final integration API result:
+`IMPLEMENTATION COMPLETE / HUMAN REVIEW PASS`.
+
+## Phase 8 Final Integration Web / Streamlit Gates
+
+| Gate | Requirement | Evidence | Status |
+| --- | --- | --- | --- |
+| P8-FI-WEB-G1 | Pages use only the approved Web facade | `web/pages/6_AI报告.py` and `web/pages/7_AI助手.py` import only `web.agent_support` plus standard/Streamlit modules | PASS |
+| P8-FI-WEB-G2 | UI exposes exactly the approved fields | Rendering is limited to `answer`, `summary`, `evidence_references`, `recommendations` and `safe_status` | PASS |
+| P8-FI-WEB-G3 | Internal data cannot leak to the UI | Projection tests reject absolute paths, SQL/shell content, raw provider markers, traceback text, secret-like labels and traversal references | PASS |
+| P8-FI-WEB-G4 | No model or provider execution path exists in Web | The composition uses `provider_client=None`; sources contain no `best.pt`, Ultralytics, provider environment or chat transport call | PASS |
+| P8-FI-WEB-G5 | Streamlit reruns are deterministic and non-executing | The adapter caches one projection per request ID and rejects reuse with changed content | PASS |
+| P8-FI-WEB-G6 | Local demo identity is explicit and read-only | The UI labels `LOCAL_DEMO_READ_ONLY` and grants no `provider:invoke` capability | PASS |
+| P8-FI-WEB-G7 | Report status is truthful | Provider-disabled report generation displays `TEMPLATE_FALLBACK`, `degraded` and grounding status from the structured report | PASS |
+| P8-FI-WEB-G8 | API/Web/integration tests and frozen identities pass | Focused suite `27 passed`; full repository `660 passed, 1 skipped`; `compileall` PASS; `git diff --check` PASS; checkpoint and frozen assets unchanged | PASS / HUMAN REVIEW PASS |
+
+Phase 8 final integration Web result:
+`IMPLEMENTATION COMPLETE / HUMAN REVIEW PASS`.
+
+## Phase 8 Final Integration E2E Demo Gates
+
+| Gate | Requirement | Evidence | Status |
+| --- | --- | --- | --- |
+| P8-FI-E2E-G1 | The demo validates the approved end-to-end flow | The fixture-driven path is `AgentWebAdapter -> AgentApplicationService -> AgentService -> ToolRegistry -> AgentAuditService -> AgentUiProjection` | PASS |
+| P8-FI-E2E-G2 | Normal read-only query succeeds | The summary scenario returns `ANSWERED`, one persisted event and the expected relative evidence reference | PASS |
+| P8-FI-E2E-G3 | Report fallback is grounded and truthful | The provider-disabled report scenario returns `TEMPLATE_FALLBACK`, `degraded=true`, `grounding=valid` and no provider-client call | PASS |
+| P8-FI-E2E-G4 | Forbidden request is refused without result release | The mutation request returns `REFUSED / FORBIDDEN_REQUEST`, records no requested tool and releases no facts, evidence or recommendations | PASS |
+| P8-FI-E2E-G5 | Audit evidence is append-only and bounded | The scenario records five deterministic audit events with fixed request identities, statuses and tool names, without raw payload or paths | PASS |
+| P8-FI-E2E-G6 | UI-safe projection cannot leak internals | Projection tests reject internal object names, provider markers, SQL/shell text and absolute paths | PASS |
+| P8-FI-E2E-G7 | Demo output is deterministic and provider-independent | Repeated runs match the frozen expected-result fixture; the composition uses no provider client, network transport or model | PASS |
+| P8-FI-E2E-G8 | Full regression and frozen identities pass | E2E suite `6 passed`; combined slice `94 passed`; full repository `667 passed, 1 skipped`; `compileall` PASS; `git diff --check` PASS | PASS / HUMAN REVIEW PASS |
+
+Phase 8 final integration E2E demo result:
+`IMPLEMENTATION COMPLETE / HUMAN REVIEW PASS`.
+
+## Phase 8 Final Release Gates
+
+| Gate | Requirement | Evidence | Status |
+| --- | --- | --- | --- |
+| P8-FR-G1 | Branch, HEAD and remote identity are verified | `main` and `origin/main` were aligned at `56c0f49095c7b4ad39f273e0884652daad26a19f` before release | PASS |
+| P8-FR-G2 | Existing release identity is preserved | `phase-8-controlled-agent-complete` and all Phase 7 tags remain unchanged | PASS |
+| P8-FR-G3 | Final integration scope is complete | API, Web, deterministic E2E, reports, tests and status documentation are included | PASS |
+| P8-FR-G4 | Security boundary is clean | No credential, raw provider output, model, dataset, database or runtime artifact is included | PASS |
+| P8-FR-G5 | Frozen contracts and assets are unchanged | Context, report, grounding, fallback, plan, audit, registry, permission, model, dataset and training hashes remain unchanged | PASS |
+| P8-FR-G6 | Full repository gate passes | `667 passed, 1 skipped`; `compileall` PASS; `git diff --check` PASS | PASS |
+| P8-FR-G7 | Final release identity is explicit | Annotated tag `phase-8-final-integration-complete` records the final release commit | PASS |
+| P8-FR-G8 | Phase boundary remains accurate | Phase 8 is `FINAL RELEASED`; Phase 9 remains `NOT STARTED` | PASS |
+
+Phase 8 result:
+`FINAL RELEASED`.
+
+Phase 9 remains `NOT STARTED`.

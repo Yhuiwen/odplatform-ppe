@@ -1,5 +1,64 @@
 # Changelog
 
+## 2026-09-24 - Phase 8 Final Integration Release
+
+- Synchronized Phase 8 final integration documentation and reports to
+  `FINAL RELEASED`; Phase 9 remains `NOT STARTED`.
+- Released the reviewed API, Web / Streamlit and deterministic E2E
+  integration under annotated tag `phase-8-final-integration-complete`.
+- Preserved the interim tag `phase-8-controlled-agent-complete` and all
+  historical provider, schema and checkpoint evidence.
+- Final validation: `667 passed, 1 skipped`; `compileall` PASS;
+  `git diff --check` PASS. Frozen contracts, model, dataset, training and
+  inference hashes remain unchanged.
+- No detection, tracking, association, compliance, model, dataset, training
+  or Phase 9 change is included.
+
+## 2026-09-24 - Phase 8 Final Integration E2E Demo
+
+- Added a deterministic fixture-driven E2E demo for the reviewed Phase 8
+  final integration path:
+  `Web facade -> AgentApiService -> AgentService -> ToolRegistry -> audit -> UI projection`.
+- Added the bounded input and expected-result fixtures plus an integration
+  test that validates normal summary, provider-disabled grounded report
+  fallback, forbidden-request refusal and safe UI projection output.
+- The demo uses a temporary in-memory SQLite database, fixed audit/context
+  clocks, deterministic tool timing, no provider client and no model load.
+  It preserves the source event and snapshot identity without mutation.
+- Focused E2E validation passed (`6 passed`); the combined E2E/structure/import
+  slice passed (`94 passed`); the full repository gate passed
+  (`667 passed, 1 skipped`); `compileall` and `git diff --check` passed.
+- The Web / Streamlit integration is now `HUMAN REVIEW PASS`. The E2E demo is
+  `IMPLEMENTATION COMPLETE / HUMAN REVIEW PENDING`; Phase 8 remains IN PROGRESS
+  and Phase 9 remains NOT STARTED.
+- No model, dataset, training, inference, detection, tracking, association,
+  compliance, provider request, commit, tag or push was changed or performed.
+
+## 2026-09-24 - Phase 8 Final Integration API and Web / Streamlit
+
+- Added `phase8-agent-api-v1` request/response contracts and
+  `AgentApplicationService` as the typed in-process boundary over the
+  unchanged `AgentService`.
+- Added deployment-owned `TrustedIdentityProvider` resolution, bounded
+  request validation and UI-safe projection for all six Agent outcomes.
+- Added `web/agent_support.py` as the only Web composition root, using the
+  existing analytics, query, report, grounding, fallback, registry, planner
+  and append-only audit services with `provider_client=None`.
+- Replaced the AI report and Safety Assistant placeholders with bounded
+  Streamlit pages and added both to navigation.
+- The page data surface is exactly `answer`, `summary`,
+  `evidence_references`, `recommendations` and `safe_status`. Pages import
+  only the approved Web facade and expose no planner, registry, candidate,
+  provider, raw audit, SQL, shell, absolute path or traceback data.
+- Added API, Web-boundary and persisted-event integration tests. Focused
+  validation passed (`27 passed`); full repository validation passed
+  (`660 passed, 1 skipped`), `compileall` PASS and `git diff --check` PASS.
+- The API boundary is `IMPLEMENTATION COMPLETE / HUMAN REVIEW PASS`; the
+  Web / Streamlit integration subsequently received `HUMAN REVIEW PASS`.
+  Phase 8 remains IN PROGRESS and Phase 9 remains NOT STARTED.
+- No model, dataset, training, inference, provider request, durable audit
+  store, memory, autonomous loop, commit, tag or push was added.
+
 ## 2026-09-24 - Phase 8 Agent Implementation Checkpoint Release
 
 - Recorded P8-6.1 through P8-6.4.3 as `HUMAN REVIEW PASS`.

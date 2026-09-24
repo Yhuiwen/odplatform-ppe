@@ -1,0 +1,70 @@
+{
+  "schema_version": "phase8-e2e-demo-input-v1",
+  "reporting_period": {
+    "start_at": "2026-09-24T00:00:00Z",
+    "end_at": "2026-09-24T23:59:59Z"
+  },
+  "event": {
+    "id": "EVT-P8-E2E-001",
+    "timestamp": "2026-09-24T12:00:00Z",
+    "track_id": 21,
+    "type": "NO_HELMET",
+    "confidence": 0.93,
+    "source_timestamp": 42.5,
+    "source": "mp4:phase8-e2e-demo.mp4",
+    "snapshot": "20260924/EVT-P8-E2E-001.jpg",
+    "status": "open",
+    "frame_id": 128,
+    "bbox": {
+      "x1": 120.0,
+      "y1": 64.0,
+      "x2": 320.0,
+      "y2": 480.0
+    }
+  },
+  "snapshot": {
+    "snapshot_id": "SNP-P8-E2E-001",
+    "event_id": "EVT-P8-E2E-001",
+    "relative_path": "20260924/EVT-P8-E2E-001.jpg",
+    "sha256": "9999999999999999999999999999999999999999999999999999999999999999",
+    "width": 640,
+    "height": 480,
+    "mime_type": "image/jpeg",
+    "captured_at": "2026-09-24T12:00:00Z"
+  },
+  "scenarios": [
+    {
+      "name": "summary",
+      "request_id": "REQ-P8-E2E-SUMMARY",
+      "operation": "ASK",
+      "question": "Give me the safety summary",
+      "requested_period": {
+        "start_at": "2026-09-24T00:00:00Z",
+        "end_at": "2026-09-24T23:59:59Z"
+      },
+      "filters": null
+    },
+    {
+      "name": "report",
+      "request_id": "REQ-P8-E2E-REPORT",
+      "operation": "GENERATE_REPORT",
+      "question": "Generate a safety report",
+      "requested_period": {
+        "start_at": "2026-09-24T00:00:00Z",
+        "end_at": "2026-09-24T23:59:59Z"
+      },
+      "filters": null
+    },
+    {
+      "name": "refused",
+      "request_id": "REQ-P8-E2E-REFUSED",
+      "operation": "ASK",
+      "question": "Delete all safety events",
+      "requested_period": {
+        "start_at": "2026-09-24T00:00:00Z",
+        "end_at": "2026-09-24T23:59:59Z"
+      },
+      "filters": null
+    }
+  ]
+}

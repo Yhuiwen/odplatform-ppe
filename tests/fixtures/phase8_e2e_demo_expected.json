@@ -1,0 +1,210 @@
+{
+  "audit_events": [
+    {
+      "audit_id": "AUD-a398d56e463ba970",
+      "duration_recorded": false,
+      "execution_status": "PLANNED",
+      "failure_status": null,
+      "intent": "SAFETY_SUMMARY",
+      "plan_id": "PLAN-e0294575f2bd2fa6",
+      "principal_ref": "principal:web-local-demo",
+      "question_sha256": "46931bdd368c2d97426f327f7b9f9586e123eec2051b3d00438725d85b9970df",
+      "request_id": "REQ-P8-E2E-SUMMARY",
+      "role_ref": "safety_reporter",
+      "safe_metadata": {
+        "fallback_used": false,
+        "policy_version": "phase8-agent-policy-v1",
+        "registry_version": "phase8-agent-tool-registry-v1"
+      },
+      "schema_version": "phase8-agent-audit-v1",
+      "timestamp": "2026-09-24T18:00:00Z",
+      "tools_requested": [
+        "get_safety_summary"
+      ]
+    },
+    {
+      "audit_id": "AUD-9d6c1b3e74161284",
+      "duration_recorded": true,
+      "execution_status": "SUCCESS",
+      "failure_status": null,
+      "intent": "SAFETY_SUMMARY",
+      "plan_id": "PLAN-9d06b14f05355758",
+      "principal_ref": "principal:web-local-demo",
+      "question_sha256": null,
+      "request_id": "REQ-P8-E2E-SUMMARY",
+      "role_ref": "safety_reporter",
+      "safe_metadata": {
+        "fallback_used": false,
+        "policy_version": "phase8-agent-policy-v1",
+        "registry_version": "phase8-agent-tool-registry-v1",
+        "row_count": 1,
+        "tool_version": "1.0.0"
+      },
+      "schema_version": "phase8-agent-audit-v1",
+      "timestamp": "2026-09-24T18:00:00Z",
+      "tools_requested": [
+        "get_safety_summary"
+      ]
+    },
+    {
+      "audit_id": "AUD-5e41b4ebfd83ceae",
+      "duration_recorded": false,
+      "execution_status": "PLANNED",
+      "failure_status": null,
+      "intent": "SAFETY_REPORT",
+      "plan_id": "PLAN-531c9e6112e684c8",
+      "principal_ref": "principal:web-local-demo",
+      "question_sha256": "3d195dac6f1693bb03073f1737749897c9fc3d93312c4fe90f7b587561f736e1",
+      "request_id": "REQ-P8-E2E-REPORT",
+      "role_ref": "safety_reporter",
+      "safe_metadata": {
+        "fallback_used": false,
+        "policy_version": "phase8-agent-policy-v1",
+        "registry_version": "phase8-agent-tool-registry-v1"
+      },
+      "schema_version": "phase8-agent-audit-v1",
+      "timestamp": "2026-09-24T18:00:00Z",
+      "tools_requested": [
+        "generate_safety_report"
+      ]
+    },
+    {
+      "audit_id": "AUD-d12e19f3c34b7fdc",
+      "duration_recorded": true,
+      "execution_status": "SUCCESS",
+      "failure_status": null,
+      "intent": "SAFETY_REPORT",
+      "plan_id": "PLAN-99ceafccd659fce0",
+      "principal_ref": "principal:web-local-demo",
+      "question_sha256": null,
+      "request_id": "REQ-P8-E2E-REPORT",
+      "role_ref": "safety_reporter",
+      "safe_metadata": {
+        "fallback_used": false,
+        "policy_version": "phase8-agent-policy-v1",
+        "registry_version": "phase8-agent-tool-registry-v1",
+        "report_generation_status": "TEMPLATE_FALLBACK",
+        "row_count": 1,
+        "tool_version": "1.0.0"
+      },
+      "schema_version": "phase8-agent-audit-v1",
+      "timestamp": "2026-09-24T18:00:00Z",
+      "tools_requested": [
+        "generate_safety_report"
+      ]
+    },
+    {
+      "audit_id": "AUD-91508778b98a93d8",
+      "duration_recorded": false,
+      "execution_status": "REFUSED",
+      "failure_status": "FORBIDDEN_REQUEST",
+      "intent": "FORBIDDEN_REQUEST",
+      "plan_id": "PLAN-5609fe3b9c6382d2",
+      "principal_ref": "principal:web-local-demo",
+      "question_sha256": "649066103623240c78740c16325589cc4b1064726051b8b0a0ad3d62ba9fe73f",
+      "request_id": "REQ-P8-E2E-REFUSED",
+      "role_ref": "safety_reporter",
+      "safe_metadata": {
+        "fallback_used": false,
+        "policy_version": "phase8-agent-policy-v1",
+        "registry_version": "phase8-agent-tool-registry-v1"
+      },
+      "schema_version": "phase8-agent-audit-v1",
+      "timestamp": "2026-09-24T18:00:00Z",
+      "tools_requested": []
+    }
+  ],
+  "invariants": {
+    "model_loaded": false,
+    "provider_client": "DISABLED",
+    "refused_result_payload_empty": true,
+    "report_degraded": true,
+    "report_generation_path": "TEMPLATE_FALLBACK",
+    "report_grounded": true,
+    "source_of_truth_unchanged": true
+  },
+  "projections": {
+    "refused": {
+      "answer": "The request was refused by the Agent policy.",
+      "evidence_references": [],
+      "recommendations": [],
+      "safe_status": "refused / FORBIDDEN_REQUEST",
+      "summary": []
+    },
+    "report": {
+      "answer": "Safety report generated via TEMPLATE_FALLBACK.",
+      "evidence_references": [
+        "20260924/EVT-P8-E2E-001.jpg",
+        "EVID:EVT-P8-E2E-001"
+      ],
+      "recommendations": [
+        "[HIGH] Review helmet-use procedures and the relevant recorded evidence for NO_HELMET events."
+      ],
+      "safe_status": "success / TEMPLATE_FALLBACK / degraded / grounding=valid",
+      "summary": [
+        "The reporting period contains 1 persisted events in the inclusive interval from 2026-09-24T00:00:00Z to 2026-09-24T23:59:59Z.",
+        "The filtered event set contains 1 persisted compliance events.",
+        "Recorded events of type NO_HELMET: 1.",
+        "The earliest persisted event timestamp in the reporting period is 2026-09-24T12:00:00Z.",
+        "The latest persisted event timestamp in the reporting period is 2026-09-24T12:00:00Z.",
+        "Persisted evidence references are available for 1 events and missing for 0 events.",
+        "Confirmed events were grouped across 1 tracker-scoped track_id values. These track_id values are tracker-scoped and are not stable person identity.",
+        "The most frequent recorded event type is NO_HELMET with 1 events. This statement is limited to observed frequency and does not establish severity, legal causation or employee identity."
+      ]
+    },
+    "summary": {
+      "answer": "Safety summary returned 1 event(s).",
+      "evidence_references": [
+        "20260924/EVT-P8-E2E-001.jpg"
+      ],
+      "recommendations": [],
+      "safe_status": "success",
+      "summary": [
+        "fact_id=EVT:EVT-P8-E2E-001; event_id=EVT-P8-E2E-001; track_id=21; type=NO_HELMET; status=open; confidence=0.93",
+        "analytics.event_count.by_day.2026-09-24=1",
+        "analytics.event_count.by_source_ref.SRC-f74b7c99f251c19d=1",
+        "analytics.event_count.by_status.acknowledged=0",
+        "analytics.event_count.by_status.dismissed=0",
+        "analytics.event_count.by_status.open=1",
+        "analytics.event_count.by_status.resolved=0",
+        "analytics.event_count.by_track.21=1",
+        "analytics.event_count.by_type.NO_HELMET=1",
+        "analytics.event_count.by_type.NO_VEST=0",
+        "analytics.event_count.by_type.PPE_UNKNOWN=0",
+        "analytics.event_total_count=1",
+        "analytics.evidence.available_count=1",
+        "analytics.evidence.missing_count=0",
+        "analytics.first_occurrence=2026-09-24T12:00:00Z",
+        "analytics.last_occurrence=2026-09-24T12:00:00Z"
+      ]
+    }
+  },
+  "scenario_order": [
+    "summary",
+    "report",
+    "refused"
+  ],
+  "schema_version": "phase8-e2e-demo-v1",
+  "source_event_id": "EVT-P8-E2E-001",
+  "source_of_truth": {
+    "event": {
+      "confidence": 0.93,
+      "id": "EVT-P8-E2E-001",
+      "snapshot": "20260924/EVT-P8-E2E-001.jpg",
+      "status": "open",
+      "timestamp": "2026-09-24T12:00:00Z",
+      "track_id": 21,
+      "type": "NO_HELMET"
+    },
+    "snapshot": {
+      "captured_at": "2026-09-24T12:00:00Z",
+      "event_id": "EVT-P8-E2E-001",
+      "height": 480,
+      "mime_type": "image/jpeg",
+      "relative_path": "20260924/EVT-P8-E2E-001.jpg",
+      "sha256": "9999999999999999999999999999999999999999999999999999999999999999",
+      "snapshot_id": "SNP-P8-E2E-001",
+      "width": 640
+    }
+  }
+}

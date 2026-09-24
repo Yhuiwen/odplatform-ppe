@@ -1,6 +1,6 @@
 # Phase 8 P8-6 Basic Safety Agent Architecture
 
-Status: `P8-6 ARCHITECTURE FREEZE COMPLETE / HUMAN REVIEW PASS`
+Status: `P8-6 ARCHITECTURE FREEZE COMPLETE / HUMAN REVIEW PASS; P8-FI API/WEB/E2E HUMAN REVIEW PASS; PHASE 8 FINAL RELEASED`
 
 Date: 2026-09-24
 
@@ -586,13 +586,14 @@ P8-6.4.2 LLM planner adapter: HUMAN REVIEW PASS
 P8-6.4.3 AgentService orchestration: HUMAN REVIEW PASS
 Agent reasoning, memory and autonomous loop: NOT IMPLEMENTED
 Phase 8 Agent implementation checkpoint: RELEASED
-Phase 8 final integration: NOT COMPLETE
+Phase 8 final integration: FINAL RELEASED / tag phase-8-final-integration-complete
 Phase 9: NOT STARTED
 ```
 
 The architecture freeze has passed human review. P8-6.1 through P8-6.4.2 also
 have human review PASS. P8-6.4.3 implements AgentService orchestration over
 validated plans and has passed human review. The implementation is recorded
-by interim tag `phase-8-controlled-agent-complete`. Durable audit storage,
-memory, autonomous loops, Phase 8 final integration and Phase 9 require
-separate authorization.
+by interim tag `phase-8-controlled-agent-complete`. The subsequent API, Web
+and E2E integration received human review PASS and is recorded by final
+release tag `phase-8-final-integration-complete`. Durable audit storage,
+memory, autonomous loops and Phase 9 require separate authorization.

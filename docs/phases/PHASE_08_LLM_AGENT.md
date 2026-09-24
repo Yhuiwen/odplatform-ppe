@@ -43,8 +43,13 @@ bounded audit metadata 和 deterministic fallback，当前状态为
 Orchestration 已实现 typed request/result、validated-plan-only
 `ToolRegistry.execute`、planner/tool audit recording、deterministic fallback
 和 audit-unavailable fail-closed，当前状态为 `HUMAN REVIEW PASS`，并由
-interim tag `phase-8-controlled-agent-complete` 记录。durable audit store、
-memory、autonomous loop 和 Phase 9 仍未开始。
+interim tag `phase-8-controlled-agent-complete` 记录。P8-FI Final Integration
+Architecture 已通过人工审核；其 API boundary 已实现并通过人工审核，
+Web / Streamlit integration 已实现并通过人工审核。deterministic E2E demo
+现已验证 Web facade、Agent API、AgentService、ToolRegistry、append-only
+audit 和 UI projection 的完整只读路径，并已通过人工审核。Phase 8 final
+integration 已发布为 `phase-8-final-integration-complete`。durable audit
+store、memory、autonomous loop 和 Phase 9 仍未开始。
 冻结与实现路径为：
 
 ```text
@@ -92,6 +97,12 @@ append-only audit event，并保持 candidate 不可执行。M-021、M-022、M-0
 - `docs/reports/phase-08/PHASE_8_P8_6_ARCHITECTURE_FREEZE_REPORT.md`
 - `docs/reports/phase-08/PHASE_8_P8_6_4_ARCHITECTURE_FREEZE_REPORT.md`
 - `docs/reports/phase-08/PHASE_8_P8_6_2_DETERMINISTIC_PLANNER_REPORT.md`
+- `docs/designs/phase-08/PHASE_8_FINAL_INTEGRATION_ARCHITECTURE.md`
+- `docs/reports/phase-08/PHASE_8_FINAL_INTEGRATION_FREEZE_REPORT.md`
+- `docs/reports/phase-08/PHASE_8_FINAL_INTEGRATION_API_REPORT.md`
+- `docs/reports/phase-08/PHASE_8_FINAL_INTEGRATION_WEB_REPORT.md`
+- `docs/reports/phase-08/PHASE_8_FINAL_INTEGRATION_E2E_REPORT.md`
+- `docs/reports/phase-08/PHASE_8_FINAL_RELEASE_REPORT.md`
 - `docs/03_TECHNICAL_DECISIONS.md` ADR-023
 
 子阶段规划：
@@ -114,6 +125,10 @@ append-only audit event，并保持 candidate 不可执行。M-021、M-022、M-0
 | P8-6.4.1 | Plan candidate parser, validator and deterministic plan conversion | HUMAN REVIEW PASS |
 | P8-6.4.2 | LLM planner adapter, request builder, validator integration and deterministic fallback | HUMAN REVIEW PASS |
 | P8-6.4.3 | AgentService orchestration over validated plans, registry execution and append-only audit | HUMAN REVIEW PASS |
+| P8-FI | Final integration architecture and security freeze | ARCHITECTURE FREEZE COMPLETE / HUMAN REVIEW PASS |
+| P8-FI-API | Typed Agent application API boundary and UI-safe response projection | IMPLEMENTATION COMPLETE / HUMAN REVIEW PASS |
+| P8-FI-WEB | Streamlit Agent interface over the API boundary | IMPLEMENTATION COMPLETE / HUMAN REVIEW PASS |
+| P8-FI-E2E | Deterministic Web -> Agent -> Registry -> Audit E2E demo | IMPLEMENTATION COMPLETE / HUMAN REVIEW PASS |
 
 P8-6 freezes the Basic Agent boundary without implementation. The planner is
 deterministic, the tool registry is static and read-only, permissions are
@@ -139,6 +154,21 @@ in append-only audit, and audit failure closes the success path. Durable
 audit storage, memory, autonomous loops, reasoning, real provider planning
 calls and runtime evidence still require separate authorization. The P8-5
 row records the authorized provider E2E scope, not Basic Agent completion.
+
+P8-FI freezes the final integration boundary without widening the Agent.
+`AgentApplicationService` accepts a bounded application request, obtains
+identity only from a deployment-owned `TrustedIdentityProvider`, constructs
+the frozen `AgentRequest`, calls `AgentService` once and returns a UI-safe
+projection. The API boundary has passed human review. The Web layer composes
+that boundary with `provider_client=None`, renders only `answer`, `summary`,
+`evidence_references`, `recommendations` and `safe_status`, and exposes no
+planner, registry, candidate, provider, raw audit or filesystem details. The
+Web / Streamlit implementation has passed human review. The deterministic E2E
+demo validates the full Web facade, Agent API, AgentService, static registry,
+append-only audit and UI projection path and has passed human review. Phase 8
+is `FINAL RELEASED` under `phase-8-final-integration-complete`. It does not add
+durable audit storage, production authentication, memory, autonomous loops,
+real provider planning calls or Phase 9 work.
 
 ## 4. 实现设计
 
@@ -450,6 +480,41 @@ transport、strict JSON、`phase8-report-v1` 和 grounding 全部通过，返回
 
 ## 8. 开发记录
 
+- 2026-09-24: Completed Phase 8 final integration release. Synchronized the
+  final integration architecture, API, Web, E2E, status, Changelog and test
+  gate records to `HUMAN REVIEW PASS / FINAL RELEASED`; preserved the interim
+  checkpoint and historical provider/schema evidence; and published annotated
+  tag `phase-8-final-integration-complete`. Full gate:
+  `667 passed, 1 skipped`; `compileall` PASS; `git diff --check` PASS. Phase 9
+  remains `NOT STARTED`.
+- 2026-09-24: Completed the deterministic Phase 8 final integration E2E demo.
+  Added fixture-driven validation for the full
+  `Web facade -> AgentApplicationService -> AgentService -> ToolRegistry ->
+  AgentAuditService -> UI projection` path, covering summary, grounded
+  provider-disabled report fallback, forbidden-request refusal and safe UI
+  output. The demo uses fixed clocks and deterministic tool timing, does not
+  load a model or call a provider, and preserves the source event and snapshot
+  identity. Focused E2E tests passed (`6 passed`); the combined E2E,
+  structure and import slice passed (`94 passed`); the full repository gate
+  passed (`667 passed, 1 skipped`), `compileall` passed and
+  `git diff --check` passed. Web integration is now `HUMAN REVIEW PASS`; the
+  E2E demo is `IMPLEMENTATION COMPLETE / HUMAN REVIEW PENDING`. No model,
+  dataset, training, inference, detection, tracking, association, compliance,
+  commit, tag or push was changed or performed.
+- 2026-09-24: Completed the authorized Phase 8 final integration API and
+  Web / Streamlit implementation slices. Added `phase8-agent-api-v1`,
+  `AgentApplicationService`, trusted identity resolution, bounded response
+  projection, `web/agent_support.py`, the AI report and Safety Assistant
+  pages, and deterministic API/Web/integration tests. The Web composition
+  reuses the existing Agent plan, registry, analytics, report, grounding,
+  fallback and audit services with no provider client and renders only the
+  five approved UI fields. Focused validation passed (`27 passed`); final
+  repository validation passed (`660 passed, 1 skipped`), `compileall`
+  passed and `git diff --check` passed. The API boundary is
+  `HUMAN REVIEW PASS`; Web integration subsequently received
+  `HUMAN REVIEW PASS`. No model, dataset,
+  training, inference, durable audit, memory, autonomous loop, Phase 9,
+  commit, tag or push was performed.
 - 2026-09-24: Completed P8-6.4.3 AgentService orchestration. Added the
   immutable `phase8-agent-request-v1` and `phase8-agent-result-v1` contracts,
   replaced the placeholder with validated-plan-only `AgentService`

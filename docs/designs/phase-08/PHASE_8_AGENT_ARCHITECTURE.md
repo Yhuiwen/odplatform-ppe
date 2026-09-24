@@ -1,6 +1,6 @@
 # Phase 8 Safety Intelligence Agent Architecture
 
-Status: `P8-0 THROUGH P8-5 COMPLETE / HUMAN REVIEW PASS / CHECKPOINTED; P8-5D HUMAN REVIEW PASS; P8-5P HUMAN REVIEW PASS; P8-6 ARCHITECTURE FREEZE COMPLETE / HUMAN REVIEW PASS; P8-6.1/P8-6.2/P8-6.3 HUMAN REVIEW PASS; P8-6.4 ARCHITECTURE FREEZE COMPLETE / HUMAN REVIEW PASS; P8-6.4.1/P8-6.4.2/P8-6.4.3 HUMAN REVIEW PASS; AGENT IMPLEMENTATION CHECKPOINT RELEASED`
+Status: `P8-0 THROUGH P8-5 COMPLETE / HUMAN REVIEW PASS / CHECKPOINTED; P8-5D HUMAN REVIEW PASS; P8-5P HUMAN REVIEW PASS; P8-6 ARCHITECTURE FREEZE COMPLETE / HUMAN REVIEW PASS; P8-6.1/P8-6.2/P8-6.3 HUMAN REVIEW PASS; P8-6.4 ARCHITECTURE FREEZE COMPLETE / HUMAN REVIEW PASS; P8-6.4.1/P8-6.4.2/P8-6.4.3 HUMAN REVIEW PASS; P8-FI ARCHITECTURE/API/WEB/E2E HUMAN REVIEW PASS; PHASE 8 FINAL RELEASED`
 
 Date: 2026-09-24
 
@@ -690,8 +690,10 @@ append-only in-memory audit model and service and has received human review
 PASS. Durable audit storage, Agent orchestration and reasoning remain not
 started. P8-6.4 is design-only and freezes an untrusted LLM candidate, strict
 validation, deterministic final-plan construction, registry-only execution,
-permission rechecks and deterministic fallback. P8-6.4 implementation and
-Phase 9 remain not started and require separate authorization.
+permission rechecks and deterministic fallback. Separately authorized
+P8-6.4.1 through P8-6.4.3 implementations, final integration API/Web/E2E
+validation and the final release have since completed and received human
+review PASS. Phase 9 remains not started and requires separate authorization.
 P8-5D adds bounded sanitized JSON-path diagnostics for future authorized
 `REPORT_SCHEMA_INVALID` failures without changing the report schema, grounding
 semantics, fallback semantics, provider trust boundary or privacy boundary.

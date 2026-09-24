@@ -16,7 +16,7 @@
 | P5 | Tracking & Association | ByteTrack + Person-PPE Association | 已经实现（COMPLETE / RELEASED；tag `phase-5-tracking-association-complete`；P5-3-G5 historical `BLOCKED / NOT RUN` followed by explicit release authorization） |
 | P6 | Compliance & Events | PPE 合规规则、时序判断、Event Engine | 已经实现（COMPLETE / RELEASED；tag `phase-6-compliance-event-engine-complete`） |
 | P7 | Web & Alerts | SQLite + Snapshot + TTS + Streamlit | 已经实现（COMPLETE / RELEASED；base tag `phase-7-web-alert-platform-complete`；final freeze tag `phase-7-release-freeze-complete`；M-007 implementation + real MP4 validation + human review PASS） |
-| P8 | LLM & Agent | LLM Report + Fallback + Basic Agent | 实现中（P8-0 至 P8-5 `COMPLETE / HUMAN REVIEW PASS / CHECKPOINTED`；P8-5D/P8-5P `HUMAN REVIEW PASS`；P8-6 architecture `HUMAN REVIEW PASS`；P8-6.1/P8-6.2/P8-6.3 `HUMAN REVIEW PASS`；P8-6.4 architecture `HUMAN REVIEW PASS`；P8-6.4.1 candidate parser/validator `HUMAN REVIEW PASS`；P8-6.4.2 LLM planner adapter `HUMAN REVIEW PASS`；P8-6.4.3 AgentService orchestration `HUMAN REVIEW PASS`；P8-6 Agent implementation checkpoint tag `phase-8-controlled-agent-complete`；Phase 8 final integration 尚未完成） |
+| P8 | LLM & Agent | LLM Report + Fallback + Basic Agent | 已经实现（COMPLETE / FINAL RELEASED；interim tag `phase-8-controlled-agent-complete`；release tag `phase-8-final-integration-complete`；P8-FI architecture/API/Web/E2E `HUMAN REVIEW PASS`；Charter M-021–M-023 仍待 Phase 9 acceptance） |
 | P9 | Integration & Delivery | 全链路测试、性能分析、文档、Demo、答辩交付 | 待实现 |
 
 ## 2. 阶段依赖
@@ -203,7 +203,19 @@ when audit append cannot be confirmed. Durable audit storage, memory,
 autonomous loops, real provider planning requests and reasoning remain not
 implemented. P8-6.4.3 has passed human review and is recorded by the interim
 tag `phase-8-controlled-agent-complete`; this is not the Phase 8 final
-product release.
+product release. P8-FI final integration architecture has passed human review.
+Its `phase8-agent-api-v1` boundary is implemented and human-reviewed PASS; it
+uses trusted identity resolution, one `AgentService.execute()` call and a
+bounded UI-safe response projection. The Web / Streamlit integration has
+passed human review. It renders only `answer`, `summary`,
+`evidence_references`, `recommendations` and `safe_status`, uses
+`provider_client=None`, and preserves the existing registry, grounding,
+fallback and append-only audit path. A deterministic fixture-driven E2E demo
+now validates the complete Web facade, Agent API, AgentService, ToolRegistry,
+append-only audit and UI projection path; it has passed human review. Phase 8
+is `FINAL RELEASED` under `phase-8-final-integration-complete`. Durable audit
+storage, memory, autonomous loops, real provider planning requests and Phase
+9 remain not started.
 
 ## 4. 状态规则
 

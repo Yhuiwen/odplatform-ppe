@@ -19,8 +19,8 @@ LLM 安全分析报告和基础 Agent。
 ## 当前开发状态
 
 - 当前 Phase：Phase 8 — LLM & Agent
-- 当前 Subphase：P8-6 Agent Implementation Checkpoint
-- Phase 状态：P8-0 至 P8-5 `COMPLETE / HUMAN REVIEW PASS / CHECKPOINTED`；P8-5D/P8-5P `HUMAN REVIEW PASS`；P8-6 architecture `HUMAN REVIEW PASS`；P8-6.1/P8-6.2/P8-6.3 `HUMAN REVIEW PASS`；P8-6.4 architecture `HUMAN REVIEW PASS`；P8-6.4.1 candidate parser/validator `HUMAN REVIEW PASS`；P8-6.4.2 LLM planner adapter `HUMAN REVIEW PASS`；P8-6.4.3 AgentService orchestration `HUMAN REVIEW PASS`；P8-6 Agent implementation checkpoint 已发布 tag `phase-8-controlled-agent-complete`
+- 当前 Subphase：Phase 8 Final Integration Release
+- Phase 状态：P8-0 至 P8-5 `COMPLETE / HUMAN REVIEW PASS / CHECKPOINTED`；P8-5D/P8-5P `HUMAN REVIEW PASS`；P8-6 architecture `HUMAN REVIEW PASS`；P8-6.1/P8-6.2/P8-6.3 `HUMAN REVIEW PASS`；P8-6.4 architecture `HUMAN REVIEW PASS`；P8-6.4.1 candidate parser/validator `HUMAN REVIEW PASS`；P8-6.4.2 LLM planner adapter `HUMAN REVIEW PASS`；P8-6.4.3 AgentService orchestration `HUMAN REVIEW PASS`；P8-6 Agent implementation checkpoint 已发布 tag `phase-8-controlled-agent-complete`；P8-FI architecture/API/Web/E2E `HUMAN REVIEW PASS`；Phase 8 `FINAL RELEASED`，release tag `phase-8-final-integration-complete`；Phase 9 `NOT STARTED`
 - Provider 状态：ONE OPENAI-COMPATIBLE TRANSPORT IMPLEMENTED / REAL PROVIDER VALIDATED / STRICT JSON PASS / PHASE8-REPORT-V1 PASS / GROUNDING VALID / FALLBACK NOT USED
 - Phase 7 状态：COMPLETE / RELEASED；7-6 RUNTIME VALIDATION PASS；M-007 HUMAN REVIEW PASS
 - Phase 7 implementation：7-0、7-1、7-2、7-3、7-4、7-5、7-6 PASS；M-007 annotated demo video IMPLEMENTED / REAL MP4 RUNTIME PASS / HUMAN REVIEW PASS；base tag `phase-7-web-alert-platform-complete`；final freeze tag `phase-7-release-freeze-complete`
@@ -195,14 +195,32 @@ LLM 安全分析报告和基础 Agent。
   interim checkpoint. Durable audit storage,
   memory, autonomous loops, real provider planning calls and reasoning remain
   not implemented.
-- M-021, M-022 and M-023 remain `待实现`; P8-0 through P8-5 are
+- P8-FI final integration freezes a typed in-process
+  `phase8-agent-api-v1` boundary, trusted identity resolution, one
+  `AgentService.execute()` call and a bounded UI-safe response projection. The
+  API boundary has passed human review. `web/agent_support.py` composes the
+  existing service graph with `provider_client=None`; the AI report and Safety
+  Assistant pages render only `answer`, `summary`, `evidence_references`,
+  `recommendations` and `safe_status`. Page imports are restricted to the
+  approved facade, and focused API/Web/integration validation passed
+  (`27 passed`); full repository validation passed (`660 passed, 1 skipped`).
+  The Web / Streamlit implementation has passed human review. A deterministic
+  fixture-driven E2E demo now validates the complete Web facade, API, Agent,
+  registry, audit and UI projection path without a provider or model and has
+  passed human review. Phase 8 is `FINAL RELEASED` under
+  `phase-8-final-integration-complete`; Phase 9 is `NOT STARTED`.
+- M-021, M-022 and M-023 remain `待实现` in the locked Charter; P8-0 through P8-5 are
   human-reviewed PASS and checkpointed. P8-6 architecture and P8-6.1 through
   P8-6.3 are human-reviewed PASS. P8-6.4 is `ARCHITECTURE FREEZE COMPLETE /
   HUMAN REVIEW PASS`. P8-6.4.1 and P8-6.4.2 are `HUMAN REVIEW PASS`.
   P8-6.4.3 is `HUMAN REVIEW PASS` and is included in the interim tag
-  `phase-8-controlled-agent-complete`; durable audit storage, memory,
-  autonomous loops, real provider planning calls and Phase 9 remain not
-  implemented.
+  `phase-8-controlled-agent-complete`. P8-FI architecture is
+  `HUMAN REVIEW PASS`, its API boundary is `HUMAN REVIEW PASS`, and its Web
+  implementation is `HUMAN REVIEW PASS`. The deterministic E2E demo has
+  passed human review. Phase 8 final integration is released under
+  `phase-8-final-integration-complete`; durable audit storage, memory,
+  autonomous loops and real provider planning calls remain not implemented,
+  and Phase 9 is not started.
 
 ## Current Runtime
 
@@ -497,6 +515,11 @@ git status --short
 - `docs/reports/phase-08/PHASE_8_P8_6_4_2_LLM_PLANNER_ADAPTER_REPORT.md`：P8-6.4.2 LLM planner adapter 报告
 - `docs/reports/phase-08/PHASE_8_P8_6_4_3_AGENT_SERVICE_REPORT.md`：P8-6.4.3 AgentService orchestration 报告
 - `docs/reports/phase-08/PHASE_8_AGENT_CHECKPOINT_RELEASE_REPORT.md`：P8-6 controlled Agent implementation checkpoint release 报告
+- `docs/designs/phase-08/PHASE_8_FINAL_INTEGRATION_ARCHITECTURE.md`：Phase 8 final integration architecture
+- `docs/reports/phase-08/PHASE_8_FINAL_INTEGRATION_FREEZE_REPORT.md`：Phase 8 final integration architecture freeze report
+- `docs/reports/phase-08/PHASE_8_FINAL_INTEGRATION_API_REPORT.md`：Phase 8 final integration API boundary report
+- `docs/reports/phase-08/PHASE_8_FINAL_INTEGRATION_WEB_REPORT.md`：Phase 8 final integration Web / Streamlit report
+- `docs/reports/phase-08/PHASE_8_FINAL_INTEGRATION_E2E_REPORT.md`：Phase 8 deterministic E2E demo validation report
 - `docs/reports/phase-08/PHASE_8_P8_5D_SCHEMA_DIAGNOSTICS_REPORT.md`：P8-5D sanitized provider schema diagnostics 报告
 - `docs/reports/phase-08/PHASE_8_P8_5P_PROMPT_SCHEMA_CONFORMANCE_REPORT.md`：P8-5P provider prompt schema conformance 报告
 - `docs/designs/phase-07/PHASE_7_TARGET_ARCHITECTURE.md`：Phase 7 目标架构
@@ -536,8 +559,8 @@ git status --short
 当前下一允许步骤是：
 
 ```text
-PHASE 8 FINAL INTEGRATION REVIEW / DO NOT START PHASE 9 OR IMPLEMENT DURABLE
-AUDIT, MEMORY, AUTONOMOUS LOOP OR REAL PROVIDER PLANNING CALL WITHOUT NEW
+PHASE 9 AUTHORIZATION / NOT STARTED / DO NOT START OR IMPLEMENT DURABLE AUDIT,
+MEMORY, AUTONOMOUS LOOP OR REAL PROVIDER PLANNING CALL WITHOUT NEW
 AUTHORIZATION
 ```
 
@@ -569,7 +592,16 @@ deterministic fallback；forbidden candidate capability 直接拒绝且不会被
 request/result、`AgentService` 编排、validated-plan-only registry execution、
 每路径 audit recording、planner fallback、structured tool failure 和
 audit-unavailable fail-closed；已通过人工审核，并纳入 interim checkpoint
-tag `phase-8-controlled-agent-complete`。durable audit storage、memory、
+tag `phase-8-controlled-agent-complete`。P8-FI 架构已通过人工审核：API
+boundary 已实现 trusted identity、bounded request validation、existing
+`AgentService` single-call boundary 和 UI-safe response projection，并通过
+人工审核；Web / Streamlit layer 已实现 `web/agent_support.py`、AI report
+和 Safety Assistant 页面，只暴露五个 approved fields，已完成
+API/Web/integration focused tests（`27 passed`）并通过人工审核。
+deterministic E2E demo 现已覆盖 Web facade、Agent API、AgentService、
+ToolRegistry、append-only audit 和 UI projection 的完整只读路径，现已通过
+人工审核。Phase 8 final integration 已以 `FINAL RELEASED` 状态发布，release
+tag 为 `phase-8-final-integration-complete`。durable audit storage、memory、
 autonomous loop 和 reasoning 仍未实现。
 P8-5 的
 历史 `REPORT_SCHEMA_INVALID`、P8-5D diagnostics 和 P8-5P prompt-v2 证据继续
@@ -580,7 +612,8 @@ USED。这个 checkpoint 不是 Phase 8 final release：M-021、M-022、M-023
 未开始。P8-6.1 至 P8-6.3 已通过人工审核；P8-6.4 architecture freeze
 已通过人工审核；P8-6.4.1 plan candidate validator 和 P8-6.4.2 LLM
 planner adapter 已通过人工审核；P8-6.4.3 AgentService orchestration
-已通过人工审核并由 `phase-8-controlled-agent-complete` 记录。本 checkpoint
-发布后停止，不得实现 durable audit store、memory、autonomous loop、真实
-provider planning request 或后续 Agent 工作，也不得执行 provider 或进入
-Phase 9。
+已通过人工审核并由 `phase-8-controlled-agent-complete` 记录。P8-FI
+architecture、API boundary 和 Web / Streamlit integration 已通过人工审核；
+deterministic E2E demo 已实现并通过人工审核。Phase 8 final integration 已
+发布为 `phase-8-final-integration-complete`。不得实现 durable audit store、
+memory、autonomous loop、真实 provider planning request 或进入 Phase 9。

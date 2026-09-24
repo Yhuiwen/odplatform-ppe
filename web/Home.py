@@ -39,6 +39,16 @@ def main() -> None:
                 title="Statistics",
                 icon=":material/monitoring:",
             ),
+            st.Page(
+                "pages/6_AI报告.py",
+                title="AI Report",
+                icon=":material/summarize:",
+            ),
+            st.Page(
+                "pages/7_AI助手.py",
+                title="Safety Assistant",
+                icon=":material/smart_toy:",
+            ),
         )
     )
     navigation.run()
