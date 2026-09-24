@@ -25,7 +25,26 @@ Diagnostics 当前状态为 `HUMAN REVIEW PASS`。P8-5P Provider Prompt Schema
 Conformance Fix 当前状态为 `HUMAN REVIEW PASS`。
 本次授权将 P8-5 重定为 provider E2E，并以 P8-5D 增强失败诊断；P8-5P 仅将
 provider prompt 提升为从权威 dataclass/enum 生成的 exact schema
-description；Basic Agent 仍未被授权。
+description。P8-6 Basic Agent Architecture Freeze 已完成设计并通过人工审核，
+当前状态为 `ARCHITECTURE FREEZE COMPLETE / HUMAN REVIEW PASS`。P8-6.1
+Static Read-only Tool Registry and Permission Layer 已完成实现并通过人工审核，
+当前状态为 `HUMAN REVIEW PASS`。P8-6.2 Deterministic Agent Planner 已授权
+实现并通过人工审核，当前状态为 `HUMAN REVIEW PASS`。P8-6.3 Agent Audit
+已授权实现并通过人工审核，当前状态为 `HUMAN REVIEW PASS`。P8-6.4
+LLM-Assisted Agent Planning Architecture 已完成 design-only freeze，当前状态为
+`ARCHITECTURE FREEZE COMPLETE / HUMAN REVIEW PASS`。P8-6.4.1 Plan Candidate
+Parser and Validator 已完成实现并通过人工审核，当前状态为
+`HUMAN REVIEW PASS`；该 slice 只实现 untrusted
+candidate schema、bounded strict parser、semantic validation 和 deterministic
+`AgentPlan` conversion。P8-6.4.2 LLM Planner Adapter 已实现 provider-independent
+request builder、injected candidate client、strict validator integration、
+bounded audit metadata 和 deterministic fallback，当前状态为
+`HUMAN REVIEW PASS`，未执行真实 provider 请求。P8-6.4.3 AgentService
+Orchestration 已实现 typed request/result、validated-plan-only
+`ToolRegistry.execute`、planner/tool audit recording、deterministic fallback
+和 audit-unavailable fail-closed，当前状态为 `HUMAN REVIEW PASS`，并由
+interim tag `phase-8-controlled-agent-complete` 记录。durable audit store、
+memory、autonomous loop 和 Phase 9 仍未开始。
 冻结与实现路径为：
 
 ```text
@@ -47,12 +66,32 @@ provider transport 与 provider-first fallback orchestration 已实现。人工�
 真实请求遵循 prompt v2，transport、strict JSON、`phase8-report-v1` 和
 provider grounding 全部通过，返回 `PROVIDER_VALIDATED`，且
 `generation_path=PROVIDER`、`degraded=false`、fallback 未使用。Agent 业务
-代码未开始；M-021、M-022、M-023 仍为 `待实现`。
+代码仅实现静态工具注册表、权限层和确定性 planner。P8-6.3 新增
+append-only in-memory audit model 与 `AgentAuditService`；AgentService 编排、
+reasoning 和 durable audit store 未开始。P8-6.4 只定义可选 LLM candidate
+边界、独立 candidate contract、严格解析/验证、deterministic final plan
+构造、registry-only execution、权限复核、audit 集成和 provider failure
+fallback，并已通过人工审核。P8-6.4.1 实现
+`phase8-agent-plan-candidate-v1`、bounded strict UTF-8 JSON parser、
+request binding 以及 intent/tool/argument/permission validation，并只构造新的
+`phase8-agent-plan-v1`；validator 不调用 `ToolRegistry.execute`，也不发起
+provider 请求。P8-6.4.2 不修改 report-specific `SafetyLLMClient`，而是在
+新的 planner candidate boundary 后处理 untrusted bytes；有效候选经严格
+validator 转为 `AgentPlan`，无效或 provider failure 回退 deterministic
+planner，forbidden candidate capability 直接拒绝。P8-6.4.3 在已验证 plan
+之后增加 `AgentService`，只通过 static `ToolRegistry` 执行，记录
+append-only audit event，并保持 candidate 不可执行。M-021、M-022、M-023
+仍为 `待实现`。
 
 冻结文档：
 
 - `docs/designs/phase-08/PHASE_8_AGENT_ARCHITECTURE.md`
+- `docs/designs/phase-08/PHASE_8_P8_6_AGENT_ARCHITECTURE.md`
+- `docs/designs/phase-08/PHASE_8_P8_6_4_AGENT_PLANNING_ARCHITECTURE.md`
 - `docs/reports/phase-08/PHASE_8_P8_0_ARCHITECTURE_FREEZE_REPORT.md`
+- `docs/reports/phase-08/PHASE_8_P8_6_ARCHITECTURE_FREEZE_REPORT.md`
+- `docs/reports/phase-08/PHASE_8_P8_6_4_ARCHITECTURE_FREEZE_REPORT.md`
+- `docs/reports/phase-08/PHASE_8_P8_6_2_DETERMINISTIC_PLANNER_REPORT.md`
 - `docs/03_TECHNICAL_DECISIONS.md` ADR-023
 
 子阶段规划：
@@ -67,11 +106,39 @@ provider grounding 全部通过，返回 `PROVIDER_VALIDATED`，且
 | P8-5 | Real provider E2E, grounding enforcement and safe fallback | COMPLETE / HUMAN REVIEW PASS / CHECKPOINTED |
 | P8-5D | Sanitized provider schema diagnostics | HUMAN REVIEW PASS |
 | P8-5P | Provider prompt schema conformance fix | HUMAN REVIEW PASS |
-| P8-6 | Integration tests, evaluation and Phase 8 release review | READY / NOT STARTED |
+| P8-6 | Basic Agent architecture: deterministic read-only tools, permissions and audit | IMPLEMENTATION CHECKPOINT RELEASED / HUMAN REVIEW PASS |
+| P8-6.1 | Static read-only tool registry and permission layer | IMPLEMENTATION COMPLETE / HUMAN REVIEW PASS |
+| P8-6.2 | Deterministic Agent planner | HUMAN REVIEW PASS |
+| P8-6.3 | Append-only Agent audit model and service | HUMAN REVIEW PASS |
+| P8-6.4 | LLM-assisted Agent planning architecture | ARCHITECTURE FREEZE COMPLETE / HUMAN REVIEW PASS |
+| P8-6.4.1 | Plan candidate parser, validator and deterministic plan conversion | HUMAN REVIEW PASS |
+| P8-6.4.2 | LLM planner adapter, request builder, validator integration and deterministic fallback | HUMAN REVIEW PASS |
+| P8-6.4.3 | AgentService orchestration over validated plans, registry execution and append-only audit | HUMAN REVIEW PASS |
 
-Basic Agent remains `NOT AUTHORIZED` and requires a separately assigned
-subphase/authorization. The P8-5 row records the authorized provider E2E scope,
-not Basic Agent completion.
+P8-6 freezes the Basic Agent boundary without implementation. The planner is
+deterministic, the tool registry is static and read-only, permissions are
+deny-by-default, and no LLM tool calling or Agent framework is introduced.
+P8-6.1 implements only the immutable registry, permission policy, bounded
+argument checks, existing-service adapters and audit metadata generation.
+P8-6.2 adds the deterministic planner, exact intent-to-tool mapping and
+argument validation without executing tools and has passed human review.
+P8-6.3 adds the `phase8-agent-audit-v1` event, append-only in-memory store
+abstraction, privacy filtering and `AgentAuditService`; durable audit storage
+is not implemented. P8-6.4 passed human review and freezes an untrusted LLM
+candidate, strict validation, deterministic final-plan construction,
+registry-only execution, permission rechecks and deterministic fallback.
+P8-6.4.1 implements only the candidate parser/validator and deterministic
+conversion slice; it issues no provider request and executes no tool.
+P8-6.4.2 adds the provider-independent planner request/client boundary,
+strict validator integration, bounded planning audit metadata and
+deterministic fallback without issuing a real provider request or executing a
+tool, and has passed human review. P8-6.4.3 adds the typed request/result
+boundary and the `AgentService` orchestration path: a validated plan is
+executed only through `ToolRegistry`, planner and tool outcomes are recorded
+in append-only audit, and audit failure closes the success path. Durable
+audit storage, memory, autonomous loops, reasoning, real provider planning
+calls and runtime evidence still require separate authorization. The P8-5
+row records the authorized provider E2E scope, not Basic Agent completion.
 
 ## 4. 实现设计
 
@@ -196,10 +263,29 @@ timeout/auth/rate-limit/HTTP/unavailable/empty/oversized 等失败均确定性�
 `TEMPLATE_FALLBACK` / `degraded=true` 并通过同一个 validator；fallback
 失败返回 `REPORT_UNAVAILABLE`，不暴露无效报告。
 
-Basic Agent 只允许调用受控只读工具，例如 `query_events`、
-`get_event_statistics`、`get_event`、`list_sources`、
-`get_evidence_metadata` 和 `analyze_period`。禁止任意 SQL、shell、文件系统、
-网络副作用和外部动作；超出范围或无证据时返回明确拒绝或数据不足。
+P8-6 Basic Agent 只允许调用四个静态只读工具：
+`get_safety_summary`、`get_event_statistics`、`get_event_details` 和
+`generate_safety_report`。工具注册不允许动态扩展，权限 deny-by-default，
+planner 为确定性规则而非 LLM tool calling。禁止任意 SQL、shell、文件系统、
+事件变更、证据删除、alert action、compliance override 和外部动作；超出
+范围或无证据时返回明确拒绝或数据不足。`generate_safety_report` 复用未改变
+的 P8-5 provider-first 路径和 `TemplateFallback`。
+
+P8-6.1 已实现上述注册表和权限层：`AgentTool`、不可变 `ToolRegistry`、
+`ToolPermissionPolicy`、`ToolExecutionContext`、`ToolResult` 和 audit
+metadata 均已落地。四类 handler 仅调用现有 `SafetyAnalyticsService`、
+`SafetyContextBuilder`、`EventQueryService` 和 `ReportService`，未复制分析、
+报告或 grounding 逻辑。未知工具、动态注册、禁止 capability、未知参数及
+SQL/path/shell/mutation-like 参数均在 handler 前拒绝。当前 audit metadata
+仅生成、不持久化。P8-6.2 已实现 `AgentIntent`、`AgentPlan` 和确定性 planner：
+支持四类 intent 到四个静态工具的精确映射，验证 question、period、filters
+和 event ID，执行 registry resolve 与 permission preflight，但不调用
+`ToolRegistry.execute`，并已通过人工审核。P8-6.3 已实现
+`phase8-agent-audit-v1`、`AuditEvent`、append-only in-memory store
+abstraction、bounded metadata sanitization 和 `AgentAuditService`。
+P8-6.4.3 的 AgentService orchestration 已实现并通过人工审核，并纳入
+interim checkpoint tag `phase-8-controlled-agent-complete`；
+durable audit persistence 与 autonomous reasoning 仍未实现。
 
 P8-5D 仅为 `REPORT_SCHEMA_INVALID` 增加有界、确定性的 sanitized
 diagnostics。每条诊断只包含 safe JSON path、项目自有错误类别、expected
@@ -364,11 +450,85 @@ transport、strict JSON、`phase8-report-v1` 和 grounding 全部通过，返回
 
 ## 8. 开发记录
 
+- 2026-09-24: Completed P8-6.4.3 AgentService orchestration. Added the
+  immutable `phase8-agent-request-v1` and `phase8-agent-result-v1` contracts,
+  replaced the placeholder with validated-plan-only `AgentService`
+  orchestration, routed execution exclusively through `ToolRegistry.execute`,
+  recorded planner/tool outcomes through append-only `AgentAuditService`,
+  preserved deterministic fallback and returned structured refusal, tool and
+  audit failures. Audit append failure fails closed. Full gate passed
+  (`632 passed, 1 skipped`); `compileall` PASS; `git diff --check` PASS.
+  No real provider request, durable audit store, memory, autonomous loop,
+  commit, tag or push was performed. P8-6.4.2 is `HUMAN REVIEW PASS`;
+  P8-6.4.3 subsequently received `HUMAN REVIEW PASS`; the Agent
+  implementation checkpoint was later released under tag
+  `phase-8-controlled-agent-complete`.
+- 2026-09-24: Completed P8-6.4.2 LLM planner adapter implementation.
+  Added `LLMPlannerRequest`, `LLMPlannerCandidateClient` and
+  `PlannerCandidateRequestBuilder` as a provider-independent boundary, plus
+  `LLMPlannerAdapter` for one candidate attempt, strict parser/validator
+  integration, bounded audit metadata and deterministic fallback. Invalid and
+  provider-failed candidates fall back; forbidden candidate capabilities are
+  refused without privilege escalation. No real provider request,
+  AgentService, tool execution, model/data/training change, commit, tag or
+  push was performed. P8-6.4.1 is `HUMAN REVIEW PASS`; P8-6.4.2
+  subsequently received `HUMAN REVIEW PASS`.
+- 2026-09-24: Completed P8-6.4.1 plan candidate parser and validator.
+  Added the immutable `phase8-agent-plan-candidate-v1` schema, bounded strict
+  UTF-8 JSON parsing, deterministic request binding, intent/tool/argument and
+  deny-by-default permission validation, and deterministic conversion to the
+  unchanged `phase8-agent-plan-v1`. Added focused parser/validator tests and
+  proved that no tool execution occurs. Full gate passed (`613 passed,
+  1 skipped`). No provider request, AgentService, commit, tag or push was
+  performed. P8-6.4 is `HUMAN REVIEW PASS`; P8-6.4.1 subsequently received
+  `HUMAN REVIEW PASS`.
+- 2026-09-24: Completed the P8-6.4 design-only LLM-assisted Agent planning
+  architecture freeze. Defined the optional untrusted candidate boundary,
+  separated `phase8-agent-plan-candidate-v1` from the unchanged
+  `phase8-agent-plan-v1`, and froze strict parsing, deterministic validation,
+  registry-only execution, permission rechecks, append-only audit
+  integration, provider failure fallback and privacy constraints. No planner
+  implementation, provider request, dependency, model or dataset change was
+  added. P8-6.4 subsequently received `HUMAN REVIEW PASS`; P8-6.1 through
+  P8-6.3 are `HUMAN REVIEW PASS`.
+- 2026-09-24: Completed P8-6.3 append-only Agent audit model and service.
+  Added the immutable `phase8-agent-audit-v1` `AuditEvent`, frozen audit
+  statuses, allowlist metadata sanitization, an append-only in-memory store
+  abstraction, deterministic plan identity and planner/tool-result
+  integration. The implementation retains no raw question, arguments,
+  provider output, credentials or filesystem/database paths. P8-6.3
+  subsequently received `HUMAN REVIEW PASS`; P8-6.4 design followed, while
+  durable audit storage, AgentService orchestration and Phase 9 remain not
+  started.
+- 2026-09-24: Completed P8-6.2 deterministic Agent planner. Added the
+  versioned `AgentPlan` contract, supported/unknown/forbidden intent
+  classification, exact mapping to the four frozen read-only tools, bounded
+  question and argument validation, registry resolution and permission
+  preflight. The planner never executes a tool and adds no LLM, network,
+  provider or Agent framework dependency. P8-6.2 subsequently received
+  `HUMAN REVIEW PASS`; P8-6.3 adds the audit boundary and Phase 9 remains
+  not started.
+- 2026-09-24: Completed P8-6.1 static read-only tool registry and permission
+  layer. Added immutable Agent contracts, exactly four registered tools,
+  deny-by-default role capabilities, bounded execution, existing-service
+  adapters and audit metadata generation. Added focused registry and security
+  tests and synchronized Phase 8 status. No planner, reasoning, LLM tool
+  calling, durable audit store, provider request, model/data/training change
+  or Phase 9 work was added. P8-6.1 subsequently received `HUMAN REVIEW PASS`.
+- 2026-09-24: Completed the P8-6 Basic Agent architecture freeze for human
+  review. Defined a deterministic `AgentService` planner, static read-only
+  tool registry, deny-by-default permissions, the four allowed tools,
+  structured failure behavior, P8-5 fallback reuse, append-only audit and
+  hard security boundaries. No Agent implementation, LLM tool calling,
+  provider request, dependency, configuration or upstream contract was
+  changed. At freeze completion P8-6 was `ARCHITECTURE FREEZE COMPLETE /
+  IMPLEMENTATION NOT STARTED / HUMAN REVIEW PENDING`; it subsequently passed
+  human review. M-023 remains `待实现`.
 - 2026-09-24: Published the authorized P8-0 through P8-5 interim release
   checkpoint under annotated tag `phase-8-provider-pipeline-complete`. This
   is `P8-0 THROUGH P8-5 COMPLETE / HUMAN REVIEW PASS / CHECKPOINTED`, not the
-  final Phase 8 release. P8-6 is `READY / NOT STARTED`; Basic Agent and Phase
-  9 are not started. The release task issued no provider request, did not use
+  final Phase 8 release. At checkpoint creation, P8-6 was `READY / NOT
+  STARTED`; Basic Agent and Phase 9 were not started. The release task issued no provider request, did not use
   `--execute`, preserved the historical schema-rejection evidence and left
   M-021, M-022 and M-023 as `待实现`.
 - 2026-09-24: Completed the P8-5 final real provider validation audit. The

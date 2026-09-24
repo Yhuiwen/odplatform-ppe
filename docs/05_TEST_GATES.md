@@ -981,9 +981,12 @@ Phase 8 P8-4 result:
 Phase 8 P8-5 result:
 `COMPLETE / HUMAN REVIEW PASS / CHECKPOINTED`.
 
-Provider success and fallback success are separate outcomes. P8-6 is
-`READY / NOT STARTED`; Basic Agent and Phase 9 remain not started. M-021,
-M-022 and M-023 remain `待实现`.
+Provider success and fallback success are separate outcomes. At P8-5
+completion P8-6 was `READY / NOT STARTED`; its architecture freeze later
+passed human review, and the separately authorized P8-6.1 registry/permission
+slice is `IMPLEMENTATION COMPLETE / HUMAN REVIEW PENDING`. Agent planner,
+reasoning and Phase 9 remain not started. M-021, M-022 and M-023 remain
+`待实现`.
 
 ## Phase 8 P8-5D Sanitized Provider Schema Diagnostics Gates
 
@@ -1004,7 +1007,8 @@ Phase 8 P8-5D result:
 The exact historical provider schema mismatch remains unrecoverable because
 raw provider content was intentionally not persisted. P8-5D only makes a
 future separately authorized `REPORT_SCHEMA_INVALID` attempt diagnosable.
-Basic Agent, P8-6 and Phase 9 remain unauthorized.
+At that historical point, Basic Agent, P8-6 implementation and Phase 9
+remained unauthorized.
 
 ## Phase 8 P8-5P Provider Prompt Schema Conformance Gates
 
@@ -1026,8 +1030,11 @@ Prompt v2 improves instruction conformance against the unchanged exact report
 contract. P8-5P itself did not issue a provider request or prove
 `PROVIDER_VALIDATED`; a subsequent separately authorized manual request
 following prompt v2 returned `PROVIDER_VALIDATED`. Prompt compliance remains a
-conformance aid, not the security boundary. P8-6 is `READY / NOT STARTED`;
-Basic Agent and Phase 9 remain not started.
+conformance aid, not the security boundary. At P8-5P review completion, P8-6
+was `READY / NOT STARTED`; its subsequent architecture freeze passed human
+review, and the separately authorized P8-6.1 registry/permission slice is
+`IMPLEMENTATION COMPLETE / HUMAN REVIEW PENDING`. Agent planner, reasoning and
+Phase 9 remain not started.
 
 ## Phase 8 P8-5 Interim Release Checkpoint Gates
 
@@ -1040,7 +1047,194 @@ Basic Agent and Phase 9 remain not started.
 | P8-5-CP-G5 | No secret, raw response or runtime artifact enters Git | Credential scan has no real credential match; authorization headers, raw provider response, `.env`, databases, MP4 files, model artifacts and generated runtime outputs are absent or ignored | PASS |
 | P8-5-CP-G6 | Real provider result is represented without re-execution | Existing human-authorized evidence records `PROVIDER_VALIDATED`; this release task issued no provider request and did not use `--execute` | PASS |
 | P8-5-CP-G7 | Full repository gates pass | Final pre-commit gate: `539 passed, 1 skipped`; `python -m compileall -q .` PASS; `git diff --check` PASS | PASS |
-| P8-5-CP-G8 | Checkpoint boundaries remain accurate | Phase 8 remains IN PROGRESS; P8-6 is `READY / NOT STARTED`; Basic Agent and Phase 9 are not started; M-021, M-022 and M-023 remain `待实现` | PASS |
+| P8-5-CP-G8 | Checkpoint boundaries remain accurate | At checkpoint creation, Phase 8 remained IN PROGRESS, P8-6 was `READY / NOT STARTED`, Basic Agent and Phase 9 were not started, and M-021, M-022 and M-023 remained `待实现` | PASS |
 
 Phase 8 P8-5 interim checkpoint result:
 `P8-0 THROUGH P8-5 COMPLETE / HUMAN REVIEW PASS / CHECKPOINTED`.
+
+## Phase 8 P8-6 Basic Agent Architecture Freeze Gates
+
+| Gate | Requirement | Evidence | Status |
+| --- | --- | --- | --- |
+| P8-6-AF-G1 | Basic Safety Agent boundary and deterministic planner are frozen | `docs/designs/phase-08/PHASE_8_P8_6_AGENT_ARCHITECTURE.md` defines one `AgentService` orchestration path with deterministic intent routing and no autonomous loop | PASS |
+| P8-6-AF-G2 | Static read-only tool registry is frozen | Registry versions, descriptor fields and exactly four allowlisted tools are defined; dynamic registration and remote discovery are prohibited | PASS |
+| P8-6-AF-G3 | Deny-by-default permission model is frozen | Capabilities, initial roles, provider-invocation separation and denial behavior are defined without any mutation capability | PASS |
+| P8-6-AF-G4 | Four allowed tool contracts are complete | Inputs, outputs, service dependencies and privacy boundaries are defined for summary, statistics, event details and report generation | PASS |
+| P8-6-AF-G5 | Forbidden capabilities are explicit | Arbitrary SQL, filesystem, shell, mutation, evidence deletion, alert action, compliance override, dynamic code/tools and provider tool calling are prohibited | PASS |
+| P8-6-AF-G6 | Failure and P8-5 fallback reuse are frozen | Structured Agent outcomes and unchanged `phase8-report-v1` / `GroundingValidator` / `TemplateFallback` reuse are specified | PASS |
+| P8-6-AF-G7 | Audit and security constraints are frozen | Append-only `phase8-agent-audit-v1`, fail-closed audit writes, bounded inputs, sanitized outputs and no-secret rules are specified | PASS |
+| P8-6-AF-G8 | No implementation or frozen identity changes are included | No Agent code, dependency, provider request or P8-5 contract change was made by the freeze task; checkpoint tag, model, dataset, training and inference identities remain unchanged | PASS |
+
+Phase 8 P8-6 architecture-freeze result:
+`ARCHITECTURE FREEZE COMPLETE / HUMAN REVIEW PASS`.
+
+The freeze task was design-only. Separately authorized P8-6.1 and P8-6.2 work
+now provides the static registry, permission layer and deterministic planner.
+P8-6.3 subsequently implements the append-only Agent audit boundary without
+durable persistence and has passed human review. P8-6.4 design-only
+architecture freeze passed human review. P8-6.4.1 passed human review and
+P8-6.4.2 implements the provider-independent planner adapter without a real
+provider request. AgentService orchestration, runtime evidence, M-023
+completion and Phase 9 remain unauthorized.
+
+## Phase 8 P8-6.1 Tool Registry and Permission Gates
+
+| Gate | Requirement | Evidence | Status |
+| --- | --- | --- | --- |
+| P8-6.1-G1 | Static AgentTool contracts and exactly four frozen tools are implemented | `core/schemas/agent.py` and `core/agent/tool_registry.py` define the immutable contract and stable order for summary, statistics, event details and report generation | PASS |
+| P8-6.1-G2 | Dynamic registration and unknown tools fail closed | `ToolRegistry` has no `register` method and rejects unknown, duplicate, incomplete, mismatched or disabled descriptors before execution | PASS |
+| P8-6.1-G3 | Permission policy is deny-by-default | `ToolPermissionPolicy` maps project roles to explicit read/report capabilities, separates `provider:invoke`, and rejects forbidden capability classes | PASS |
+| P8-6.1-G4 | Tool execution is read-only and bounded | Every descriptor is `READ_ONLY`, `max_calls_per_request=1`, has a finite timeout and accepts only its frozen argument allowlist | PASS |
+| P8-6.1-G5 | Existing services are reused without duplication | Handlers delegate to `SafetyAnalyticsService`, `SafetyContextBuilder`, `EventQueryService` and `ReportService`; no analytics/report/grounding implementation is copied | PASS |
+| P8-6.1-G6 | Audit metadata is generated without persisting raw arguments | Successful, denied and failed executions return bounded tool audit metadata with a canonical arguments SHA256; durable audit storage remains unimplemented | PASS |
+| P8-6.1-G7 | Security boundaries and regression gates pass | Focused tests cover unknown tools, forbidden permissions, all four allowed operations, audit metadata and SQL/filesystem/shell/mutation-like arguments; full gate is `555 passed, 1 skipped`; `compileall` PASS; `git diff --check` PASS | PASS |
+| P8-6.1-G8 | Frozen P8-5 contracts, model/data assets and release tag remain unchanged | `phase8-report-v1`, `SafetyReportGroundingValidator`, `TemplateFallback`, the provider boundary, checkpoint, training, inference and processed dataset hashes remain MATCH; `phase-8-provider-pipeline-complete` is unchanged; Charter diff is EMPTY | PASS |
+
+Phase 8 P8-6.1 result:
+`IMPLEMENTATION COMPLETE / HUMAN REVIEW PASS`.
+
+P8-6.2 subsequently implemented the deterministic planner and received human
+review PASS. P8-6.3 implements the append-only audit boundary and has passed
+human review. P8-6.4 passed design review; P8-6.4.1 passed human review and
+P8-6.4.2 implements the provider-independent planner adapter without a real
+provider request. AgentService orchestration, reasoning, durable audit store,
+provider invocation through the Agent and Phase 9 remain unauthorized.
+
+## Phase 8 P8-6.2 Deterministic Planner Gates
+
+| Gate | Requirement | Evidence | Status |
+| --- | --- | --- | --- |
+| P8-6.2-G1 | Versioned AgentPlan and supported intent vocabulary are implemented | `core/schemas/agent.py` defines `phase8-agent-plan-v1`, `AgentIntent` and the immutable `AgentPlan` projection | PASS |
+| P8-6.2-G2 | Supported intents map exactly to frozen read-only tools | Focused tests cover summary, statistics, event detail and report intent-to-tool mapping | PASS |
+| P8-6.2-G3 | Unknown and forbidden questions fail closed | Unknown intent returns `OUT_OF_SCOPE`; mutation, administration, SQL, shell and system-action requests return `FORBIDDEN_REQUEST` | PASS |
+| P8-6.2-G4 | Planning arguments are validated before plan creation | Question byte limits, UTC period bounds, 366-day maximum, descriptor input fields, event type/status, track ID, limit, offset and event ID are validated | PASS |
+| P8-6.2-G5 | Planning reuses registry and permission boundaries without execution | The planner resolves the exact static tool and runs `ToolPermissionPolicy`; tests prove `ToolRegistry.execute` is never called | PASS |
+| P8-6.2-G6 | No LLM, network or framework dependency is introduced | Planner source imports no HTTP, socket, provider SDK or Agent framework; all classification is deterministic and rule-based | PASS |
+| P8-6.2-G7 | Focused and full repository gates pass | Focused planner/registry/import suite `112 passed`; full repository `577 passed, 1 skipped`; `compileall` PASS; `git diff --check` PASS | PASS |
+| P8-6.2-G8 | Frozen P8-5 contracts, model/data assets and release tag remain unchanged | `phase8-report-v1`, `SafetyReportGroundingValidator`, `TemplateFallback`, the provider boundary, checkpoint, training, inference and processed dataset hashes remain MATCH; `phase-8-provider-pipeline-complete` is unchanged; Charter diff is EMPTY | PASS |
+
+Phase 8 P8-6.2 result:
+`HUMAN REVIEW PASS`.
+
+P8-6.3 subsequently implemented the append-only Agent audit boundary.
+It has passed human review. P8-6.4 subsequently passed architecture human
+review, and P8-6.4.1 implements the candidate parser/validator without
+provider requests or tool execution. AgentService orchestration, reasoning,
+durable audit storage, provider execution through the Agent and Phase 9 remain
+unauthorized.
+
+## Phase 8 P8-6.3 Agent Audit Gates
+
+| Gate | Requirement | Evidence | Status |
+| --- | --- | --- | --- |
+| P8-6.3-G1 | `phase8-agent-audit-v1` and immutable `AuditEvent` are implemented | `core/schemas/agent.py` defines the versioned event, audit statuses, required identity/status fields and deterministic JSON serialization | PASS |
+| P8-6.3-G2 | Audit storage is append-only and non-durable | `infra/storage/agent_audit_store.py` defines an append/events protocol and an in-memory implementation with immutable snapshots and no update/delete/clear API | PASS |
+| P8-6.3-G3 | Required request, plan, tool, status, failure and timestamp fields are recorded | Focused tests assert request ID, intent, plan ID, tools requested, execution status, failure status and timestamp presence | PASS |
+| P8-6.3-G4 | Metadata sanitization is bounded and privacy-preserving | Only duration, row count, versions, fallback/report status may be retained; secrets, credentials, raw payloads, provider output, prompts and paths are dropped | PASS |
+| P8-6.3-G5 | Success, failure, refusal and unknown-tool events are recorded | `record_tool_result()` maps the frozen tool statuses; `record_unknown_tool()` records `UNKNOWN_TOOL` / `TOOL_NOT_FOUND` without tool data | PASS |
+| P8-6.3-G6 | Planner integration records identity without raw input | `record_plan()` derives a deterministic opaque plan ID and records only plan/tool identity, intent and question SHA256; raw question/arguments are absent | PASS |
+| P8-6.3-G7 | Focused and full gates pass | Focused audit/planner/registry/import suite `124 passed`; full repository `589 passed, 1 skipped`; `compileall` PASS; `git diff --check` PASS | PASS / HUMAN REVIEW PASS |
+| P8-6.3-G8 | Frozen P8-5 contracts, model/data assets and release tag remain unchanged | `phase8-report-v1`, `SafetyReportGroundingValidator`, `TemplateFallback`, the provider boundary, checkpoint, training, inference and processed dataset hashes remain MATCH; `phase-8-provider-pipeline-complete` is unchanged; Charter diff is EMPTY | PASS / HUMAN REVIEW PASS |
+
+Phase 8 P8-6.3 result:
+`HUMAN REVIEW PASS`.
+
+Durable audit storage, AgentService orchestration, reasoning, provider
+execution through the Agent and Phase 9 remain unauthorized. P8-6.4 passed
+architecture human review; P8-6.4.1 implements only the strict candidate
+parser, validator and deterministic final-plan conversion.
+
+## Phase 8 P8-6.4 LLM-Assisted Planning Architecture Gates
+
+| Gate | Requirement | Evidence | Status |
+| --- | --- | --- | --- |
+| P8-6.4-AF-G1 | LLM planner boundary and deterministic authority are frozen | The architecture keeps deterministic prechecking, intent/tool authority, final plan construction and fallback separate from the untrusted provider candidate | PASS |
+| P8-6.4-AF-G2 | Candidate and final `AgentPlan` contracts are separated | `phase8-agent-plan-candidate-v1` is defined as untrusted input; `phase8-agent-plan-v1` remains the only final plan contract | PASS |
+| P8-6.4-AF-G3 | Plan parsing, validation and fallback order are frozen | Strict bounded parsing, request binding, intent/tool/argument validation, deterministic plan construction and fallback order are documented | PASS |
+| P8-6.4-AF-G4 | Static `ToolRegistry` remains the only execution enforcement point | Provider output cannot resolve or call handlers; exact name/version resolution and `ToolRegistry.execute` remain mandatory | PASS |
+| P8-6.4-AF-G5 | Deny-by-default permission and provider-access boundaries are frozen | Validation preflight and execution-time recheck are required; planning provider access uses `provider:invoke` and remains off by default | PASS |
+| P8-6.4-AF-G6 | Append-only audit integration preserves `phase8-agent-audit-v1` | Accepted, refused, unknown-tool, invalid-output and provider-failure outcomes map to the existing audit statuses without raw prompt or output retention | PASS |
+| P8-6.4-AF-G7 | Provider failure, invalid output and privacy boundaries are frozen | Invalid candidates cannot execute; deterministic planner fallback remains separate from report `TemplateFallback`; event data, paths, secrets and reasoning are excluded | PASS |
+| P8-6.4-AF-G8 | No implementation, provider request, dependency, frozen-contract or tag change is included | Only design and status documents changed; `phase8-report-v1`, `GroundingValidator`, `TemplateFallback`, the checkpoint tag and frozen assets remain unchanged | PASS |
+
+Phase 8 P8-6.4 architecture result:
+`ARCHITECTURE FREEZE COMPLETE / HUMAN REVIEW PASS`.
+
+## Phase 8 P8-6.4.1 Plan Candidate Validator Gates
+
+| Gate | Requirement | Evidence | Status |
+| --- | --- | --- | --- |
+| P8-6.4.1-G1 | Candidate and final plan contracts are versioned and separate | `AgentPlanCandidate` uses `phase8-agent-plan-candidate-v1`; conversion returns the unchanged `phase8-agent-plan-v1` | PASS |
+| P8-6.4.1-G2 | Untrusted JSON parsing is strict and bounded | Parser accepts raw UTF-8 bytes only and rejects empty/oversized input, BOM, malformed or duplicate-key JSON, non-finite values, wrong schema fields/types and unsupported values without repair | PASS |
+| P8-6.4.1-G3 | Intent and tool semantics are validated | Supported intents, reason-code consistency, deterministic intent conflicts, exact tool name/version, frozen intent-to-tool mapping and read-only effect are enforced | PASS |
+| P8-6.4.1-G4 | Request binding and forbidden capabilities fail closed | Candidate binding is recomputed from the normalized question and frozen contract; unknown/dynamic tools and SQL, filesystem, shell or mutation-like fields are rejected | PASS |
+| P8-6.4.1-G5 | Registry and permissions are enforcement boundaries | Exact tool resolution occurs through the static `ToolRegistry`; `ToolPermissionPolicy` authorization is required before conversion | PASS |
+| P8-6.4.1-G6 | Candidate arguments reuse deterministic validation | Validator delegates period, filter, event-ID and pagination checks to the unchanged deterministic planner before constructing the plan | PASS |
+| P8-6.4.1-G7 | Conversion is deterministic and non-executing | Repeated validation returns identical plans, and monkeypatched `ToolRegistry.execute` is never called | PASS |
+| P8-6.4.1-G8 | Frozen contracts, assets and checkpoint remain unchanged | `phase8-report-v1`, `GroundingValidator`, `TemplateFallback`, provider transport, checkpoint/training/inference/dataset hashes and `phase-8-provider-pipeline-complete` remain unchanged; Charter diff is EMPTY | PASS |
+
+Phase 8 P8-6.4.1 result:
+`HUMAN REVIEW PASS`.
+
+Focused validation: `148 passed`. Full repository validation:
+`613 passed, 1 skipped`; `compileall` PASS; `git diff --check` PASS. The skip
+is the existing optional Torch test. No provider request, AgentService,
+tool execution, commit, tag or push was performed. AgentService orchestration,
+durable audit storage, provider execution through the Agent and Phase 9
+remain unauthorized.
+
+## Phase 8 P8-6.4.2 LLM Planner Adapter Gates
+
+| Gate | Requirement | Evidence | Status |
+| --- | --- | --- | --- |
+| P8-6.4.2-G1 | Planner request builder is bounded, deterministic and tool-call-free | `phase8-agent-planner-request-v1` contains normalized question, static schema/registry metadata and request binding only; repeated builds are canonical | PASS |
+| P8-6.4.2-G2 | Candidate client boundary is injected and untrusted | `LLMPlannerCandidateClient` returns bytes only; no network, provider SDK, provider-native tool calling or dynamic discovery is implemented | PASS |
+| P8-6.4.2-G3 | Candidate output uses the existing strict parser and validator | Every returned candidate passes `AgentPlanCandidateParser` and `AgentPlanCandidateValidator` before an `AgentPlan` can be returned | PASS |
+| P8-6.4.2-G4 | Provider access is deny-by-default | A candidate is attempted only when the existing `provider:invoke` capability authorizes the context; otherwise the deterministic planner is used without calling the client | PASS |
+| P8-6.4.2-G5 | Failure behavior is bounded and non-escalating | Provider failure and invalid output fall back to the deterministic planner; forbidden capabilities are refused without fallback or privilege escalation | PASS |
+| P8-6.4.2-G6 | No tool execution or Agent orchestration is added by this slice | Focused tests monkeypatch `ToolRegistry.execute` to fail; the adapter returns plans only. P8-6.4.3 subsequently adds AgentService orchestration under separate authorization | PASS |
+| P8-6.4.2-G7 | Audit metadata is bounded and privacy-preserving | Validated, refused, unknown-tool, invalid and provider-failure outcomes append `phase8-agent-audit-v1` events without raw question, arguments or provider payload | PASS |
+| P8-6.4.2-G8 | Frozen contracts, assets and checkpoint remain unchanged | P8-5 report contracts, candidate/final plan/audit/registry/policy contracts, model/data/training assets and `phase-8-provider-pipeline-complete` remain unchanged; no real provider request occurred | PASS |
+
+Phase 8 P8-6.4.2 result:
+`HUMAN REVIEW PASS`.
+
+Focused validation: `148 passed`. Full repository validation:
+`625 passed, 1 skipped`; `compileall` PASS; `git diff --check` PASS. The skip
+is the existing optional Torch test. No real provider request, AgentService,
+tool execution, commit, tag or push was performed by this P8-6.4.2 slice.
+
+## Phase 8 P8-6.4.3 AgentService Orchestration Gates
+
+| Gate | Requirement | Evidence | Status |
+| --- | --- | --- | --- |
+| P8-6.4.3-G1 | Typed request/result contracts are bounded and provider-independent | `phase8-agent-request-v1` carries trusted execution identity and bounded question/period/filter inputs; `phase8-agent-result-v1` carries only status, advisory answer, structured facts/metrics/references/report and bounded safe error | PASS |
+| P8-6.4.3-G2 | Only a validated `phase8-agent-plan-v1` can execute | `AgentService` rejects non-plan outcomes before registry execution and never accepts or passes a provider candidate or raw candidate bytes | PASS |
+| P8-6.4.3-G3 | Registry remains the only execution path | Every executable request calls `ToolRegistry.execute`; no handler is imported, resolved or invoked directly by `AgentService` | PASS |
+| P8-6.4.3-G4 | Deterministic fallback and deny-by-default permissions are preserved | LLM candidate failure and invalid output reuse the existing fallback; the existing registry/policy checks remain authoritative at execution time | PASS |
+| P8-6.4.3-G5 | Every executable or refused path records append-only audit | Planner plan/refusal/failure events and tool success/refusal/error projections are appended through `AgentAuditService`; planner errors without their own event receive a bounded service audit event | PASS |
+| P8-6.4.3-G6 | Audit failure fails closed | A tool-result audit append failure returns `AUDIT_UNAVAILABLE` and does not release `ANSWERED` or tool data | PASS |
+| P8-6.4.3-G7 | Structured success, fallback, refusal and tool failure are covered | Focused tests cover deterministic success, LLM success, provider fallback, forbidden request, tool error, empty result, missing planner audit and deterministic JSON serialization | PASS |
+| P8-6.4.3-G8 | Frozen contracts, assets and checkpoint remain unchanged | `phase8-report-v1`, `SafetyReportGroundingValidator`, `TemplateFallback`, the provider boundary, model/data/training assets and `phase-8-provider-pipeline-complete` remain unchanged; no real provider request occurred | PASS |
+
+Phase 8 P8-6.4.3 result:
+`PASS / HUMAN REVIEW PASS`.
+
+Focused validation: `36 passed`. Full repository validation:
+`632 passed, 1 skipped`; `compileall` PASS; `git diff --check` PASS. The skip
+is the existing optional Torch test. No real provider request, durable audit
+store, memory, autonomous loop, commit, tag or push was performed. P8-6.4.2
+is `HUMAN REVIEW PASS`.
+
+## Phase 8 Agent Checkpoint Release Gates
+
+| Gate | Requirement | Evidence | Status |
+| --- | --- | --- | --- |
+| P8-6-CP-G1 | Complete Phase 8 Agent scope is included | P8-6.1 through P8-6.4.3 implementation, tests, architecture, reports and status documents are present | PASS |
+| P8-6-CP-G2 | P8-6 reviews are complete | P8-6.1, P8-6.2, P8-6.3, P8-6.4.1, P8-6.4.2 and P8-6.4.3 are recorded as `HUMAN REVIEW PASS` | PASS |
+| P8-6-CP-G3 | Frozen contracts remain unchanged | `phase8-context-v1`, `phase8-report-v1`, `SafetyReportGroundingValidator`, `TemplateFallback`, `phase8-agent-plan-v1` and `phase8-agent-audit-v1` remain unchanged | PASS |
+| P8-6-CP-G4 | Existing release tags are preserved | Phase 7 tags and `phase-8-provider-pipeline-complete` remain unchanged | PASS |
+| P8-6-CP-G5 | Repository security boundary is clean | No credential, provider secret, raw provider response, model, dataset, database or runtime artifact is added | PASS |
+| P8-6-CP-G6 | Full repository validation passes | `632 passed, 1 skipped`; `compileall` PASS; `git diff --check` PASS | PASS |
+| P8-6-CP-G7 | Release identity is explicit | Interim annotated tag `phase-8-controlled-agent-complete` records the Agent implementation checkpoint | PASS |
+| P8-6-CP-G8 | Scope boundary remains accurate | This is not the Phase 8 final product release; real provider planning, durable audit, reasoning and Phase 9 remain not implemented | PASS |

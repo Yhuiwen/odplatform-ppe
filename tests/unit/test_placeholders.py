@@ -6,7 +6,6 @@ from core.detection.detector import Detector
 from core.events.event_state import EventStateManager
 from core.pipeline.inference_pipeline import InferencePipeline
 from infra.storage.video_storage import VideoStorage
-from services.agent_service import AgentService
 from services.dataset_service import DatasetService
 from services.inference_service import InferenceService
 from services.tracking_service import TrackingService
@@ -21,7 +20,6 @@ PLACEHOLDER_CALLS = [
     ("video-service", lambda: InferenceService().infer_video(None)),
     ("stream-service", lambda: InferenceService().infer_stream(None)),
     ("tracking-service", lambda: TrackingService().track([])),
-    ("agent-service", lambda: AgentService().ask("question")),
     ("video-storage", lambda: VideoStorage().save_clip([], Path("x.mp4"))),
 ]
 

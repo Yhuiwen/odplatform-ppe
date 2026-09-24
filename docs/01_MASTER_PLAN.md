@@ -16,7 +16,7 @@
 | P5 | Tracking & Association | ByteTrack + Person-PPE Association | 已经实现（COMPLETE / RELEASED；tag `phase-5-tracking-association-complete`；P5-3-G5 historical `BLOCKED / NOT RUN` followed by explicit release authorization） |
 | P6 | Compliance & Events | PPE 合规规则、时序判断、Event Engine | 已经实现（COMPLETE / RELEASED；tag `phase-6-compliance-event-engine-complete`） |
 | P7 | Web & Alerts | SQLite + Snapshot + TTS + Streamlit | 已经实现（COMPLETE / RELEASED；base tag `phase-7-web-alert-platform-complete`；final freeze tag `phase-7-release-freeze-complete`；M-007 implementation + real MP4 validation + human review PASS） |
-| P8 | LLM & Agent | LLM Report + Fallback + Basic Agent | 实现中（P8-0 至 P8-5 `COMPLETE / HUMAN REVIEW PASS / CHECKPOINTED`；P8-5D/P8-5P `HUMAN REVIEW PASS`；P8-6 `READY / NOT STARTED`；Basic Agent 未实现） |
+| P8 | LLM & Agent | LLM Report + Fallback + Basic Agent | 实现中（P8-0 至 P8-5 `COMPLETE / HUMAN REVIEW PASS / CHECKPOINTED`；P8-5D/P8-5P `HUMAN REVIEW PASS`；P8-6 architecture `HUMAN REVIEW PASS`；P8-6.1/P8-6.2/P8-6.3 `HUMAN REVIEW PASS`；P8-6.4 architecture `HUMAN REVIEW PASS`；P8-6.4.1 candidate parser/validator `HUMAN REVIEW PASS`；P8-6.4.2 LLM planner adapter `HUMAN REVIEW PASS`；P8-6.4.3 AgentService orchestration `HUMAN REVIEW PASS`；P8-6 Agent implementation checkpoint tag `phase-8-controlled-agent-complete`；Phase 8 final integration 尚未完成） |
 | P9 | Integration & Delivery | 全链路测试、性能分析、文档、Demo、答辩交付 | 待实现 |
 
 ## 2. 阶段依赖
@@ -173,8 +173,37 @@ configuration or Phase 0 through Phase 7 implementation is changed. M-021,
 M-022 and M-023 remain `待实现`. P8-0 through P8-5 are human-reviewed PASS
 and are recorded by the interim `phase-8-provider-pipeline-complete`
 checkpoint. This is not the Phase 8 final release. P8-6 is
-`READY / NOT STARTED`; it is not authorized by this checkpoint task. Basic
-Agent and Phase 9 remain not started.
+`ARCHITECTURE FREEZE COMPLETE / HUMAN REVIEW PASS`. P8-6.1 implements the
+immutable static registry, deny-by-default permission policy, bounded
+read-only execution, four existing-service adapters and audit metadata
+generation and has passed human review. P8-6.2 adds the deterministic planner,
+intent classification, exact tool mapping and validated execution plans
+without tool execution, and has passed human review. P8-6.3 adds the
+append-only in-memory audit model, bounded metadata sanitization and
+`AgentAuditService` and has passed human review. P8-6.4 freezes an optional
+LLM-assisted planning boundary around an untrusted, versioned candidate
+contract, strict validation, deterministic `AgentPlan` construction,
+registry-only execution, permission rechecks, append-only audit integration
+and deterministic fallback. It preserves the deterministic planner,
+`phase8-agent-plan-v1`, `phase8-agent-audit-v1`, the static registry,
+`phase8-report-v1`, `GroundingValidator` and `TemplateFallback`. P8-6.4
+subsequently passed human review. P8-6.4.1 implements strict bounded JSON
+parsing, request binding, semantic validation and deterministic conversion
+to `AgentPlan`; it does not call a provider or execute a tool and has passed
+human review. P8-6.4.2 adds the provider-independent planner request builder,
+injected candidate-client boundary, strict validator integration, bounded
+audit metadata and deterministic fallback. Invalid/provider-failed candidates
+fall back to the deterministic planner; forbidden candidate capabilities are
+refused without privilege escalation. P8-6.4.2 has passed human review.
+P8-6.4.3 adds a typed Agent request/result contract and `AgentService`
+orchestration that executes only a validated `phase8-agent-plan-v1` through
+the static `ToolRegistry`, records append-only audit events for planner,
+tool and failure outcomes, preserves deterministic fallback, and fails closed
+when audit append cannot be confirmed. Durable audit storage, memory,
+autonomous loops, real provider planning requests and reasoning remain not
+implemented. P8-6.4.3 has passed human review and is recorded by the interim
+tag `phase-8-controlled-agent-complete`; this is not the Phase 8 final
+product release.
 
 ## 4. 状态规则
 

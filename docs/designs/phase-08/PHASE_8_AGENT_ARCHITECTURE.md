@@ -1,6 +1,6 @@
 # Phase 8 Safety Intelligence Agent Architecture
 
-Status: `P8-0 THROUGH P8-5 COMPLETE / HUMAN REVIEW PASS / CHECKPOINTED; P8-5D HUMAN REVIEW PASS; P8-5P HUMAN REVIEW PASS; P8-6 READY / NOT STARTED`
+Status: `P8-0 THROUGH P8-5 COMPLETE / HUMAN REVIEW PASS / CHECKPOINTED; P8-5D HUMAN REVIEW PASS; P8-5P HUMAN REVIEW PASS; P8-6 ARCHITECTURE FREEZE COMPLETE / HUMAN REVIEW PASS; P8-6.1/P8-6.2/P8-6.3 HUMAN REVIEW PASS; P8-6.4 ARCHITECTURE FREEZE COMPLETE / HUMAN REVIEW PASS; P8-6.4.1/P8-6.4.2/P8-6.4.3 HUMAN REVIEW PASS; AGENT IMPLEMENTATION CHECKPOINT RELEASED`
 
 Date: 2026-09-24
 
@@ -463,22 +463,25 @@ provider integration is accepted.
 
 ## 12. Basic Agent Boundary
 
-The initial Agent scope is internal-data query and analysis. It does not execute
-external actions.
+The P8-6 architecture freeze supersedes the provisional tool list in this
+original P8-0 design. The authoritative Basic Safety Agent contract is
+`docs/designs/phase-08/PHASE_8_P8_6_AGENT_ARCHITECTURE.md`.
 
 Allowlisted tools:
 
 ```text
-query_events
+get_safety_summary
 get_event_statistics
-get_event
-list_sources
-get_evidence_metadata
-analyze_period
+get_event_details
+generate_safety_report
 ```
 
-Every tool is read-only, has a typed request and response, and is implemented by
-an existing service. No generic SQL tool is allowed.
+Every tool is read-only, has a typed request and response, and reuses an
+existing deterministic service. Registration is static and project-owned. No
+dynamic tool registration, model-directed tool selection, generic SQL tool or
+generic network tool is allowed. `generate_safety_report` reuses the unchanged
+P8-5 provider-first path and `TemplateFallback`; provider invocation remains a
+separate capability.
 
 The agent returns one of:
 
@@ -488,6 +491,7 @@ INSUFFICIENT_DATA
 OUT_OF_SCOPE
 TOOL_ERROR
 REFUSED
+AUDIT_UNAVAILABLE
 ```
 
 An answer must carry the same fact, metric and evidence references as a report
@@ -655,7 +659,15 @@ frameworks are not approved for P8-0 and must not be introduced implicitly.
 | P8-5 | Real provider E2E, grounding enforcement and safe fallback | COMPLETE / HUMAN REVIEW PASS / CHECKPOINTED |
 | P8-5D | Sanitized provider schema diagnostics | HUMAN REVIEW PASS |
 | P8-5P | Provider prompt schema conformance fix | HUMAN REVIEW PASS |
-| P8-6 | Integration tests, evaluation and Phase 8 release review | READY / NOT STARTED |
+| P8-6 | Basic Agent architecture: deterministic read-only tools, permissions and audit | ARCHITECTURE FREEZE COMPLETE / HUMAN REVIEW PASS |
+| P8-6.1 | Static read-only tool registry and permission layer | IMPLEMENTATION COMPLETE / HUMAN REVIEW PASS |
+| P8-6.2 | Deterministic Agent planner | HUMAN REVIEW PASS |
+| P8-6.3 | Append-only Agent audit model and service | HUMAN REVIEW PASS |
+| P8-6.4 | LLM-assisted Agent planning architecture | ARCHITECTURE FREEZE COMPLETE / HUMAN REVIEW PASS |
+| P8-6.4.1 | Plan candidate parser, validator and deterministic conversion | HUMAN REVIEW PASS |
+| P8-6.4.2 | LLM planner adapter and deterministic fallback | HUMAN REVIEW PASS |
+| P8-6.4.3 | AgentService orchestration over validated plans | HUMAN REVIEW PASS |
+| P8-6 checkpoint | Controlled Agent implementation | RELEASED / tag `phase-8-controlled-agent-complete` |
 
 P8-0, P8-1, P8-2, P8-3 and P8-4 received human review. P8-3 implements the
 deterministic local fallback and validates it against the frozen report
@@ -670,8 +682,16 @@ JSON syntax parsing, but `phase8-report-v1` construction was rejected as
 fallback passed grounding. That historical result is not
 `PROVIDER_VALIDATED`. P8-0 through P8-5 are checkpointed by
 `phase-8-provider-pipeline-complete`; this is not the final Phase 8 release.
-Basic Agent and Phase 9 remain not started, and P8-6 requires a separate
-subphase authorization.
+P8-6 has since completed its Basic Agent architecture freeze and received
+human review PASS. P8-6.1 implements the static read-only registry and
+permission layer and has received human review PASS. P8-6.2 adds the
+deterministic planner and has received human review PASS. P8-6.3 adds the
+append-only in-memory audit model and service and has received human review
+PASS. Durable audit storage, Agent orchestration and reasoning remain not
+started. P8-6.4 is design-only and freezes an untrusted LLM candidate, strict
+validation, deterministic final-plan construction, registry-only execution,
+permission rechecks and deterministic fallback. P8-6.4 implementation and
+Phase 9 remain not started and require separate authorization.
 P8-5D adds bounded sanitized JSON-path diagnostics for future authorized
 `REPORT_SCHEMA_INVALID` failures without changing the report schema, grounding
 semantics, fallback semantics, provider trust boundary or privacy boundary.
@@ -699,7 +719,9 @@ The following are intentionally deferred:
 - long-term report storage and retention policy;
 - exact fallback template wording and localization;
 - whether report export formats are required beyond structured JSON;
-- agent model/provider selection and tool-call planning strategy.
+- P8-6 implementation values for maximum question length, maximum reporting
+  interval and tool latency budgets;
+- production principal provisioning and authentication mechanism.
 
 These decisions do not block P8-0 because they do not alter the read-only
 boundary, context separation, grounding policy, fallback requirement or
