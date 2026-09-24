@@ -1,0 +1,11 @@
+schema_version: phase8-llm-config-v1
+
+# This file stores environment-variable names and non-secret policy only.
+provider_ref: openai-compatible
+endpoint_env: PPE_LLM_ENDPOINT
+model_env: PPE_LLM_MODEL
+api_key_env: PPE_LLM_API_KEY
+
+timeout_seconds: 60.0
+maximum_response_bytes: 262144
+response_format_json_object: true

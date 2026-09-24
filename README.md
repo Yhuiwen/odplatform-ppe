@@ -18,9 +18,11 @@ LLM 安全分析报告和基础 Agent。
 
 ## 当前开发状态
 
-- 当前 Phase：Phase 7 — Web & Alert Platform
-- 当前 Subphase：Phase 7 Release Closure
-- Phase 状态：COMPLETE / RELEASED；7-6 RUNTIME VALIDATION PASS；M-007 HUMAN REVIEW PASS
+- 当前 Phase：Phase 8 — LLM & Agent
+- 当前 Subphase：P8-5 Release Checkpoint
+- Phase 状态：P8-0 至 P8-5 `COMPLETE / HUMAN REVIEW PASS / CHECKPOINTED`；P8-5D `HUMAN REVIEW PASS`；P8-5P `HUMAN REVIEW PASS`；P8-6 `READY / NOT STARTED`
+- Provider 状态：ONE OPENAI-COMPATIBLE TRANSPORT IMPLEMENTED / REAL PROVIDER VALIDATED / STRICT JSON PASS / PHASE8-REPORT-V1 PASS / GROUNDING VALID / FALLBACK NOT USED
+- Phase 7 状态：COMPLETE / RELEASED；7-6 RUNTIME VALIDATION PASS；M-007 HUMAN REVIEW PASS
 - Phase 7 implementation：7-0、7-1、7-2、7-3、7-4、7-5、7-6 PASS；M-007 annotated demo video IMPLEMENTED / REAL MP4 RUNTIME PASS / HUMAN REVIEW PASS；base tag `phase-7-web-alert-platform-complete`；final freeze tag `phase-7-release-freeze-complete`
 - Phase 6 — PPE Compliance Event Engine：COMPLETE / RELEASED
 - Phase 4 — Offline Inference：COMPLETE / Camera-RTSP Deferred MUST
@@ -91,6 +93,86 @@ LLM 安全分析报告和基础 Agent。
   background-worker lifecycle and persisted-event alert ordering
 - Streamlit realtime monitoring page for source control, live counters,
   frame preview, recent events and structured alert results
+
+## Phase 8 Implementation Status
+
+- P8-0 is human-reviewed PASS and does not add an LLM provider, external API
+  call, Agent framework, dependency or secrets.
+- The agent is strictly downstream and read-only over `EventQueryService`; it
+  cannot inspect raw images to decide compliance, override
+  detection/tracking/association or mutate historical events.
+- P8-1 implements deterministic `SafetyAnalyticsService` and canonical
+  `phase8-context-v1` construction over the existing event-query boundary.
+  Context separates observed facts, calculated metrics, metadata and
+  unavailable fields.
+- Analytics supports exact counts, event/status/track/day distributions,
+  first/last occurrence, evidence availability and opaque source grouping.
+  Unsupported duration, identity and alert-delivery metrics remain explicit.
+- The context fingerprint is a method-level SHA256 of canonical content; no
+  `context_sha256` field was added to the frozen schema.
+- P8-2 implements the provider-independent `phase8-report-v1` schema and a
+  deterministic grounding validator bound to the P8-1 context fingerprint.
+- P8-3 implements the deterministic local `TemplateFallback` and
+  `ReportService` orchestration. The fallback accepts only
+  `phase8-context-v1`, reuses the frozen context fingerprint, emits
+  `TEMPLATE_FALLBACK` with `degraded=true`, and fails closed if required
+  metrics are absent or inconsistent.
+- P8-4 implements the provider-independent `SafetyLLMClient` boundary,
+  deterministic request builder, injectable transport protocol and strict
+  untrusted-output parser. Provider output must be exact `phase8-report-v1`
+  JSON and is returned only as an `unvalidated` candidate.
+- Provider candidates are passed to the unchanged P8-2 grounding validator
+  through `ReportService.generate_provider_report()`.
+- P8-5 adds one configuration-driven OpenAI-compatible chat-completions
+  transport behind the P8-4 boundary and implements provider-first
+  orchestration. Provider output can only escape after strict parsing and the
+  unchanged P8-2 grounding validator accept it.
+- Semantic and operational provider failures route deterministically to the
+  unchanged deterministic `TemplateFallback`. Fallback output remains
+  `TEMPLATE_FALLBACK` with `degraded=true`; fallback failure returns
+  `REPORT_UNAVAILABLE` without an invalid report.
+- P8-5 uses environment-only credential resolution, a finite timeout, no
+  retries and a `262144`-byte response limit. Historical attempts include a
+  configuration non-execution and a `REPORT_SCHEMA_INVALID` rejection followed
+  by fallback PASS. A final separately authorized manual request against
+  `deepseek-flash` passed strict JSON, `phase8-report-v1` construction and the
+  unchanged grounding validator, returning `PROVIDER_VALIDATED` with
+  `PROVIDER`, `degraded=false` and fallback not used. The earlier failures
+  remain in the audit trail.
+- P8-5D adds bounded, deterministic diagnostics to
+  `REPORT_SCHEMA_INVALID`: safe JSON path, project-owned error category,
+  expected type or constraint and actual JSON type. The parser still returns
+  only the public `REPORT_SCHEMA_INVALID` failure code and never repairs or
+  partially accepts invalid provider output.
+- Diagnostics are capped at 20 entries with an explicit `truncated` flag.
+  Raw field values, unknown provider field names, raw provider content,
+  prompts, context payloads, authorization headers and API keys are excluded.
+  `ReportService` and the smoke CLI may surface only this sanitized metadata;
+  provider failure still routes to the unchanged `TemplateFallback`.
+- P8-5P replaces the loose prompt prose with a compact schema description
+  derived from the authoritative `phase8-report-v1` dataclasses and enums.
+  Prompt `phase8-provider-prompt-v2` now states every top-level and nested
+  required field, exact enum values, nullable-but-required fields, closed
+  objects and empty-array policy. Provider success constants and the exact
+  `source_context_sha256` instruction are included.
+- P8-5P does not change `phase8-report-v1`, the strict parser, grounding
+  validation or fallback semantics. The final separately authorized provider
+  attempt followed prompt v2 and returned `PROVIDER_VALIDATED`; P8-5P itself
+  did not issue that request.
+- Claims carry explicit fact, metric, event, tracker-scoped track, source,
+  evidence and structured numeric references; unknown or unavailable
+  references fail closed.
+- Recommendations retain separate finding/fact/metric bases, and report
+  limitations must match the deterministic context unavailable fields.
+- `ReportService` runs the generated fallback through the unchanged P8-2
+  grounding validator and returns a report only after validation succeeds.
+- The future Basic Agent must use only read-only allowlisted tools. Arbitrary
+  SQL, shell, filesystem, network side effects and autonomous external actions
+  remain out of scope.
+- M-021, M-022 and M-023 remain `待实现`; P8-0 through P8-5 are
+  human-reviewed PASS and checkpointed. P8-6 is `READY / NOT STARTED` but is
+  not authorized to begin in this checkpoint task. Basic Agent and Phase 9
+  remain not started.
 
 ## Current Runtime
 
@@ -365,6 +447,17 @@ git status --short
 - `docs/06_DATASET_CARD.md`：冻结数据集、mapping 与质量证据
 - `docs/07_OPEN_SOURCE_USAGE.md`：开源依赖、参考和许可证记录
 - `docs/08_RISK_REGISTER.md`：风险登记册
+- `docs/designs/phase-08/PHASE_8_AGENT_ARCHITECTURE.md`：Phase 8 Safety Agent 架构
+- `docs/reports/phase-08/PHASE_8_P8_0_ARCHITECTURE_FREEZE_REPORT.md`：P8-0 架构与契约冻结报告
+- `docs/reports/phase-08/PHASE_8_P8_1_DETERMINISTIC_ANALYTICS_REPORT.md`：P8-1 确定性分析与 context 实现报告
+- `docs/reports/phase-08/PHASE_8_P8_2_REPORT_GROUNDING_VALIDATION_REPORT.md`：P8-2 报告契约与 grounding validator 报告
+- `docs/reports/phase-08/PHASE_8_P8_3_TEMPLATE_FALLBACK_REPORT.md`：P8-3 确定性模板降级实现报告
+- `docs/reports/phase-08/PHASE_8_P8_4_PROVIDER_ADAPTER_REPORT.md`：P8-4 provider 边界与 untrusted output 解析报告
+- `docs/reports/phase-08/PHASE_8_P8_5_PROVIDER_E2E_REPORT.md`：P8-5 real provider E2E、grounding enforcement 与 safe fallback 报告
+- `docs/reports/phase-08/PHASE_8_P8_5_FINAL_VALIDATION_REPORT.md`：P8-5 final real provider validation audit 报告
+- `docs/reports/phase-08/PHASE_8_P8_5_CHECKPOINT_RELEASE_REPORT.md`：P8-0 至 P8-5 interim release checkpoint 报告
+- `docs/reports/phase-08/PHASE_8_P8_5D_SCHEMA_DIAGNOSTICS_REPORT.md`：P8-5D sanitized provider schema diagnostics 报告
+- `docs/reports/phase-08/PHASE_8_P8_5P_PROMPT_SCHEMA_CONFORMANCE_REPORT.md`：P8-5P provider prompt schema conformance 报告
 - `docs/designs/phase-07/PHASE_7_TARGET_ARCHITECTURE.md`：Phase 7 目标架构
 - `docs/designs/phase-07/PHASE_7_DATA_CONTRACTS.md`：Phase 7 数据契约
 - `docs/reports/phase-07/PHASE_7_ARCHITECTURE_FREEZE_REPORT.md`：Phase 7-0 冻结报告
@@ -402,18 +495,16 @@ git status --short
 当前下一允许步骤是：
 
 ```text
-PHASE 8 NOT STARTED / WAIT FOR AUTHORIZATION
+P8-0 THROUGH P8-5 CHECKPOINTED / P8-6 READY / NOT STARTED
 ```
 
-基础 Phase 7 release commit 与 tag 已存在，最终 release closure 已完成并
-发布 `phase-7-release-freeze-complete`。Phase 7-6 finalization 已实现
-TTS adapter、service-owned MP4/USB/RTSP monitoring loop 和 Streamlit
-realtime 页面，并完成 MP4、真实 USB Camera、native Windows SAPI TTS、
-真实浏览器 Streamlit 和受控本地 MediaMTX RTSP 验证。Remote RTSP、
-reconnect/backoff、annotated video implementation 已完成并有真实 MP4 证据，
-M-007 人工审核 PASS；但 M-008 acceptance 和 Charter status 仍未完成，
-Charter 状态仍为 `待实现`。
-Phase 5 的历史 P5-3-G5 `BLOCKED / NOT RUN` 继续保留。M-009/M-010
-已增加 Phase 7-5 runtime evidence，但 Charter acceptance 仍未完成；
-Phase 7-5 不把历史 Phase 5 block 改写为 PASS，也不修改冻结 dataset、
-mapping、训练配置或 EXP-001 release model。
+Phase 7 已完成并发布最终 tag `phase-7-release-freeze-complete`。Phase 8
+P8-0 至 P8-5 均已通过人工审核，并由
+`phase-8-provider-pipeline-complete` interim checkpoint tag 记录。P8-5 的
+历史 `REPORT_SCHEMA_INVALID`、P8-5D diagnostics 和 P8-5P prompt-v2 证据继续
+保留；后续另行授权的人工请求通过 strict JSON、`phase8-report-v1` 和
+grounding，返回 `PROVIDER_VALIDATED`、`degraded=false`、fallback NOT
+USED。这个 checkpoint 不是 Phase 8 final release：M-021、M-022、M-023
+仍为 `待实现`，Basic Agent 与 Phase 9 未开始，P8-6 为
+`READY / NOT STARTED`。本任务完成后停止，不得自动启动 P8-6，也不得再次
+执行 provider。

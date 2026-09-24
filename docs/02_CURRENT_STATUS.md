@@ -8,6 +8,47 @@ reviews; the statuses below reflect the current accepted records.
 
 ## Current Phase
 
+- Phase 8 IN PROGRESS — LLM & Agent. P8-0 Architecture and Contract Freeze is
+  `COMPLETE / HUMAN REVIEW PASS / CHECKPOINTED`. P8-1 Deterministic Safety
+  Analytics and Context is `COMPLETE / HUMAN REVIEW PASS / CHECKPOINTED`.
+  P8-2 Structured Report Contract and Grounding Validator is
+  `COMPLETE / HUMAN REVIEW PASS / CHECKPOINTED`. P8-3 Deterministic Template
+  Fallback is `COMPLETE / HUMAN REVIEW PASS / CHECKPOINTED`. P8-4 Provider
+  Adapter Boundary and Untrusted Output Parsing is
+  `COMPLETE / HUMAN REVIEW PASS / CHECKPOINTED`. P8-5 Real Provider E2E,
+  Grounding Enforcement and Safe Fallback is
+  `COMPLETE / HUMAN REVIEW PASS / CHECKPOINTED`. P8-5D Sanitized Provider
+  Schema Diagnostics is `HUMAN REVIEW PASS`. P8-5P Provider Prompt Schema
+  Conformance Fix is `HUMAN REVIEW PASS`. P8-6 is
+  `READY / NOT STARTED`. The
+  authoritative design is
+  `docs/designs/phase-08/PHASE_8_AGENT_ARCHITECTURE.md`; ADR-023 freezes a
+  deterministic, read-only analytics/context path, provider-independent LLM
+  boundary, grounded structured report, local fallback and allowlisted Basic
+  Agent tools. P8-1 reads only through `EventQueryService` and builds canonical
+  `phase8-context-v1` payloads. P8-2 adds the provider-independent
+  `phase8-report-v1` contract, context-fingerprint binding and fail-closed
+  reference/numeric/privacy validation. P8-3 adds deterministic local report
+  generation over the same context and validates it through the unchanged
+  P8-2 boundary. P8-4 adds a provider-independent request/transport boundary,
+  strict bounded JSON parsing and candidate-plus-validation orchestration.
+  P8-5 adds one configuration-driven OpenAI-compatible chat-completions
+  transport, provider-first orchestration and deterministic provider-timeout,
+  auth, rate-limit, malformed-output and semantic-failure fallback. An
+  initial human-executed OpenAI-compatible request to `deepseek-flash`
+  received a response, passed strict JSON syntax parsing, but was rejected
+  during `phase8-report-v1` construction with `REPORT_SCHEMA_INVALID`; the
+  unchanged fallback then passed. That failure remains historical evidence.
+  P8-5D adds bounded sanitized schema diagnostics without weakening the
+  report schema or grounding boundary. P8-5P upgrades only provider request
+  construction to `phase8-provider-prompt-v2` with an exact schema description
+  generated from the authoritative dataclasses and enums, without changing or
+  weakening the report schema, parser, grounding validator or fallback. A
+  final separately authorized manual request followed prompt v2 and returned
+  `PROVIDER_VALIDATED`: transport, strict JSON, `phase8-report-v1` and
+  grounding all passed with `PROVIDER`, `degraded=false` and fallback not
+  used. M-021, M-022 and M-023 remain `待实现`; Basic Agent and Phase 9 remain
+  not started. This interim checkpoint does not authorize P8-6.
 - Phase 7 COMPLETE / RELEASED — Web & Alerts. Base commit
   `a30b73c080c18d010fbaa08642868e86acb68022` carries annotated tag
   `phase-7-web-alert-platform-complete`; final release closure publishes
@@ -20,7 +61,7 @@ reviews; the statuses below reflect the current accepted records.
   in the locked Charter pending Phase 9 acceptance. Remote RTSP reconnect
   behavior, reconciliation automation and retention remain pending.
   M-015 through M-020 remain `待实现` in the locked Charter until full
-  acceptance. Phase 8 is not started.
+  acceptance.
 - Phase 6 COMPLETE / RELEASED — PPE Compliance Event Engine. Release tag
   `phase-6-compliance-event-engine-complete` targets
   `e24e31ae635e5d5cd1129a9fb519a59b7014f802`.
@@ -38,10 +79,120 @@ reviews; the statuses below reflect the current accepted records.
   `6da6213f0cc541765f231c81b4264a98f01d5f4a`; the current documentation is
   now synchronized to `COMPLETE / RELEASED`.
 - Phase 4 remains `Offline Inference COMPLETE` for its released offline scope.
-- Current next allowed step: `PHASE 8 NOT STARTED / WAIT FOR AUTHORIZATION`.
+- Current next allowed step: `WAIT FOR P8-6 AUTHORIZATION / DO NOT EXECUTE
+  PROVIDER, START BASIC AGENT OR PHASE 9`.
 
 ## Last Completed
 
+- Phase 8 P8-5 Release Checkpoint:
+  `P8-0 THROUGH P8-5 COMPLETE / HUMAN REVIEW PASS / CHECKPOINTED`. The
+  interim checkpoint records the deterministic analytics/context, grounded
+  report, fallback, provider boundary, provider validation and documentation
+  under annotated tag `phase-8-provider-pipeline-complete`. It is not the
+  Phase 8 final release. No provider request was issued during this release
+  task. P8-6 is `READY / NOT STARTED`; Basic Agent and Phase 9 remain not
+  started.
+- Phase 8 P8-5 Final Real Provider Validation:
+  `COMPLETE / HUMAN REVIEW PASS / CHECKPOINTED`. A separately authorized
+  manual request to the OpenAI-compatible
+  `deepseek-flash` path returned `PROVIDER_VALIDATED` with transport PASS,
+  strict JSON PASS, `phase8-report-v1` PASS, provider grounding VALID,
+  `generation_path=PROVIDER`, `degraded=false`, no safe error, no schema
+  diagnostics and no fallback. This audit issued no further provider request.
+  Earlier configuration non-execution, schema rejection/fallback and prompt
+  conformance evidence remain preserved. The validation audit itself performed
+  no commit, tag or push; checkpoint publication is recorded separately above.
+- Phase 8 P8-5P Provider Prompt Schema Conformance:
+  `HUMAN REVIEW PASS`.
+  Added a machine-derived compact schema description for the unchanged
+  `phase8-report-v1` contract and embedded it in provider request
+  construction. Prompt v2 now enumerates top-level and nested required fields,
+  exact enum values, nullable-but-required fields, closed-object policy,
+  empty-array behavior, provider candidate constants and reference policy.
+  The change addresses the prior loose-prose prompt gap without modifying the
+  report schema, strict parser, grounding validator, fallback behavior,
+  context contract or fingerprint algorithm. Focused provider tests passed
+  (`80 passed`) and the full repository gate passed (`539 passed, 1 skipped`).
+  No real provider request or `--execute` was performed at that subphase.
+- Phase 8 P8-5D Sanitized Provider Schema Diagnostics:
+  `HUMAN REVIEW PASS`. Extended the existing
+  strict parser failure path with a bounded, deterministic diagnostic model
+  for `REPORT_SCHEMA_INVALID`. The public failure code remains unchanged, no
+  invalid report is repaired or partially accepted, diagnostics are capped at
+  20 with a `truncated` flag, and only safe JSON paths, project-owned
+  categories, expected type or constraint and actual JSON type are exposed.
+  Raw field values, unknown field names, raw provider content, prompts,
+  context payloads, credentials and authorization headers are excluded.
+  `ReportService` and the smoke CLI propagate only the sanitized metadata;
+  provider failure still routes to the unchanged `TemplateFallback`. No real
+  provider request or `--execute` was performed at that subphase.
+- Phase 8 P8-5R Real Provider Post-Execution Audit:
+  `REAL PROVIDER EXECUTED / PROVIDER REPORT SCHEMA REJECTED / TEMPLATE
+  FALLBACK PASS / HUMAN REVIEW PENDING`. The human operator executed one
+  OpenAI-compatible request against
+  `https://api.deepseek.com/chat/completions` with model `deepseek-flash`.
+  The provider response envelope and non-empty message content were received,
+  and strict JSON parsing succeeded. `phase8-report-v1` construction then
+  failed with `REPORT_SCHEMA_INVALID`, so provider grounding validation was not
+  reached. The unchanged `TemplateFallback` generated a report and passed the
+  unchanged grounding validator; that `valid` status belongs only to fallback.
+  Raw provider content was not persisted, so the exact schema mismatch cannot
+  be recovered. This audit issued no additional provider request.
+- Phase 8 P8-5:
+  `COMPLETE / HUMAN REVIEW PASS / CHECKPOINTED`.
+  Added one configuration-driven
+  OpenAI-compatible chat-completions transport behind the frozen P8-4
+  `ProviderTransport` boundary, environment-only credential resolution,
+  finite timeout and bounded response handling. `ReportService` now provides
+  provider-first orchestration: only a strictly parsed candidate that passes
+  the unchanged P8-2 grounding validator can be returned as
+  `PROVIDER_VALIDATED`. Semantic and operational failures route to the
+  unchanged deterministic `TemplateFallback`; fallback failure returns
+  `REPORT_UNAVAILABLE` without exposing an invalid report. Historical attempts
+  include a configuration non-execution and a `REPORT_SCHEMA_INVALID`
+  rejection with fallback PASS; these remain preserved. The final separately
+  authorized manual request followed prompt v2 and passed strict parsing,
+  schema construction and grounding, returning `PROVIDER_VALIDATED` with
+  fallback not used. No credential value, provider SDK, model, dataset or
+  upstream pipeline was changed.
+- Phase 8 P8-4: `HUMAN REVIEW PASS`. Added the
+  provider-independent `SafetyLLMClient`, deterministic request builder,
+  injectable transport protocol and strict untrusted-output parser. Provider
+  requests contain only the safe P8-1 context with construction time removed,
+  preserve the frozen fingerprint, use fixed request/prompt/schema versions,
+  require a finite timeout and enforce a `262144`-byte response limit. Provider
+  responses must be exact bounded UTF-8 JSON, cannot contain duplicate keys or
+  non-finite values, and are returned only as `unvalidated`
+  `phase8-report-v1` candidates. `ReportService.generate_provider_report()`
+  passes the candidate through the unchanged P8-2 validator without silently
+  selecting fallback. No real provider, transport, SDK, API key, network call,
+  model, dataset or upstream pipeline was changed.
+- Phase 8 P8-3: `HUMAN REVIEW PASS`. Added the
+  deterministic `TemplateFallback` and minimal `ReportService` orchestration.
+  The fallback accepts only `phase8-context-v1`, reuses
+  `SafetyContextBuilder.fingerprint(context)`, emits
+  `TEMPLATE_FALLBACK` with `degraded=true`, copies all unavailable fields
+  exactly, and reports only metrics/facts/evidence present in the context.
+  `ReportService` runs the unchanged P8-2 grounding validator and returns
+  `VALID` only on success; missing, malformed or inconsistent required metrics
+  fail closed. No provider SDK, network call, real LLM invocation or upstream
+  pipeline change was introduced.
+- Phase 8 P8-2: `HUMAN REVIEW PASS`. Added the
+  provider-independent `phase8-report-v1` schema and deterministic
+  `SafetyReportGroundingValidator`. Reports bind to the P8-1 context
+  fingerprint; fact, metric, event, tracker-scoped track, source, evidence and
+  structured numeric references are validated against the supplied context.
+  Invalid, unknown, unavailable, ungrounded, contradictory or path-leaking
+  reports fail closed. No provider SDK, network call, LLM invocation, fallback
+  implementation or upstream pipeline change was introduced.
+- Phase 8 P8-1: `HUMAN REVIEW PASS`. Added
+  deterministic `SafetyAnalyticsService`, read-only bounded analytics over
+  `EventQueryService`, opaque source aggregation, `phase8-context-v1` schemas,
+  canonical serialization and a method-level context fingerprint. Focused
+  tests cover exact counts, interval boundaries, deterministic ordering, empty
+  and partial data, source-path exclusion, missing required fields,
+  schema validation and reproducibility. No provider, network call,
+  dependency or upstream implementation was changed.
 - Phase 2 Training: `已经实现`; EXP-001 baseline training completed using its
   single authorized run. M-004：已经实现.
 - Phase 3 Evaluation: `已经实现`; model comparison, selection and independent
@@ -249,6 +400,10 @@ reviews; the statuses below reflect the current accepted records.
 - M-007 validation used the frozen `INF-RUNTIME-001` Python `3.10.4`,
   PyTorch `2.5.1+cpu`, Ultralytics `8.4.157`, OpenCV `5.0.0` runtime and
   NumPy `2.2.6` environment.
+- Phase 8 P8-5 was implemented and tested on Python `3.13.6` using the
+  standard-library transport. No provider SDK is installed and no
+  `PPE_LLM_ENDPOINT`, `PPE_LLM_MODEL` or `PPE_LLM_API_KEY` runtime value is
+  configured.
 - Training used a separately frozen AutoDL RTX 4090 environment. The
   EXP-001 one-run authorization is `CONSUMED`; it does not authorize retraining.
 
@@ -310,6 +465,26 @@ reviews; the statuses below reflect the current accepted records.
 
 ## Latest Reports
 
+- [Phase 8 P8-5 final real provider validation report](reports/phase-08/PHASE_8_P8_5_FINAL_VALIDATION_REPORT.md).
+- [Phase 8 P8-5P prompt schema conformance report](reports/phase-08/PHASE_8_P8_5P_PROMPT_SCHEMA_CONFORMANCE_REPORT.md).
+- [Phase 8 P8-5P prompt schema conformance worklog](worklogs/2026/09/2026-09-24-10-phase8-p8-5p-prompt-schema-conformance.md).
+- [Phase 8 P8-5D schema diagnostics report](reports/phase-08/PHASE_8_P8_5D_SCHEMA_DIAGNOSTICS_REPORT.md).
+- [Phase 8 P8-5D schema diagnostics worklog](worklogs/2026/09/2026-09-24-09-phase8-p8-5d-schema-diagnostics.md).
+- [Phase 8 P8-5R post-execution audit](reports/phase-08/PHASE_8_P8_5R_POST_EXECUTION_AUDIT_REPORT.md).
+- [Phase 8 P8-5 provider E2E report](reports/phase-08/PHASE_8_P8_5_PROVIDER_E2E_REPORT.md).
+- [Phase 8 P8-5R real provider smoke worklog](worklogs/2026/09/2026-09-24-08-phase8-p8-5r-real-provider-smoke.md).
+- [Phase 8 P8-5 worklog](worklogs/2026/09/2026-09-24-07-phase8-p8-5-provider-e2e.md).
+- [Phase 8 P8-4 provider adapter report](reports/phase-08/PHASE_8_P8_4_PROVIDER_ADAPTER_REPORT.md).
+- [Phase 8 P8-4 worklog](worklogs/2026/09/2026-09-24-06-phase8-p8-4-provider-adapter.md).
+- [Phase 8 P8-2 report grounding validation report](reports/phase-08/PHASE_8_P8_2_REPORT_GROUNDING_VALIDATION_REPORT.md).
+- [Phase 8 P8-2 worklog](worklogs/2026/09/2026-09-24-04-phase8-p8-2-report-grounding.md).
+- [Phase 8 P8-3 template fallback report](reports/phase-08/PHASE_8_P8_3_TEMPLATE_FALLBACK_REPORT.md).
+- [Phase 8 P8-3 worklog](worklogs/2026/09/2026-09-24-05-phase8-p8-3-template-fallback.md).
+- [Phase 8 P8-1 deterministic analytics report](reports/phase-08/PHASE_8_P8_1_DETERMINISTIC_ANALYTICS_REPORT.md).
+- [Phase 8 P8-1 worklog](worklogs/2026/09/2026-09-24-03-phase8-p8-1-deterministic-analytics.md).
+- [Phase 8 P8-0 architecture freeze report](reports/phase-08/PHASE_8_P8_0_ARCHITECTURE_FREEZE_REPORT.md).
+- [Phase 8 Safety Intelligence Agent architecture](designs/phase-08/PHASE_8_AGENT_ARCHITECTURE.md).
+- [Phase 8 P8-0 worklog](worklogs/2026/09/2026-09-24-02-phase8-p8-0-architecture-freeze.md).
 - [Phase 7-0 architecture freeze report](reports/phase-07/PHASE_7_ARCHITECTURE_FREEZE_REPORT.md).
 - [Phase 7-1 event storage report](reports/phase-07/PHASE_7_1_EVENT_STORAGE_REPORT.md).
 - [Phase 7-2 evidence snapshot report](reports/phase-07/PHASE_7_2_EVIDENCE_SNAPSHOT_REPORT.md).
@@ -355,15 +530,22 @@ reviews; the statuses below reflect the current accepted records.
 
 ## Next Allowed Step
 
-`PHASE 8 NOT STARTED / WAIT FOR AUTHORIZATION`.
+`WAIT FOR P8-6 AUTHORIZATION / DO NOT EXECUTE PROVIDER, START BASIC AGENT OR
+PHASE 9`.
 
-The base Phase 7 release tag and remote commit already exist. The Phase 7-6
-finalization and M-007 implementation passed the full repository test gate and
-human review. The authorized release closure created the final freeze commit
-and tag and pushed the release. Remote RTSP behavior, reconnect/backoff and
-M-008 final acceptance remain pending. Native TTS and controlled local RTSP
-were executed in the isolated validation runtime. The M-007 annotated demo
-video implementation, real MP4 output validation and human review are complete,
-but Phase 9 acceptance still does not change the Charter's `待实现` status.
-The historical P5-3-G5 runtime block and all frozen model/data/training assets
-remain unchanged. Phase 8 has not started.
+P8-0, P8-1, P8-2, P8-3 and P8-4 are human-reviewed PASS. P8-5 implements one
+OpenAI-compatible provider transport behind the frozen P8-4 boundary and
+provider-first orchestration with strict parsing, unchanged grounding
+validation, deterministic fallback and `REPORT_UNAVAILABLE` handling. The
+earlier P8-5R request was rejected as `REPORT_SCHEMA_INVALID` before provider
+grounding; that failure remains historical evidence. P8-5D adds bounded
+sanitized diagnostics for that failure class, and P8-5P replaces loose prompt
+prose with a schema description derived from the authoritative report
+dataclasses and enums. A later separately authorized manual request followed
+prompt v2 and returned `PROVIDER_VALIDATED`: transport, strict JSON,
+`phase8-report-v1`, and provider grounding all passed with `PROVIDER`,
+`degraded=false`, no safe error, no schema diagnostics and fallback not used.
+No further provider request may be executed. The P8-0 through P8-5 interim
+checkpoint is released, but P8-6 is `READY / NOT STARTED` and requires a new
+authorization. Basic Agent and Phase 9 remain not started. M-021, M-022 and
+M-023 remain `待实现`.

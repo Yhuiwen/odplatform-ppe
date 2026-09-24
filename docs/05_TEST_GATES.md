@@ -885,3 +885,162 @@ reviewed implementation was included in the final Phase 7 release closure.
 Phase 7 final release closure result: `PASS / RELEASED`. Publication details
 are recorded in
 `docs/reports/phase-07/PHASE_07_RELEASE_COMPLETE_REPORT.md`.
+
+## Phase 8 P8-0 Architecture and Contract Freeze Gates
+
+| Gate | Requirement | Evidence | Status |
+| --- | --- | --- | --- |
+| P8-0-G1 | Authoritative Phase 8 scope and repository status are audited | Branch/HEAD/origin, Phase 7 tags, Phase 8 documents, placeholder boundaries and event/database contracts were inspected; no governance conflict was found | PASS |
+| P8-0-G2 | Downstream read-only trust boundary is frozen | ADR-023 and `PHASE_8_AGENT_ARCHITECTURE.md` prohibit image inspection, compliance override, event mutation and direct SQL; `EventQueryService` is the authority | PASS |
+| P8-0-G3 | Deterministic analytics and versioned context contracts are defined | `SafetyAnalyticsService` supports counts, distributions, first/last occurrence and evidence availability; unsupported duration/identity/alert metrics are explicit; `phase8-context-v1` separates facts, metrics, metadata and unavailable fields | PASS |
+| P8-0-G4 | Provider-independent report and fallback contracts are defined | `SafetyLLMClient.generate_report(context)` and `phase8-report-v1` are frozen; degradation is labeled `TEMPLATE_FALLBACK`; provider selection is deferred | PASS |
+| P8-0-G5 | Grounding and evidence-reference policy is defined | Claims require fact/metric references; event/track IDs and numbers are validated; recommendations remain advisory; invalid output is rejected | PASS |
+| P8-0-G6 | Failure, privacy, secret and Basic Agent tool boundaries are defined | Structured failure codes, monitoring isolation, raw-evidence exclusion, environment-only secrets and allowlisted read-only Agent tools are specified | PASS |
+| P8-0-G7 | Future deterministic and mock-based evaluation strategy is defined | Analytics, canonical context, schema, hallucination, numeric consistency, fallback, provider isolation, empty data and mock-LLM tests are required | PASS |
+| P8-0-G8 | No implementation, external call, dependency, frozen-asset change, commit, tag or push is included | Only documentation changed; placeholder Python boundaries remain untouched; validation runs without network or provider credentials | PASS |
+
+Phase 8 P8-0 result: `DESIGN COMPLETE / HUMAN REVIEW PASS`.
+
+## Phase 8 P8-1 Deterministic Analytics and Context Gates
+
+| Gate | Requirement | Evidence | Status |
+| --- | --- | --- | --- |
+| P8-1-G1 | Authoritative event query boundary reused without upstream mutation | `SafetyAnalyticsService` reads detailed events through bounded `EventQueryService.query_events()` pages and source aggregates through `EventQueryService.statistics()`; no direct SQL and no Phase 5/6/7 implementation change | PASS |
+| P8-1-G2 | Deterministic analytics produce correct counts and distributions | Focused tests verify exact totals, type/status/track/day counts, first/last occurrence, evidence availability and opaque source counts | PASS |
+| P8-1-G3 | Reporting interval and ordering semantics are deterministic | Inclusive `[start_at,end_at]` semantics are frozen; facts use `timestamp DESC, event_id ASC`; metrics, unavailable fields, filters, types, statuses, tracks, days and source references have stable ordering | PASS |
+| P8-1-G4 | `phase8-context-v1` is generated strictly from supported authoritative data | Context contains only `observed_facts`, `calculated_metrics`, `metadata` and `unavailable_fields`; canonical JSON excludes raw evidence, absolute paths, SQL, stack traces and secrets | PASS |
+| P8-1-G5 | Unsupported and unavailable information remains explicit and is never fabricated | Duration, unique-person, cross-session identity, alert-delivery and per-event source attribution are explicit unavailable fields; tracker scope is preserved | PASS |
+| P8-1-G6 | Empty and partial-data cases behave according to contract | Empty intervals return zero counts and null occurrences; duplicate IDs, unsupported records, changing totals and incomplete pages fail with structured errors | PASS |
+| P8-1-G7 | Reproducibility and schema-validation tests pass | Canonical JSON and fingerprint are stable across row order and wall-clock generation time; schema rejects duplicate fact/metric/unavailable identities; `18 passed` focused tests | PASS |
+| P8-1-G8 | Full repository regression and frozen-asset checks pass | `432 passed, 1 skipped`; `compileall` PASS; `git diff --check` PASS; checkpoint/training/inference/processed-data hashes MATCH; Charter diff EMPTY | PASS |
+
+Phase 8 P8-1 result:
+`HUMAN REVIEW PASS`.
+
+## Phase 8 P8-2 Report Contract and Grounding Validator Gates
+
+| Gate | Requirement | Evidence | Status |
+| --- | --- | --- | --- |
+| P8-2-G1 | `phase8-report-v1` structured schema is provider-independent | `core/schemas/safety_report.py` defines generation metadata, separate observation/risk claims, recommendations, evidence references and limitations with no provider/network import | PASS |
+| P8-2-G2 | Reports bind to the deterministic P8-1 context fingerprint | Every report carries `source_context_sha256`; validation compares it with `SafetyContextBuilder.fingerprint(context)` and rejects missing, malformed or mismatched values | PASS |
+| P8-2-G3 | Fact, metric, event, track and evidence references are validated | `SafetyReportGroundingValidator` rejects unknown fact/metric/event/track/evidence/source references and validates top-level evidence metadata against context facts | PASS |
+| P8-2-G4 | Structured numeric claims cannot contradict analytics | `MetricNumericClaim` values are checked exactly against referenced `MetricValue.value`; mismatches and non-numeric/unavailable metric targets fail | PASS |
+| P8-2-G5 | Fabricated or ungrounded content fails closed | Findings and risk observations require fact/metric grounding; recommendations require valid finding/fact/metric bases; invalid claims are rejected rather than repaired or removed | PASS |
+| P8-2-G6 | Unavailable fields and privacy boundaries remain enforced | Report limitations must exactly match context unavailable fields/reason codes; absolute Windows/POSIX paths, database paths and credential-like leakage are rejected | PASS |
+| P8-2-G7 | Canonicalization and validation behavior are reproducible | Report lists are deterministically ordered; canonical JSON, repeated validation results and error ordering are stable under equivalent logical input | PASS |
+| P8-2-G8 | Full regression and no-provider checks pass | `450 passed, 1 skipped`; `compileall` PASS; `git diff --check` PASS; focused tests cover valid/empty reports, fingerprint mismatch, fabricated references, numeric mismatch, unavailable contradictions, path rejection and provider/network import exclusion | PASS |
+
+Phase 8 P8-2 result:
+`HUMAN REVIEW PASS`.
+
+## Phase 8 P8-3 Deterministic Template Fallback Gates
+
+| Gate | Requirement | Evidence | Status |
+| --- | --- | --- | --- |
+| P8-3-G1 | `TemplateFallback` is typed, deterministic and provider-independent | `infra/llm/fallback.py` accepts only `SafetyAnalysisContext`, uses no provider/network import and has no random or wall-clock content generation | PASS |
+| P8-3-G2 | Output is `phase8-report-v1` bound to the supplied context fingerprint | `ReportGeneration` is `TEMPLATE_FALLBACK` / `degraded=true`; `source_context_sha256` equals `SafetyContextBuilder.fingerprint(context)` and the reporting period is copied exactly | PASS |
+| P8-3-G3 | Claims use only context facts, metrics, tracks and available evidence | Numeric claims match required metrics; tracker references are explicitly `tracker_scoped`; evidence references are generated only from available context facts | PASS |
+| P8-3-G4 | Unavailable fields and recommended actions preserve frozen boundaries | All context unavailable fields and reason codes are copied exactly; recommendations cover `NO_HELMET`, `NO_VEST` and `PPE_UNKNOWN` without asserting identity or unmeasured facts | PASS |
+| P8-3-G5 | Empty, tied and malformed-metric cases are deterministic and fail closed | Empty contexts produce a valid zero-event report; tied dominant types do not fabricate a risk; missing, non-integer or inconsistent required metrics raise deterministic errors | PASS |
+| P8-3-G6 | `ReportService` validates fallback output and marks it `VALID` only after PASS | `ReportService.generate()` calls the unchanged P8-2 validator and raises `GROUNDING_VALIDATION_FAILED` on rejection | PASS |
+| P8-3-G7 | No provider, network, model, dataset or upstream pipeline dependency is introduced | No provider SDK/network import in fallback/report service; no model, dataset, training, inference, tracking, association or compliance file changed | PASS |
+| P8-3-G8 | Full regression and frozen-asset checks pass | `460 passed, 1 skipped`; `compileall` PASS; `git diff --check` PASS; checkpoint/training/inference/processed-data hashes MATCH; Charter diff EMPTY | PASS |
+
+Phase 8 P8-3 result:
+`HUMAN REVIEW PASS`.
+
+## Phase 8 P8-4 Provider Adapter Boundary Gates
+
+| Gate | Requirement | Evidence | Status |
+| --- | --- | --- | --- |
+| P8-4-G1 | Provider-independent client and injectable transport boundary are implemented | `SafetyLLMClient` depends only on the project-owned request builder, `ProviderTransport` and strict parser; no provider SDK or network transport is present | PASS |
+| P8-4-G2 | Request construction is deterministic, safe and fingerprint-bound | Request version `phase8-provider-request-v1`, prompt version `phase8-provider-prompt-v1`, canonical context, generated_at removal and `SafetyContextBuilder.fingerprint(context)` are tested | PASS |
+| P8-4-G3 | Provider response is parsed as untrusted `phase8-report-v1` input | Parser enforces bounded raw bytes, UTF-8, strict JSON, duplicate-key/non-finite rejection, exact fields and nested schema construction | PASS |
+| P8-4-G4 | Accepted candidates pass the unchanged P8-2 grounding validator | `ReportService.generate_provider_report()` returns `ProviderReportResult` with the original `ReportValidationResult`; no validator rule was changed | PASS |
+| P8-4-G5 | Malformed, oversized, invalid, fabricated or contradictory output fails closed | Focused tests cover malformed, empty, oversized, schema-invalid, fingerprint-mismatch, fabricated event/track, numeric mismatch and path-leak cases | PASS |
+| P8-4-G6 | Provider failures are safe and deterministic | Timeout, auth, rate-limit and HTTP statuses map to structured codes with fixed messages; fake secret-like transport text is absent from raised errors | PASS |
+| P8-4-G7 | Mock transport and tests perform zero real network/provider access | `FakeTransport` is the only execution path; a socket monkeypatch failure test passes and source imports exclude vendor/network SDKs | PASS |
+| P8-4-G8 | Full regression, frozen contracts/assets, governance and tags pass | `485 passed, 1 skipped`; focused P8-4 `26 passed`; `compileall` PASS; `git diff --check` PASS; checkpoint/training/inference/processed-data hashes MATCH; Charter diff EMPTY; Phase 7 tags unchanged | PASS |
+
+Phase 8 P8-4 result:
+`HUMAN REVIEW PASS`.
+
+## Phase 8 P8-5 Real Provider E2E and Safe Fallback Gates
+
+| Gate | Requirement | Evidence | Status |
+| --- | --- | --- | --- |
+| P8-5-G1 | Exactly one real provider is implemented behind the frozen P8-4 abstraction | `OpenAICompatibleChatTransport` is the only concrete `ProviderTransport`; it owns endpoint auth/request/response envelope only and contains no context, grounding, fallback or event-store logic | PASS |
+| P8-5-G2 | Provider candidates escape only after strict parsing and unchanged P8-2 grounding | `ReportService.generate_provider_or_fallback()` returns `PROVIDER` only after `ProviderResponseParser` and `SafetyReportGroundingValidator` both accept the candidate; no bypass flag or trusted-provider path exists | PASS |
+| P8-5-G3 | Semantic provider failures route to `TemplateFallback` | Malformed/schema-invalid output, fingerprint mismatch, fabricated event/track, numeric contradiction and path leakage tests produce `TEMPLATE_FALLBACK` | PASS |
+| P8-5-G4 | Operational provider failures route to `TemplateFallback` | Timeout, auth, rate-limit, unavailable, HTTP, empty and oversized response tests produce `TEMPLATE_FALLBACK` | PASS |
+| P8-5-G5 | Fallback passes the unchanged validator and remains degraded | Fallback output uses `TEMPLATE_FALLBACK` / `degraded=true`, preserves the provider failure code and receives `grounding_status=VALID` only after the unchanged P8-2 validator passes | PASS |
+| P8-5-G6 | Fallback failure returns `REPORT_UNAVAILABLE` without a report | Injected fallback failure returns `UNAVAILABLE`, `report=None`, `degraded=true` and a sanitized error | PASS |
+| P8-5-G7 | Real provider evidence is recorded accurately and separately from fallback success | The historical P8-5R request was rejected as `REPORT_SCHEMA_INVALID`. A later separately authorized manual request followed prompt v2 and returned `PROVIDER_VALIDATED`: transport, strict JSON, `phase8-report-v1` and provider grounding all passed with `PROVIDER`, `degraded=false`, no safe error, no schema diagnostics and fallback not used | PASS / REAL PROVIDER VALIDATED |
+| P8-5-G8 | Full regression, frozen contracts/assets, governance and tags pass | Final validation audit: `539 passed, 1 skipped`; `compileall` PASS; `git diff --check` PASS; frozen report/grounding/fallback assets and checkpoint/training/inference/processed-data hashes MATCH; current Charter diff EMPTY; Phase 7 tags unchanged | PASS |
+
+Phase 8 P8-5 result:
+`COMPLETE / HUMAN REVIEW PASS / CHECKPOINTED`.
+
+Provider success and fallback success are separate outcomes. P8-6 is
+`READY / NOT STARTED`; Basic Agent and Phase 9 remain not started. M-021,
+M-022 and M-023 remain `待实现`.
+
+## Phase 8 P8-5D Sanitized Provider Schema Diagnostics Gates
+
+| Gate | Requirement | Evidence | Status |
+| --- | --- | --- | --- |
+| P8-5D-G1 | Diagnostic model is bounded and sanitized | `SchemaDiagnostic`/`SchemaDiagnostics` expose only safe JSON path, project-owned code, expected type/constraint and actual JSON type; identifiers and text are bounded and validated | PASS |
+| P8-5D-G2 | Schema failures use bounded project-owned categories | Missing, unexpected, type, enum, format, value, collection and construction failures map to the frozen diagnostic enum | PASS |
+| P8-5D-G3 | Public failure and strictness are unchanged | `REPORT_SCHEMA_INVALID` remains the parser code; no invalid report is repaired, selected or partially returned, and `phase8-report-v1` is unchanged | PASS |
+| P8-5D-G4 | Diagnostics are deterministic, bounded and truncated explicitly | Ordering is stable across object order changes; count is capped at `20`; additional failures set `truncated=true` | PASS |
+| P8-5D-G5 | Raw/private provider data cannot leak through diagnostics | Focused tests reject invalid values, raw response markers, unknown field names, API-key-like values and authorization text from serialized diagnostics | PASS |
+| P8-5D-G6 | Service and CLI propagate only sanitized diagnostics | `SafetyLLMClient`, `ReportService` and the smoke CLI carry the bounded metadata; invalid provider reports still route to unchanged `TemplateFallback`, whose grounding remains independently VALID | PASS |
+| P8-5D-G7 | Frozen report, grounding and fallback contracts remain unchanged | `core/schemas/safety_report.py`, `services/safety_report_grounding_validator.py` and `infra/llm/fallback.py` retain their recorded SHA256 values; locked Charter body diff is empty | PASS |
+| P8-5D-G8 | Repository, frozen-asset and no-network checks pass | `python -m pytest -q`: `532 passed, 1 skipped`; `python -m compileall -q .`: PASS; `git diff --check`: PASS; checkpoint/training/inference/processed-data hashes MATCH; Phase 7 tags unchanged; no real provider request or `--execute` | PASS |
+
+Phase 8 P8-5D result:
+`HUMAN REVIEW PASS`.
+
+The exact historical provider schema mismatch remains unrecoverable because
+raw provider content was intentionally not persisted. P8-5D only makes a
+future separately authorized `REPORT_SCHEMA_INVALID` attempt diagnosable.
+Basic Agent, P8-6 and Phase 9 remain unauthorized.
+
+## Phase 8 P8-5P Provider Prompt Schema Conformance Gates
+
+| Gate | Requirement | Evidence | Status |
+| --- | --- | --- | --- |
+| P8-5P-G1 | The prompt schema is derived from the authoritative report implementation | `infra/llm/report_schema_prompt.py` introspects `StructuredSafetyReport` and its nested dataclasses/enums; no independent report-schema definition is maintained | PASS |
+| P8-5P-G2 | Every top-level and nested required field is represented | Focused tests compare the prompt schema required/property sets with authoritative dataclass fields and verify `reporting_period.interval_semantics`, claim structures, track references, numeric claims, recommendations, evidence references and limitations | PASS |
+| P8-5P-G3 | Nullable, enum, closed-object and empty-array semantics are explicit | Prompt v2 includes nullable-but-required generation fields, exact `GenerationMode`, `GroundingStatus` and `ClaimKind` values, `additionalProperties: false` at every object level, and explicit empty-array policy | PASS |
+| P8-5P-G4 | Provider candidate constants and fingerprint binding are clear | The prompt schema requires `schema_version=phase8-report-v1`, `generation.mode=LLM`, `generation.degraded=false`, `generation.failure_code=null`, `grounding_status=unvalidated` and exact `source_context_sha256` preservation | PASS |
+| P8-5P-G5 | Prompt behavior remains deterministic and strictly fails closed | Repeated request construction is canonical; the known malformed DeepSeek-like fixture remains rejected with `REPORT_SCHEMA_INVALID`; a conforming fixture parses and reaches the unchanged grounding validator | PASS |
+| P8-5P-G6 | Frozen report, parser, grounding and fallback behavior remain unchanged | `phase8-report-v1`, `SafetyReportGroundingValidator` and `TemplateFallback` retain their recorded SHA256 values or unchanged behavior; prompt alignment is not used as a security boundary | PASS |
+| P8-5P-G7 | Focused and full repository tests pass without a network provider | Focused provider/prompt tests `80 passed`; full regression `539 passed, 1 skipped`; `compileall` PASS; `git diff --check` PASS; no real provider request or `--execute` | PASS |
+| P8-5P-G8 | Frozen assets, governance and release tags remain unchanged | Checkpoint, training config, inference config and processed dataset hashes MATCH; Charter diff EMPTY; Phase 7 tags unchanged; no commit, tag or push | PASS |
+
+Phase 8 P8-5P result:
+`HUMAN REVIEW PASS`.
+
+Prompt v2 improves instruction conformance against the unchanged exact report
+contract. P8-5P itself did not issue a provider request or prove
+`PROVIDER_VALIDATED`; a subsequent separately authorized manual request
+following prompt v2 returned `PROVIDER_VALIDATED`. Prompt compliance remains a
+conformance aid, not the security boundary. P8-6 is `READY / NOT STARTED`;
+Basic Agent and Phase 9 remain not started.
+
+## Phase 8 P8-5 Interim Release Checkpoint Gates
+
+| Gate | Requirement | Evidence | Status |
+| --- | --- | --- | --- |
+| P8-5-CP-G1 | Only authorized Phase 8 P8-0 through P8-5 work is included | Diff scope contains Phase 8 schemas, deterministic analytics/context, structured report and grounding validation, TemplateFallback, provider boundary/transport/parser, sanitized diagnostics, prompt-v2 construction, smoke CLI, focused tests, non-secret config and documentation | PASS |
+| P8-5-CP-G2 | Existing release tags are not moved or overwritten | Phase 7 tag objects/targets remain unchanged; `phase-8-provider-pipeline-complete` did not exist before publication | PASS |
+| P8-5-CP-G3 | Frozen contracts and assets remain unchanged | `core/schemas/safety_report.py`, `services/safety_report_grounding_validator.py` and `infra/llm/fallback.py` hashes MATCH their approved values; provider trust boundary, context fingerprint and prompt version `phase8-provider-prompt-v2` remain unchanged | PASS |
+| P8-5-CP-G4 | Model, dataset and training assets remain unchanged | Checkpoint, training config, inference config and processed `data.yaml` SHA256 values MATCH; Charter protected body diff EMPTY | PASS |
+| P8-5-CP-G5 | No secret, raw response or runtime artifact enters Git | Credential scan has no real credential match; authorization headers, raw provider response, `.env`, databases, MP4 files, model artifacts and generated runtime outputs are absent or ignored | PASS |
+| P8-5-CP-G6 | Real provider result is represented without re-execution | Existing human-authorized evidence records `PROVIDER_VALIDATED`; this release task issued no provider request and did not use `--execute` | PASS |
+| P8-5-CP-G7 | Full repository gates pass | Final pre-commit gate: `539 passed, 1 skipped`; `python -m compileall -q .` PASS; `git diff --check` PASS | PASS |
+| P8-5-CP-G8 | Checkpoint boundaries remain accurate | Phase 8 remains IN PROGRESS; P8-6 is `READY / NOT STARTED`; Basic Agent and Phase 9 are not started; M-021, M-022 and M-023 remain `待实现` | PASS |
+
+Phase 8 P8-5 interim checkpoint result:
+`P8-0 THROUGH P8-5 COMPLETE / HUMAN REVIEW PASS / CHECKPOINTED`.

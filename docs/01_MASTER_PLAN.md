@@ -16,7 +16,7 @@
 | P5 | Tracking & Association | ByteTrack + Person-PPE Association | 已经实现（COMPLETE / RELEASED；tag `phase-5-tracking-association-complete`；P5-3-G5 historical `BLOCKED / NOT RUN` followed by explicit release authorization） |
 | P6 | Compliance & Events | PPE 合规规则、时序判断、Event Engine | 已经实现（COMPLETE / RELEASED；tag `phase-6-compliance-event-engine-complete`） |
 | P7 | Web & Alerts | SQLite + Snapshot + TTS + Streamlit | 已经实现（COMPLETE / RELEASED；base tag `phase-7-web-alert-platform-complete`；final freeze tag `phase-7-release-freeze-complete`；M-007 implementation + real MP4 validation + human review PASS） |
-| P8 | LLM & Agent | LLM Report + Fallback + Basic Agent | 待实现 |
+| P8 | LLM & Agent | LLM Report + Fallback + Basic Agent | 实现中（P8-0 至 P8-5 `COMPLETE / HUMAN REVIEW PASS / CHECKPOINTED`；P8-5D/P8-5P `HUMAN REVIEW PASS`；P8-6 `READY / NOT STARTED`；Basic Agent 未实现） |
 | P9 | Integration & Delivery | 全链路测试、性能分析、文档、Demo、答辩交付 | 待实现 |
 
 ## 2. 阶段依赖
@@ -102,7 +102,79 @@ now exist. The authorized release closure subsequently committed the Phase 7-6
 runtime validation, M-007 implementation and final documentation, and published
 the annotated tag `phase-7-release-freeze-complete`. The remaining V1
 limitations, M-008 remote RTSP behavior and Phase 9 Charter acceptance are not
-converted into completion claims. Phase 8 has not started.
+converted into completion claims. Phase 8 has subsequently started with the
+design-only P8-0 freeze recorded below.
+
+### Phase 8 P8-0/P8-1/P8-2/P8-3/P8-4/P8-5/P8-5D/P8-5P implementation boundary (ADR-023)
+
+Phase 8 remains locked to `LLM Report + Fallback + Basic Agent`. P8-0 completed
+the design-only architecture and contract freeze after the Phase 7 release and
+passed human review. P8-1 implements the deterministic analytics/context slice
+and has passed human review. P8-2 implements the provider-independent
+`phase8-report-v1` contract and deterministic grounding validator, and has
+passed human review. P8-3 implements the provider-independent deterministic
+`TemplateFallback` and `ReportService` validation path, and has passed human
+review. P8-4 implements the provider-independent request, transport, error and
+strict untrusted-output parsing boundary and has passed human review. P8-5
+adds one configuration-driven OpenAI-compatible chat-completions transport
+behind that boundary and implements provider-first orchestration with the
+unchanged grounding validator and deterministic fallback.
+The agent is strictly downstream and read-only, consumes persisted events
+through `EventQueryService`, and cannot alter detection, tracking, association,
+compliance decisions or historical events.
+
+`SafetyAnalyticsService` is deterministic and provider-independent.
+`SafetyAnalysisContext` is versioned as `phase8-context-v1` and separates
+observed facts, calculated metrics, metadata and unavailable fields. Standard
+library canonical serialization and a method-level context fingerprint support
+reproducibility. `StructuredSafetyReport` keeps claims, risk observations,
+recommendations, evidence references and limitations distinct. P8-2 binds every
+report to the method-level context fingerprint and validates fact, metric,
+event, tracker-scoped track, source, evidence and structured numeric
+references without calling a provider. P8-3 generates the same grounded report
+shape from metrics and facts already present in the context, copies all
+unavailable fields exactly, labels the output `TEMPLATE_FALLBACK` with
+`degraded=true`, and returns `VALID` only after the unchanged P8-2 validator
+accepts the report. P8-4 adds one deterministic outbound request contract and
+one strict inbound parser. The parser accepts only bounded UTF-8 JSON,
+rejects duplicate keys, non-finite numbers, unknown fields, wrong versions,
+fingerprint mismatches and malformed nested structures, and returns only an
+`unvalidated` candidate. `ReportService.generate_provider_report()` runs that
+candidate through the unchanged P8-2 validator and does not silently fall
+back. Provider output never bypasses schema parsing or grounding validation.
+
+P8-5 provider output cannot escape unless strict P8-4 parsing and the unchanged
+P8-2 validator both accept it. Provider semantic or operational failures route
+to `TemplateFallback`; fallback failure returns `REPORT_UNAVAILABLE` without a
+report. The single concrete transport uses standard-library HTTP, finite
+timeouts, no retries, a `262144`-byte response limit and environment-only
+credentials.
+
+The human-executed P8-5R request received a `deepseek-flash` provider response
+and passed strict JSON syntax parsing, but the initial `phase8-report-v1`
+construction was rejected as `REPORT_SCHEMA_INVALID`; provider grounding was
+not reached and the unchanged fallback passed grounding. That failure remains
+historical evidence. P8-5D adds bounded sanitized schema diagnostics without
+retaining raw provider output or changing the report schema, grounding
+validator or fallback behavior.
+P8-5P adds a prompt schema description generated from the authoritative report
+dataclasses and enums. Prompt `phase8-provider-prompt-v2` now exposes every
+required nested field, enum, nullable-but-required field, closed-object rule
+and empty-array policy, plus exact provider candidate constants. This changes
+only provider request construction; the report schema, parser, grounding
+validator, fallback and context fingerprint remain unchanged. P8-5P itself
+made no real provider request. A subsequent separately authorized manual
+request followed prompt v2 and returned `PROVIDER_VALIDATED`: transport, strict
+JSON, `phase8-report-v1` and grounding all passed, with `PROVIDER`,
+`degraded=false` and fallback not used.
+
+No Agent framework, provider SDK, dependency, model, dataset, training
+configuration or Phase 0 through Phase 7 implementation is changed. M-021,
+M-022 and M-023 remain `待实现`. P8-0 through P8-5 are human-reviewed PASS
+and are recorded by the interim `phase-8-provider-pipeline-complete`
+checkpoint. This is not the Phase 8 final release. P8-6 is
+`READY / NOT STARTED`; it is not authorized by this checkpoint task. Basic
+Agent and Phase 9 remain not started.
 
 ## 4. 状态规则
 

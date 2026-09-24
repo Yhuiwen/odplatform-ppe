@@ -619,3 +619,81 @@ and reconciliation before alert integration, and real runtime validation
 before release. This ADR does not implement SQLite, snapshots, Streamlit,
 Camera/RTSP, annotated video rendering or alerts, and it does not change any
 MUST status.
+
+## ADR-023
+
+- Date: 2026-09-24
+- Status: Accepted
+- Title: Phase 8 Safety Intelligence Agent boundary and grounding contract
+
+### Decision
+
+Phase 8 remains strictly downstream of the deterministic PPE pipeline:
+
+```text
+Video
+-> Detection
+-> Tracking
+-> PPE Association
+-> Compliance Engine
+-> Event Store
+-> Safety Analytics / Agent
+```
+
+The Phase 8 read boundary is the existing `EventQueryService`. The agent and
+analytics layers must not execute direct SQL, mutate events or import
+inference/tracking/association/compliance implementation to reinterpret a
+decision.
+
+The architecture is:
+
+```text
+SafetyAnalyticsService
+-> SafetyContextBuilder
+-> SafetyLLMClient
+-> StructuredSafetyReport
+```
+
+`SafetyAnalyticsService` is deterministic and provider-independent.
+`SafetyAnalysisContext` is versioned as `phase8-context-v1` and separates
+`observed_facts`, `calculated_metrics`, `metadata` and
+`unavailable_fields`. A tracker-scoped `track_id` is not stable person
+identity. Unsupported duration, identity and alert-delivery metrics are marked
+unavailable rather than inferred.
+
+`SafetyLLMClient` is a provider-independent protocol:
+
+```text
+generate_report(context) -> StructuredSafetyReport
+```
+
+`StructuredSafetyReport` is versioned as `phase8-report-v1`. Factual claims
+must reference valid context facts or metrics; recommendations remain
+advisory and separately identified; event IDs, track IDs and numbers are
+validated; raw evidence bytes and absolute paths are excluded by default.
+Invalid or ungrounded provider output is rejected. Provider failure triggers a
+deterministic `TEMPLATE_FALLBACK` result and never affects the monitoring
+pipeline.
+
+The Basic Agent may call only allowlisted read-only tools implemented by the
+existing service layer. Arbitrary SQL, shell, filesystem, network side effects,
+external actions, autonomous loops, LangChain, LlamaIndex and other Agent
+frameworks are out of scope.
+
+### Context
+
+Phase 7 exposes persisted events, lifecycle status and verified snapshot
+metadata, but it does not expose stable person identity, violation duration or
+alert-delivery telemetry. Treating those values as available would create
+unsupported safety conclusions. The existing LLM and Agent classes are
+placeholders and must not become an implicit provider or tool framework.
+
+### Consequences
+
+P8-0 is design-only. It does not implement an LLM provider, call an external
+API, install a dependency or modify Phase 0 through Phase 7. After human
+review, P8-1 implemented deterministic analytics, canonical context
+serialization and context-schema validation. Report-level grounding validation
+remains with P8-2 because the `phase8-report-v1` contract is not implemented in
+P8-1. Provider selection and Agent planning remain later decisions. M-021,
+M-022 and M-023 remain `待实现`, and Phase 9 is not started.

@@ -1,5 +1,266 @@
 # Changelog
 
+## 2026-09-24 - Phase 8 P8-5 Interim Release Checkpoint
+
+- Published the authorized P8-0 through P8-5 checkpoint as
+  `phase-8-provider-pipeline-complete`; this is an interim checkpoint, not the
+  final Phase 8 release.
+- Marked P8-0 through P8-5 `COMPLETE / HUMAN REVIEW PASS / CHECKPOINTED` and
+  P8-6 `READY / NOT STARTED`. Basic Agent and Phase 9 remain not started;
+  M-021, M-022 and M-023 remain `待实现`.
+- Preserved the historical P8-5R `REPORT_SCHEMA_INVALID` rejection and the
+  subsequent P8-5D diagnostics and P8-5P prompt-v2 corrective evidence.
+- Confirmed the final separately authorized provider request returned
+  `PROVIDER_VALIDATED`: transport PASS, strict JSON PASS,
+  `phase8-report-v1` PASS, provider grounding VALID, `PROVIDER`,
+  `degraded=false` and fallback not used.
+- No provider request was issued during this release task. Frozen report,
+  grounding and fallback assets retained their recorded hashes; model,
+  training, inference and processed-dataset hashes MATCH; Charter diff EMPTY;
+  Phase 7 tags unchanged.
+- Validation: `539 passed, 1 skipped`; `compileall` PASS;
+  `git diff --check` PASS.
+
+## 2026-09-24 - Phase 8 P8-5 Final Real Provider Validation Audit
+
+- Recorded the separately authorized manual OpenAI-compatible provider request
+  that returned the sanitized `PROVIDER_VALIDATED` result for
+  `deepseek-flash`: transport PASS, strict JSON PASS, exact
+  `phase8-report-v1` PASS, provider grounding VALID, `PROVIDER`,
+  `degraded=false`, no safe error, no schema diagnostics and fallback not used.
+- Verified that this result is reachable only through
+  `ReportService.generate_provider_or_fallback()` after strict provider
+  candidate parsing and the unchanged P8-2 grounding validator both succeed.
+  No implementation inconsistency was found and no code was changed.
+- Preserved the earlier P8-5R `REPORT_SCHEMA_INVALID` rejection as historical
+  evidence, together with the P8-5D diagnostics and P8-5P prompt-v2
+  corrective work. P8-5D and P8-5P are `HUMAN REVIEW PASS`.
+- This audit issued no provider request, did not use `--execute`, did not
+  inspect or print the API-key value and did not persist raw provider content
+  or authorization headers.
+- Validation: `539 passed, 1 skipped`; `compileall` PASS;
+  `git diff --check` PASS; frozen report/grounding/fallback assets and model,
+  training, inference and dataset hashes MATCH; current Charter diff EMPTY;
+  Phase 7 tags unchanged. No commit, tag or push occurred.
+- P8-5 is
+  `IMPLEMENTATION COMPLETE / REAL PROVIDER VALIDATION PASS / HUMAN REVIEW
+  PENDING`; Basic Agent, P8-6 and Phase 9 remain unauthorized.
+
+## 2026-09-24 - Phase 8 P8-5P Provider Prompt Schema Conformance Fix
+
+- Added `infra/llm/report_schema_prompt.py`, which derives a compact JSON
+  Schema-like description from the authoritative `phase8-report-v1`
+  dataclasses and enums instead of maintaining a second hand-written schema.
+- Updated provider request construction to embed the generated description and
+  incremented `PROVIDER_PROMPT_VERSION` to
+  `phase8-provider-prompt-v2`.
+- The prompt now enumerates all top-level and nested required fields, exact
+  enum values, nullable-but-required fields, closed-object policy,
+  empty-array behavior, provider candidate constants, evidence-reference
+  format and tracker-scoped `track_id` semantics.
+- Added `tests/test_provider_prompt_schema.py` with seven conformance tests and
+  updated P8-5 E2E expectations for prompt v2. The known DeepSeek-like
+  malformed fixture still fails closed, while a schema-conforming fixture still
+  parses and reaches the unchanged grounding validator.
+- Kept `phase8-report-v1`, strict parser behavior, `GroundingValidator`,
+  `TemplateFallback`, context contract and fingerprint algorithm unchanged.
+  No real provider request or `--execute` was performed.
+- Validation: focused provider/prompt tests `80 passed`; full regression
+  `539 passed, 1 skipped`; `compileall` PASS; `git diff --check` PASS; frozen
+  assets MATCH; Charter diff EMPTY; Phase 7 tags unchanged. No commit, tag or
+  push occurred.
+
+## 2026-09-24 - Phase 8 P8-5D Sanitized Provider Schema Diagnostics
+
+- Added a bounded `SchemaDiagnostic` / `SchemaDiagnostics` model for
+  `REPORT_SCHEMA_INVALID` with safe JSON path, project-owned diagnostic code,
+  expected type or constraint and actual JSON type only.
+- Mapped strict report-construction failures to `MISSING_FIELD`,
+  `UNEXPECTED_FIELD`, `INVALID_TYPE`, `INVALID_ENUM`, `INVALID_FORMAT`,
+  `INVALID_VALUE`, `INVALID_COLLECTION` and
+  `SCHEMA_CONSTRUCTION_FAILED`.
+- Kept `phase8-report-v1` and `SafetyReportGroundingValidator` unchanged. The
+  parser still returns `REPORT_SCHEMA_INVALID`, never repairs output and never
+  returns a partial report.
+- Bounded diagnostics at 20 entries with deterministic ordering and a
+  `truncated` flag. Raw field values, unknown provider field names, raw
+  response content, prompts, context payloads, authorization headers and API
+  keys are excluded.
+- Propagated only sanitized diagnostics through `SafetyLLMClient`,
+  `ReportService` and the smoke CLI. Provider failure still routes to the
+  unchanged `TemplateFallback`, and fallback grounding remains independent.
+- Added focused local MockTransport tests covering missing fields, wrong
+  types, invalid enums, nested array paths, ordering, truncation, value/raw
+  response/API-key leakage, fallback routing and smoke output.
+- Validation: focused provider/diagnostic tests `73 passed`; full regression
+  `532 passed, 1 skipped`; `compileall` PASS; `git diff --check` PASS; frozen
+  asset hashes MATCH; locked Charter body unchanged; Phase 7 tags unchanged.
+  No real provider request, `--execute`, commit, tag or push occurred.
+
+## 2026-09-24 — Phase 8 P8-5R Real Provider Post-Execution Audit
+
+- Recorded the human-executed OpenAI-compatible request to
+  `https://api.deepseek.com/chat/completions` with model `deepseek-flash`.
+- The provider response envelope and non-empty message content were received,
+  and strict JSON syntax parsing succeeded. `phase8-report-v1` construction
+  failed with `REPORT_SCHEMA_INVALID`, so provider grounding was not reached.
+- The unchanged `TemplateFallback` generated a report and passed the unchanged
+  grounding validator. The fallback result is degraded and is not
+  `PROVIDER_VALIDATED`.
+- Raw provider content was not persisted, so the exact schema mismatch cannot
+  be recovered. No additional provider request was issued by this audit.
+- At that historical point P8-5 was `IMPLEMENTATION COMPLETE / REAL PROVIDER
+  EXECUTED / PROVIDER REPORT SCHEMA REJECTED / TEMPLATE FALLBACK PASS / HUMAN
+  REVIEW PENDING`.
+
+## 2026-09-24 — Phase 8 P8-5 Real Provider E2E and Safe Fallback
+
+- Added one configuration-driven OpenAI-compatible chat-completions transport
+  behind the frozen P8-4 `ProviderTransport` boundary. The transport uses the
+  standard library, one request attempt, a finite timeout, no retries and a
+  `262144`-byte response limit.
+- Added environment-only provider configuration for `PPE_LLM_ENDPOINT`,
+  `PPE_LLM_MODEL` and `PPE_LLM_API_KEY`; credentials are excluded from YAML,
+  request data, representations, errors and logs.
+- Added provider-first `ReportService.generate_provider_or_fallback()`. A
+  provider candidate can escape only after strict P8-4 parsing and unchanged
+  P8-2 grounding validation.
+- Added deterministic semantic and operational failure handling: malformed or
+  schema-invalid output, fingerprint mismatch, fabricated references, numeric
+  contradiction, path leakage, timeout, auth, rate limit, HTTP, unavailable,
+  empty and oversized responses route to `TemplateFallback`.
+- Fallback remains `TEMPLATE_FALLBACK` with `degraded=true` and passes the same
+  unchanged validator. Fallback failure returns `REPORT_UNAVAILABLE` without a
+  report; provider success and fallback success remain distinguishable.
+- Added a smoke CLI requiring explicit `--execute`. At the implementation
+  point, with no runtime `PPE_LLM_*` configuration it reported `NOT_EXECUTED`;
+  no credential use, raw response persistence or fallback-only provider PASS
+  was fabricated. The later human execution is recorded by the P8-5R audit.
+- Validation: focused Phase 8 tests `109 passed`; full regression
+  `520 passed, 1 skipped`; `compileall` PASS; `git diff --check` PASS; frozen
+  asset hashes MATCH; Charter diff EMPTY; Phase 7 tags unchanged. At that
+  point P8-5 was `IMPLEMENTATION COMPLETE / REAL PROVIDER VALIDATION NOT
+  EXECUTED / HUMAN REVIEW PENDING`; Basic Agent, P8-6 and Phase 9 remain
+  unauthorized.
+
+## 2026-09-24 — Phase 8 P8-4 Provider Adapter Boundary and Untrusted Output Parsing
+
+- Added the provider-independent `SafetyLLMClient`, typed request/response
+  contracts, injectable transport protocol and structured provider error
+  categories under `infra/llm/`.
+- Added deterministic `ProviderRequestBuilder` policy with
+  `phase8-provider-request-v1`, `phase8-provider-prompt-v1`, safe P8-1 context
+  payloads, construction-time removal, context fingerprint binding, finite
+  timeout and a `262144`-byte response limit.
+- Added strict `ProviderResponseParser` handling for untrusted provider bytes:
+  UTF-8/BOM validation, exact object shapes, duplicate-key rejection,
+  non-finite-value rejection, fingerprint/version/enum checks and
+  `phase8-report-v1` construction.
+- Added `ReportService.generate_provider_report()` returning a candidate plus
+  the unchanged P8-2 `ReportValidationResult`. P8-4 does not silently fall
+  back, mutate invalid output or mark unvalidated provider output accepted.
+- Added focused tests for deterministic requests, safe context, versioning,
+  valid parsing, malformed/empty/oversized/schema-invalid output, fabricated
+  events/tracks, numeric contradictions, path leaks, timeout/auth/rate-limit
+  mapping, secret redaction, zero network access and vendor independence.
+- P8-3 is now `HUMAN REVIEW PASS`. P8-4 is
+  `IMPLEMENTATION COMPLETE / HUMAN REVIEW PENDING`; real provider execution,
+  P8-5, Basic Agent and Phase 9 remain unauthorized.
+- Validation: `485 passed, 1 skipped`; focused P8-4 tests `26 passed`;
+  `compileall` PASS; `git diff --check` PASS; frozen asset hashes MATCH;
+  Charter diff EMPTY; Phase 7 tags unchanged. No commit, tag or push was
+  created.
+
+## 2026-09-24 — Phase 8 P8-3 Deterministic Template Fallback
+
+- Replaced the `TemplateFallback` and `ReportService` placeholders with typed,
+  provider-independent implementations over the frozen `phase8-context-v1`
+  contract.
+- Added deterministic `phase8-report-v1` generation with
+  `TEMPLATE_FALLBACK`, `degraded=true`, the frozen context fingerprint, exact
+  reporting period, event counts, evidence availability, tracker-scoped
+  grouping and conservative recommendation rules.
+- Claims reference only context facts, metrics, tracker-scoped track IDs and
+  available evidence records. Unavailable fields and reason codes are copied
+  exactly into report limitations.
+- `ReportService` validates the fallback with the unchanged P8-2 grounding
+  validator and returns `grounding_status=VALID` only after validation passes.
+  Missing, malformed or inconsistent required metrics fail closed.
+- Added focused tests for deterministic output, empty periods, type ordering,
+  exact references, all recommendation branches, tracker-scope wording, risk
+  ties, metric corruption, validator failure, privacy boundaries and
+  provider/network import exclusion.
+- P8-2 is now `HUMAN REVIEW PASS`. P8-3 is
+  `IMPLEMENTATION COMPLETE / HUMAN REVIEW PENDING`; provider integration,
+  real LLM calls, Basic Agent and P8-4 remain unauthorized.
+- Validation: `460 passed, 1 skipped`; `compileall` PASS; `git diff --check`
+  PASS; frozen asset hashes MATCH; Charter diff EMPTY. No commit, tag or push
+  was created.
+
+## 2026-09-24 — Phase 8 P8-2 Structured Report Contract and Grounding Validator
+
+- Added the provider-independent `phase8-report-v1` schema for report
+  generations, grounded observations/risk claims, recommendations, evidence
+  metadata and explicit limitations.
+- Bound every report to `SafetyContextBuilder.fingerprint(context)` through
+  `source_context_sha256`; changed or malformed fingerprints fail validation.
+- Added deterministic, fail-closed validation for unknown fact, metric, event,
+  tracker-scoped track, source and evidence references.
+- Added exact structured numeric validation against referenced
+  `MetricValue.value`; mismatches are rejected without fuzzy matching.
+- Enforced recommendation basis integrity, unavailable-field preservation and
+  contradictory-claim detection, and rejected absolute path, database path,
+  credential-like field, bearer-token and credential-URI leakage.
+- Added reproducible canonical report and validation-result serialization plus
+  focused tests for valid/empty reports, fabricated references, numeric
+  mismatch, ungrounded content, stable error ordering and no provider/network
+  dependency.
+- P8-1 is `HUMAN REVIEW PASS`. P8-2 is
+  `IMPLEMENTATION COMPLETE / HUMAN REVIEW PENDING`; provider integration,
+  TemplateFallback implementation, Basic Agent and P8-3 remain unauthorized.
+  Validation: `450 passed, 1 skipped`; `compileall` PASS; `git diff --check`
+  PASS. No commit, tag or push was created.
+
+## 2026-09-24 — Phase 8 P8-1 Deterministic Safety Analytics
+
+- Added `SafetyAnalyticsService`, `SafetyContextBuilder` and the
+  `phase8-context-v1` schema over the existing read-only `EventQueryService`
+  boundary.
+- Implemented exact event counts, type/status/tracker-scoped distributions,
+  UTC day buckets, first/last occurrence, evidence availability and opaque
+  source-reference aggregation.
+- Froze and tested inclusive `[start_at, end_at]` reporting semantics,
+  deterministic event/metric/unavailable ordering and canonical JSON
+  serialization.
+- Added method-level `SafetyContextBuilder.fingerprint(context)` without
+  changing the frozen context schema with a `context_sha256` field.
+- Added focused tests for interval validation, empty datasets, duplicate or
+  unsupported records, missing `track_id`, source-path exclusion, deterministic
+  query-order variation, schema validation and reproducibility.
+- P8-0 is human-reviewed PASS. P8-1 is `HUMAN REVIEW PASS`; the subsequent
+  P8-2 contract/validation scope was separately authorized. Provider
+  integration remains unauthorized. M-021 through M-023 remain `待实现`.
+
+## 2026-09-24 — Phase 8 P8-0 Architecture and Contract Freeze
+
+- Added the authoritative Safety Intelligence Agent architecture and ADR-023.
+- Froze the downstream read-only boundary over `EventQueryService`, with no
+  model, dataset, training, inference, tracking, association, compliance or
+  Phase 7 implementation changes.
+- Defined deterministic `SafetyAnalyticsService`, versioned
+  `phase8-context-v1`, provider-independent `SafetyLLMClient`,
+  `phase8-report-v1`, grounding validation, failure isolation and local
+  fallback.
+- Defined the privacy allowlist, secret handling, Basic Agent read-only tool
+  boundary and future deterministic/mock evaluation strategy.
+- Recorded explicit schema limitations: tracker-scoped `track_id`, no stable
+  person identity, no persisted violation duration and no alert-delivery
+  telemetry.
+- Added the P8-0 architecture freeze report and worklog. No provider, API call,
+  dependency, code, commit, tag or push was created; M-021 through M-023 remain
+  `待实现`.
+- P8-0 subsequently passed human review before the authorized P8-1 work.
+
 ## 2026-09-24 — Phase 7 Final Release Closure
 
 - Completed the authorized final release review for Phase 7 runtime
@@ -14,7 +275,7 @@
   configuration, processed dataset payload and M-007 demo SHA256 all MATCH.
 - The locked Charter body and M-007 `待实现` status remain unchanged. Remote
   RTSP, reconnect/backoff, annotation quality acceptance and Phase 9 Charter
-  acceptance remain pending. Phase 8 has not started.
+  acceptance remain pending.
 
 ## 2026-09-23 — Phase 7 M-007 Annotated Demo Video
 
