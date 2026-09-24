@@ -14,8 +14,13 @@
 Phase 7-0 Architecture Freeze、Phase 7-1 Event Storage、Phase 7-2
 Evidence Snapshot 与 Phase 7-3 Dashboard & Alerts 已通过人工审核；
 Phase 7-4 Camera / RTSP Input 和 Phase 7-5 Runtime Validation 也已通过
-人工审核。Phase 7 Release Preparation Audit 已完成并等待人工审核，
-publication 尚未授权。冻结设计见
+人工审核。基础 Phase 7 release commit 与 tag 已存在；Phase 7-6
+finalization 已实现 TTS、service-owned monitoring loop 和 Streamlit
+realtime 页面，并完成真实 runtime validation。M-007 annotated demo video
+工具已实现，已完成 47/47 帧真实 MP4 渲染、帧数校验、hash 校验、输出完整性
+验证和人工审核。Phase 7 final release closure 已完成，最终 annotated tag
+为 `phase-7-release-freeze-complete`；Charter M-007 状态仍按治理规则保持
+`待实现`，Phase 8 尚未开始。冻结设计见
 `docs/designs/phase-07/PHASE_7_TARGET_ARCHITECTURE.md`、
 `docs/designs/phase-07/PHASE_7_DATA_CONTRACTS.md` 和
 `docs/reports/phase-07/PHASE_7_ARCHITECTURE_FREEZE_REPORT.md`。
@@ -29,8 +34,18 @@ Phase 7-4 实现与测试证据见
 `docs/reports/phase-07/PHASE_7_4_CAMERA_RTSP_REPORT.md`。
 Phase 7-5 运行证据见
 `docs/reports/phase-07/PHASE_7_5_RUNTIME_VALIDATION_REPORT.md`。
+Phase 7-6 运行验证结果见
+`docs/reports/phase-07/PHASE_7_6_RUNTIME_VALIDATION_RESULT.md`。
+Phase 7 release freeze 报告见
+`docs/reports/phase-07/PHASE_07_FINAL_RELEASE_REPORT.md`。
+M-007 annotated demo video 工具设计见
+`docs/designs/phase-07/PHASE_7_M007_ANNOTATED_DEMO_VIDEO_DESIGN.md`。
+M-007 实现与真实 MP4 验证报告见
+`docs/reports/phase-07/PHASE_7_M007_IMPLEMENTATION_REPORT.md`。
 Phase 7 Release Preparation Audit 证据见
 `docs/reports/phase-07/PHASE_7_RELEASE_AUDIT_REPORT.md`。
+Phase 7 final release、tag 与 remote verification 见
+`docs/reports/phase-07/PHASE_07_RELEASE_COMPLETE_REPORT.md`。
 
 冻结子阶段：
 
@@ -41,9 +56,10 @@ Phase 7 Release Preparation Audit 证据见
 | 7-2 | Evidence Snapshot | COMPLETE / HUMAN REVIEW PASS |
 | 7-3 | Dashboard and Alerts | COMPLETE / HUMAN REVIEW PASS |
 | 7-4 | Camera / RTSP Input | COMPLETE / HUMAN REVIEW PASS |
-| 7-4b | Monitoring integration and annotated video rendering | WAITING |
+| 7-4b | Monitoring integration and annotated video rendering | COMPLETE / REAL MP4 RUNTIME PASS / HUMAN REVIEW PASS |
 | 7-5 | Runtime Validation | COMPLETE / HUMAN REVIEW PASS |
-| 7-Release | Release audit and publication | AUDIT COMPLETE FOR HUMAN REVIEW / NOT PUBLISHED |
+| 7-Release | Release audit and publication | FINAL RELEASE COMPLETE; base tag `phase-7-web-alert-platform-complete`; final freeze tag `phase-7-release-freeze-complete` |
+| 7-6 | Release finalization: TTS, monitoring loop and real-source validation | COMPLETE / RUNTIME VALIDATION PASS / HUMAN REVIEW PASS |
 
 Phase 7-4 implements the source adapter layer only: MP4, USB Camera and RTSP
 share one `VideoSource` lifecycle and observable status contract. It does not
@@ -53,9 +69,13 @@ retention or implement TTS. Phase 7-5 later validates the integrated MP4
 runtime path, all four dashboard pages and a real USB Camera lifecycle, but
 does not run real RTSP. M-015 through M-020 and deferred M-007/M-008 remain
 `待实现` in the locked Charter until their full acceptance criteria are met.
-The release audit confirms the repository and documentation boundaries but
-does not authorize commit, push or tag. Publication waits for explicit human
-review.
+The historical release audit confirmed the repository and documentation
+boundaries. The base release was subsequently published as commit
+`a30b73c080c18d010fbaa08642868e86acb68022` and tag
+`phase-7-web-alert-platform-complete`. Phase 7-6 finalization and the M-007
+annotated demo video implementation subsequently received human review PASS
+and were included in the final Phase 7 release closure. M-007 remains
+`待实现` in the locked Charter until full Phase 9 acceptance.
 
 
 ### Deferred MUST delivery ownership (ADR-019)
@@ -198,6 +218,60 @@ Phase 7 release audit:
 - Synchronized Phase 7 documentation so 7-0 through 7-5 are recorded as
   human-reviewed PASS and 7-Release is audit-complete but not published.
 
+Phase 7-6 release finalization:
+
+- `TTSService` uses a lazy optional `pyttsx3` backend and an injectable
+  speaker. `TTSAlertAdapter` preserves event idempotency, applies a
+  per-track/type cooldown and returns structured failed/skipped results
+  without blocking event persistence.
+- `MonitoringService` owns one background worker per session, reuses the
+  existing inference, person-only tracker, association, compliance, event,
+  SQLite ingest, snapshot and alert boundaries, and exposes immutable status
+  plus recent events for Streamlit.
+- `web/pages/1_实时监控.py` starts and stops the service, refreshes status
+  periodically, renders the latest frame and shows detection/event/alert
+  counters. The page does not import or invoke detector, tracker, association
+  or compliance implementations directly.
+- `configs/monitoring.yaml` freezes sequential processing, no frame skipping,
+  no batch inference, no local fallback and persistence-before-alert.
+  `configs/p7_6_validation.yaml` defines real Camera/RTSP validation with
+  `execution_enabled: false`, frozen checkpoint identity and Git-ignored
+  evidence.
+- Phase 7-6 tests pass with an injected speaker and fake source/pipeline
+  boundaries. The initial implementation review used the governance host,
+  which had no Streamlit, Torch, Ultralytics or `pyttsx3`. A subsequent
+  runtime validation used an isolated environment and executed browser
+  Streamlit, native Windows SAPI TTS and a controlled local MediaMTX RTSP
+  stream; see
+  `docs/reports/phase-07/PHASE_7_6_RUNTIME_VALIDATION_RESULT.md`.
+
+Phase 7 release freeze preparation:
+
+- The release audit confirms the published base release identity and the
+  P7-6 runtime-validation boundary. The preparation change set remains
+  uncommitted.
+- The M-007 annotated demo video tool design freezes a future offline MP4
+  pipeline using `VideoReader`, `InferenceService`, deterministic frame
+  rendering and an atomic MP4 writer.
+- The design output contract is `demo.mp4`, `run.json`, `frames.jsonl`,
+  `summary.json` and `renderer.log` below
+  `artifacts/inference/annotated/<run-id>/`.
+- The design excludes tracking, association, compliance, alerts, Camera/RTSP,
+  E-005 clip retention, model download and any core-pipeline modification.
+- M-007 implementation adds `AnnotatedFrameRenderer`,
+  `AnnotatedVideoWriter` and `AnnotatedVideoService` without changing the
+  frozen detector, video reader, schemas or upstream Phase 5/6 modules.
+- The writer stages the complete five-file output directory, verifies the
+  decoded MP4 frame count and dimensions, then publishes by one directory
+  rename. A failed run removes its staging directory and leaves no partial
+  `demo.mp4`.
+- A real CPU-only run rendered all 47 source frames to 47 output frames at
+  1280x720 with the frozen checkpoint. The output SHA256 is
+  `293a51688d0f34170abbe9e104a1b4e31d679d072a81bf71eed6d0c9a45e8949`.
+- M-007 remains `待实现` in the locked Charter until human review and Phase 9
+  acceptance; the implementation and runtime evidence are not a Charter
+  status change.
+
 ## 5. 测试要求
 
 - SQLite 创建、写入、读取、重启持久化和查询过滤测试。
@@ -321,6 +395,57 @@ Phase 7 release-preparation gates:
 | P7-REL-G5 | Full repository tests, compileall and diff checks pass | PASS |
 | P7-REL-G6 | Publication remains unauthorized | PASS |
 
+Phase 7-6 release-finalization gates:
+
+| Gate | Requirement | Status |
+| --- | --- | --- |
+| P7-6-G1 | TTS adapter implemented with cooldown and failure isolation | PASS |
+| P7-6-G2 | Service-owned MP4/USB/RTSP monitoring loop implemented | PASS |
+| P7-6-G3 | Streamlit realtime page uses service boundaries only | PASS |
+| P7-6-G4 | Real Camera/RTSP validation design and evidence policy documented | PASS |
+| P7-6-G5 | Full repository tests, compileall and diff checks pass | PASS |
+| P7-6-G6 | Frozen model, dataset, training and upstream core modules unchanged | PASS |
+| P7-6-G7 | No commit, new tag or push performed by this task | PASS |
+| P7-6-G8 | Real RTSP runtime evidence recorded | PASS |
+
+Phase 7-6 result: `COMPLETE / RUNTIME VALIDATION PASS / HUMAN REVIEW PASS`.
+Runtime evidence covers MP4, real USB Camera, native TTS, browser Streamlit
+and a controlled local RTSP stream. Remote RTSP, reconnect/backoff and
+long-running recovery remain unverified. The reviewed change set was included
+in the final Phase 7 release closure.
+
+Phase 7 release-freeze gates:
+
+| Gate | Requirement | Status |
+| --- | --- | --- |
+| P7-FR-G1 | Phase 7 subphase and base-release identity are audited | PASS |
+| P7-FR-G2 | P7-6 runtime evidence remains bounded and linked | PASS |
+| P7-FR-G3 | M-007 annotated demo video tool design is complete | PASS |
+| P7-FR-G4 | M-007 implementation is not overclaimed | PASS |
+| P7-FR-G5 | Frozen assets remain unchanged | PASS |
+| P7-FR-G6 | Repository validation passes | PASS |
+| P7-FR-G7 | No commit, tag, push or Phase 8 action is performed | PASS |
+| P7-FR-G8 | Locked Charter body remains unchanged | PASS; the requested status note was withheld by the hash guard, so M-007 remains `待实现` |
+
+Phase 7 Release Freeze result: `PASS / HUMAN REVIEW PASS`.
+
+Phase 7 M-007 annotated demo video gates:
+
+| Gate | Requirement | Status |
+| --- | --- | --- |
+| P7-M007-G1 | Frozen checkpoint and inference contract are verified | PASS |
+| P7-M007-G2 | Local MP4 input is processed sequentially without frame skipping | PASS |
+| P7-M007-G3 | Deterministic clipped boxes and labels are rendered | PASS |
+| P7-M007-G4 | Source, processed, written and decoded output frame counts are equal | PASS |
+| P7-M007-G5 | Final output is published by atomic directory rename | PASS |
+| P7-M007-G6 | Failure paths remove staging output and leave no partial demo | PASS |
+| P7-M007-G7 | Unit tests and real MP4 output-integrity validation pass | PASS |
+| P7-M007-G8 | Charter, model, dataset, training and Phase 5/6 modules remain unchanged | PASS |
+
+Phase 7 M-007 result: `COMPLETE / REAL MP4 VALIDATION PASS / HUMAN REVIEW
+PASS`. The reviewed implementation was included in the final Phase 7 release
+closure.
+
 ## 7. 已知问题
 
 并发写入、证据清理和长期运行稳定性尚待设计验证。
@@ -364,8 +489,15 @@ Additional frozen risks:
 - Phase 7-5 dashboard and alert validation used a short one-event runtime
   history. It does not establish large-history performance, retention
   behavior or long-running stability.
-- TTS is still unimplemented, real RTSP is still untested, and M-007/M-008
-  final acceptance remains pending.
+- TTS is implemented and tested with an injected speaker, and Phase 7-6
+  executed a native Windows SAPI call through `pyttsx3`. This verifies the
+  backend call path, not audio quality or long-running speech delivery. A
+  controlled local RTSP stream was validated; remote RTSP, reconnect/backoff
+  and stale-frame recovery remain untested. M-007/M-008 final acceptance
+  remains pending. M-007 annotated rendering, output frame-count verification
+  and real output inspection are implemented and passed one short public-domain
+  MP4. Long-duration throughput, codec compatibility across other hosts and
+  annotation quality review remain open.
 
 Real Camera/RTSP and annotated video evidence is required before M-007/M-008
 Phase 7 integration acceptance. Phase 9 remains the final Charter acceptance
@@ -373,6 +505,20 @@ owner.
 
 ## 8. 开发记录
 
+- 2026-09-23: Phase 7 M-007 Annotated Demo Video implementation completed for
+  human review. Added deterministic frame rendering, staged atomic MP4 output,
+  frame-count verification, metadata artifacts, rollback behavior and a
+  structured CLI. A real frozen-checkpoint MP4 run processed 47/47 frames and
+  produced a 47-frame 1280x720 output with SHA256
+  `293a51688d0f34170abbe9e104a1b4e31d679d072a81bf71eed6d0c9a45e8949`.
+  No model, dataset, training, Phase 5/6 or Charter change occurred. No commit,
+  tag or push was performed; human review remains pending.
+- 2026-09-23: Phase 7 Release Freeze Preparation completed for human review.
+  Audited the current Phase 7 status and frozen hashes, added the final
+  release-freeze candidate report, and completed the M-007 annotated demo
+  video tool design. M-007 remains `待实现`; no annotated video was rendered.
+  No model, dataset, training, inference, core pipeline, commit, tag or push
+  action occurred.
 - 2026-09-23: Phase 7 Release Preparation Audit completed for human review.
   Audited the complete uncommitted change set, generated-artifact and secret
   boundaries, large files and documentation consistency. Confirmed 7-0

@@ -8,19 +8,19 @@ reviews; the statuses below reflect the current accepted records.
 
 ## Current Phase
 
-- Phase 7 IN PROGRESS — Web & Alerts. Phase 7-0 Architecture Freeze and
-  Phase 7-1 Event Storage and Phase 7-2 Evidence Snapshot are complete with
-  human review PASS. Phase 7-3 Dashboard & Alerts and Phase 7-4 Camera/RTSP
-  Input are also human review PASS. Phase 7-5 Runtime Validation is also
-  `COMPLETE / HUMAN REVIEW PASS`. Phase 7 Release Preparation Audit is
-  `AUDIT COMPLETE FOR HUMAN REVIEW / NOT PUBLISHED`. SQLite event
-  persistence, verified evidence-file association, read-only dashboard
-  queries, Console/Web alert adapters and unified MP4/USB Camera/RTSP source
-  adapters now exist. TTS, real RTSP validation, reconnect behavior,
-  monitoring integration, annotation rendering, reconciliation automation
-  and retention remain pending.
+- Phase 7 COMPLETE / RELEASED — Web & Alerts. Base commit
+  `a30b73c080c18d010fbaa08642868e86acb68022` carries annotated tag
+  `phase-7-web-alert-platform-complete`; final release closure publishes
+  annotated tag `phase-7-release-freeze-complete`. Phase 7-0 through Phase 7-6
+  are human-reviewed PASS. Phase 7-6 adds the TTS alert adapter, a
+  service-owned MP4/USB/RTSP monitoring loop and the Streamlit realtime page;
+  MP4, USB Camera, native TTS, browser Streamlit and controlled local RTSP
+  validation all passed. M-007 annotated demo video is implemented, validated
+  on a real 47/47-frame MP4 and human-reviewed PASS. M-007 remains `待实现`
+  in the locked Charter pending Phase 9 acceptance. Remote RTSP reconnect
+  behavior, reconciliation automation and retention remain pending.
   M-015 through M-020 remain `待实现` in the locked Charter until full
-  acceptance.
+  acceptance. Phase 8 is not started.
 - Phase 6 COMPLETE / RELEASED — PPE Compliance Event Engine. Release tag
   `phase-6-compliance-event-engine-complete` targets
   `e24e31ae635e5d5cd1129a9fb519a59b7014f802`.
@@ -38,8 +38,7 @@ reviews; the statuses below reflect the current accepted records.
   `6da6213f0cc541765f231c81b4264a98f01d5f4a`; the current documentation is
   now synchronized to `COMPLETE / RELEASED`.
 - Phase 4 remains `Offline Inference COMPLETE` for its released offline scope.
-- Current next allowed step: `WAIT FOR PHASE 7 RELEASE HUMAN REVIEW`;
-  commit, push and tag must not start automatically.
+- Current next allowed step: `PHASE 8 NOT STARTED / WAIT FOR AUTHORIZATION`.
 
 ## Last Completed
 
@@ -111,6 +110,26 @@ reviews; the statuses below reflect the current accepted records.
   boundary, generated-artifact exclusions, absence of model/media/database
   files, credential/token scan, documentation status consistency and the
   complete repository test baseline. Publication remains unauthorized.
+- Phase 7-6 Release Finalization: `COMPLETE / RUNTIME VALIDATION PASS /
+  HUMAN REVIEW PASS`. Added the lazy, injectable TTS service and cooldown/isolation
+  adapter; added `MonitoringService`, session-scoped dashboard assembly and a
+  realtime Streamlit page for MP4, USB Camera and RTSP. Runtime evidence now
+  includes MP4 regression, real USB Camera, native `pyttsx3`/Windows SAPI,
+  browser-driven Streamlit pages and a real local MediaMTX RTSP stream. The
+  subsequent authorized release closure committed and published this work.
+- Phase 7 Release Freeze Preparation: `COMPLETE / HUMAN REVIEW PASS`. Audited Phase 7 subphase status, the base release identity,
+  the P7-6 runtime evidence and frozen asset hashes. Added the M-007 annotated
+  demo video tool design and the final release report. The Charter M-007
+  status remains `待实现`; no model, dataset, training, inference or core
+  pipeline was changed. The authorized final release closure followed.
+- Phase 7 M-007 Annotated Demo Video: `COMPLETE / REAL MP4 RUNTIME PASS /
+  HUMAN REVIEW PASS`. Added deterministic frame annotation,
+  staged atomic MP4 writing, decoded frame-count and dimension verification,
+  metadata artifacts and rollback. A frozen-checkpoint CPU run processed
+  47/47 frames into a 47-frame 1280x720 MP4 with SHA256
+  `293a51688d0f34170abbe9e104a1b4e31d679d072a81bf71eed6d0c9a45e8949`.
+  The Charter M-007 status remains `待实现`; the authorized Phase 7 release
+  closure committed and published the reviewed implementation.
 - Phase 1 Data remains `实现中` in the Master Plan. M-001, M-002 and M-003
   remain `待实现` in the Charter; completed data substeps are not a claim of
   their final acceptance.
@@ -150,12 +169,12 @@ reviews; the statuses below reflect the current accepted records.
   active-cycle deduplication; recovery/cooldown; and Git-ignored JSONL event
   storage are implemented. The offline fixture and tests require no model
   runtime, GPU, camera or network stream.
-- Real RTSP runtime, TTS, LLM and Agent remain outside completed scope. The
-  dashboard, Console/Web alerts and source adapter layer are implemented.
-  ByteTrack and association adapters are implemented and synthetically
-  integrated; Phase 7-5 additionally exercised them in one real MP4 runtime
-  path, but stable-ID quality and broad association acceptance remain
-  unverified.
+- LLM and Agent remain outside completed scope. The dashboard, Console/Web/TTS
+  alert adapters, service-owned monitoring loop and source adapter layer are
+  implemented. Phase 7-6 adds real local RTSP runtime evidence. ByteTrack and
+  association adapters are implemented and synthetically integrated; Phase 7-5
+  additionally exercised them in one real MP4 runtime path, but stable-ID
+  quality and broad association acceptance remain unverified.
 - Phase 7 architecture is frozen: SQLite-first storage, date-partitioned
   snapshot evidence, Streamlit V1, one `VideoSource` boundary for MP4/USB
   Camera/RTSP, Console/Web/TTS alert adapters and a separate persisted-event
@@ -193,6 +212,18 @@ reviews; the statuses below reflect the current accepted records.
   queries, Console delivery and in-process Web delivery. The run ID is
   `20260923T131111Z`; evidence remains under Git-ignored
   `artifacts/validation/P7-5/`.
+- Phase 7-6 reuses those frozen boundaries in `MonitoringService` instead of
+  duplicating detector, tracker, association or compliance logic. The
+  service owns one background worker, exposes immutable status, preserves
+  persist-before-alert ordering and reloads the persisted snapshot reference
+  before fan-out. TTS uses stable event idempotency, per-track/type cooldown
+  and structured failure isolation.
+- The M-007 annotated demo tool composes `VideoReader` and `InferenceService`
+  into sequential frame inference and deterministic box/label rendering.
+  `AnnotatedVideoWriter` stages all five artifacts, decodes the MP4 for
+  frame-count and dimension verification, then publishes by one atomic
+  directory rename. The real run processed 47/47 frames and produced output
+  SHA256 `293a51688d0f34170abbe9e104a1b4e31d679d072a81bf71eed6d0c9a45e8949`.
 - The Phase 7 release audit found no forbidden pending artifact. All changed
   files are source, tests, configuration or documentation; the largest
   pending file is approximately 75 KB, no tracked file exceeds 256 KB, and
@@ -215,6 +246,9 @@ reviews; the statuses below reflect the current accepted records.
   Ultralytics `8.4.157`, OpenCV `5.0.0`, NumPy `2.2.6`, Streamlit `1.64.0`,
   Pandas `3.0.6` and lap `0.5.12`. Python 3.12.1 differs from frozen
   `INF-RUNTIME-001` Python 3.10.4 and is recorded as a release limitation.
+- M-007 validation used the frozen `INF-RUNTIME-001` Python `3.10.4`,
+  PyTorch `2.5.1+cpu`, Ultralytics `8.4.157`, OpenCV `5.0.0` runtime and
+  NumPy `2.2.6` environment.
 - Training used a separately frozen AutoDL RTX 4090 environment. The
   EXP-001 one-run authorization is `CONSUMED`; it does not authorize retraining.
 
@@ -240,22 +274,33 @@ reviews; the statuses below reflect the current accepted records.
   Streamlit runtime coupling; RISK-022 Camera/RTSP instability; RISK-023
   evidence retention; RISK-024 alert/TTS failure isolation; RISK-025 event
   identity compatibility; RISK-026 statistics divergence.
+- M-007 annotated-output integrity is tracked as RISK-027; one short MP4
+  passed, while long-duration throughput, codec portability and visual
+  annotation quality review remain open.
 - Phase 7-5 reduces uncertainty for the MP4/SQLite/snapshot/dashboard/
-  Console/Web path and real USB Camera lifecycle, but does not close RISK-008
-  or RISK-022 because real RTSP, reconnect/backoff and stale-frame behavior
-  remain untested. TTS and retention remain open.
+  Console/Web path and real USB Camera lifecycle. Phase 7-6 adds a controlled
+  local MediaMTX RTSP lifecycle and native Windows SAPI TTS call, but does not
+  close RISK-008 or RISK-022 because remote RTSP, reconnect/backoff and
+  stale-frame behavior remain untested. RISK-024 has TTS
+  cooldown/failure-isolation tests plus a successful native backend call;
+  long-running alert delivery remains unverified. Retention remains open.
 - RISK-017 retains data-quality findings, including small-object performance
   and perceptual cross-split candidates. Candidates are not confirmed leaks.
-- Real RTSP behavior, annotated video output and production monitoring remain
-  unvalidated. Phase 7-5 validated one MP4 downstream event path and a real
-  USB Camera lifecycle, but that does not complete M-007/M-008 acceptance.
+- Remote RTSP behavior, reconnect/backoff and production monitoring remain
+  unvalidated. Phase 7-6 validated a controlled local RTSP stream and
+  MP4/USB/browser paths. M-007 annotated output is implemented and one short
+  real MP4 was decoded, inspected and verified; this does not complete full
+  M-007/M-008 acceptance or establish long-duration/codec coverage.
 
 ## Deferred Requirements
 
 ### Deferred MUST ownership
 
-- M-007 annotated video rendering: `待实现`; Phase 7 video page/service
-  integration owns delivery, Phase 9 owns final Charter acceptance.
+- M-007 annotated video rendering: `待实现`; the tool design is complete at
+  `docs/designs/phase-07/PHASE_7_M007_ANNOTATED_DEMO_VIDEO_DESIGN.md` and the
+  implementation passed one real 47/47-frame MP4 validation. Human review and
+  Phase 9 final acceptance remain pending. Phase 7 owns delivery and Phase 9
+  owns final Charter acceptance.
 - M-008 Camera/RTSP: `待实现`; Phase 7 live-input/real-time monitoring
   integration owns delivery, Phase 9 owns final Charter acceptance.
 - Neither requirement is an Extension. ADR-019 clarifies the assignment;
@@ -271,6 +316,16 @@ reviews; the statuses below reflect the current accepted records.
 - [Phase 7-3 dashboard and alert report](reports/phase-07/PHASE_7_3_DASHBOARD_ALERT_REPORT.md).
 - [Phase 7-4 camera and RTSP input report](reports/phase-07/PHASE_7_4_CAMERA_RTSP_REPORT.md).
 - [Phase 7-5 runtime validation report](reports/phase-07/PHASE_7_5_RUNTIME_VALIDATION_REPORT.md).
+- [Phase 7-6 release finalization report](reports/phase-07/PHASE_7_6_RUNTIME_VALIDATION_REPORT.md).
+- [Phase 7-6 runtime validation result](reports/phase-07/PHASE_7_6_RUNTIME_VALIDATION_RESULT.md).
+- [Phase 7 release freeze report](reports/phase-07/PHASE_07_FINAL_RELEASE_REPORT.md).
+- [M-007 annotated demo video tool design](designs/phase-07/PHASE_7_M007_ANNOTATED_DEMO_VIDEO_DESIGN.md).
+- [M-007 annotated demo video implementation report](reports/phase-07/PHASE_7_M007_IMPLEMENTATION_REPORT.md).
+- [Phase 7 release complete report](reports/phase-07/PHASE_07_RELEASE_COMPLETE_REPORT.md).
+- [Phase 7 release closure worklog](worklogs/2026/09/2026-09-24-01-phase7-release-closure.md).
+- [Phase 7 M-007 implementation worklog](worklogs/2026/09/2026-09-23-18-phase7-m007-implementation.md).
+- [Phase 7 release-freeze preparation worklog](worklogs/2026/09/2026-09-23-17-phase7-release-freeze-preparation.md).
+- [Phase 7-6 release finalization worklog](worklogs/2026/09/2026-09-23-16-phase7-release-finalization.md).
 - [Phase 7 release audit report](reports/phase-07/PHASE_7_RELEASE_AUDIT_REPORT.md).
 - [Phase 7 architecture audit](reports/phase-07/PHASE_7_ARCHITECTURE_AUDIT.md).
 - [Phase 7 target architecture](designs/phase-07/PHASE_7_TARGET_ARCHITECTURE.md).
@@ -300,10 +355,15 @@ reviews; the statuses below reflect the current accepted records.
 
 ## Next Allowed Step
 
-`WAIT FOR PHASE 7 RELEASE HUMAN REVIEW`.
+`PHASE 8 NOT STARTED / WAIT FOR AUTHORIZATION`.
 
-The Phase 7 release change set has passed repository, documentation and test
-audits, but publication is not authorized. Commit, push and tag remain
-pending explicit human review. Real RTSP, TTS, annotated rendering and
-M-007/M-008 final acceptance remain pending. The historical P5-3-G5 runtime
-block and all frozen model/data/training assets remain unchanged.
+The base Phase 7 release tag and remote commit already exist. The Phase 7-6
+finalization and M-007 implementation passed the full repository test gate and
+human review. The authorized release closure created the final freeze commit
+and tag and pushed the release. Remote RTSP behavior, reconnect/backoff and
+M-008 final acceptance remain pending. Native TTS and controlled local RTSP
+were executed in the isolated validation runtime. The M-007 annotated demo
+video implementation, real MP4 output validation and human review are complete,
+but Phase 9 acceptance still does not change the Charter's `待实现` status.
+The historical P5-3-G5 runtime block and all frozen model/data/training assets
+remain unchanged. Phase 8 has not started.

@@ -6,6 +6,7 @@ from utils.paths import PROJECT_ROOT
 DASHBOARD_PAGES = (
     "web/pages/0_Overview.py",
     "web/pages/1_Event_Explorer.py",
+    "web/pages/1_实时监控.py",
     "web/pages/2_Evidence_Viewer.py",
     "web/pages/3_Statistics.py",
 )
@@ -20,6 +21,7 @@ def test_dashboard_pages_exist_and_stay_out_of_pipeline_layers() -> None:
         assert "ComplianceEngine" not in source
         assert "EventEngine" not in source
         assert "sqlite3" not in source
+        assert "cv2.VideoCapture" not in source
 
 
 def test_dashboard_support_uses_service_boundary() -> None:

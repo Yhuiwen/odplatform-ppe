@@ -1,5 +1,104 @@
 # Changelog
 
+## 2026-09-24 — Phase 7 Final Release Closure
+
+- Completed the authorized final release review for Phase 7 runtime
+  finalization and M-007 annotated demo video delivery.
+- Confirmed Phase 7-0 through Phase 7-6 PASS, M-007 implementation and real
+  MP4 validation PASS, and M-007 Human Review PASS.
+- Published the final annotated tag `phase-7-release-freeze-complete` without
+  moving or replacing `phase-7-web-alert-platform-complete`.
+- Final release gate: `414 passed, 1 skipped`; `python -m compileall -q .`:
+  PASS; `git diff --check`: PASS.
+- Frozen identities verified: checkpoint, training configuration, inference
+  configuration, processed dataset payload and M-007 demo SHA256 all MATCH.
+- The locked Charter body and M-007 `待实现` status remain unchanged. Remote
+  RTSP, reconnect/backoff, annotation quality acceptance and Phase 9 Charter
+  acceptance remain pending. Phase 8 has not started.
+
+## 2026-09-23 — Phase 7 M-007 Annotated Demo Video
+
+- Added `AnnotatedFrameRenderer`, `AnnotatedVideoWriter`,
+  `AnnotatedVideoService` and a structured offline MP4 CLI.
+- Rendering uses the frozen checkpoint and existing `VideoReader` /
+  `InferenceService` boundaries, deterministic class colors, clipped boxes,
+  class labels and confidence values. No tracking or compliance overlay was
+  added.
+- Output is staged as one directory and published by a single atomic rename
+  only after the source, processed, written and decoded output frame counts
+  match. Failures release the encoder and remove the staging directory.
+- Added `demo.mp4`, `run.json`, `frames.jsonl`, `summary.json` and
+  `renderer.log` metadata validation. The default output root is Git-ignored.
+- Real frozen-checkpoint MP4 validation processed 47/47 frames at 1280x720
+  and produced output SHA256
+  `293a51688d0f34170abbe9e104a1b4e31d679d072a81bf71eed6d0c9a45e8949`.
+- Validation: `414 passed, 1 skipped`; `python -m compileall .`: PASS;
+  `git diff --check`: PASS. M-007 remains `待实现` in the locked Charter
+  pending human review and Phase 9 acceptance. No commit, tag or push.
+
+## 2026-09-23 — Phase 7 Release Freeze Preparation
+
+- Audited Phase 7-0 through Phase 7-6, the published base release identity,
+  the P7-6 runtime evidence and the frozen model/data/training/inference
+  hashes.
+- Added `docs/reports/phase-07/PHASE_07_FINAL_RELEASE_REPORT.md` and recorded
+  the release freeze candidate as `PASS / HUMAN REVIEW PENDING`.
+- Added the M-007 annotated demo video tool design covering offline MP4
+  rendering, deterministic overlays, output metadata, frame-count checks,
+  atomic publication and fail-closed errors.
+- Preserved M-007 as `待实现` in the locked Charter. The design is not
+  implementation evidence, and no annotated video was rendered or validated.
+- The locked Charter body remains unchanged because its hash guard rejects
+  non-status content edits; the requested Charter status note was therefore
+  withheld and recorded in the release-freeze report instead.
+- Validation: `407 passed, 1 skipped`; `python -m compileall -q .`: PASS;
+  `git diff --check`: PASS; frozen asset hashes MATCH.
+- No model, dataset, mapping, training configuration, checkpoint, core
+  pipeline, commit, tag or push action was performed.
+
+## 2026-09-23 — Phase 7-6 Runtime Validation
+
+- Executed the requested runtime order: MP4 regression, USB Camera, native
+  TTS, Streamlit browser runtime and RTSP runtime.
+- MP4 regression processed 47/47 frames with the frozen checkpoint and
+  produced the complete inference-to-event persistence path without runtime
+  errors.
+- Native Windows SAPI TTS through `pyttsx3` returned successfully. Real USB
+  Camera open/read/close and real local MediaMTX RTSP open/read/close both
+  passed with recorded latency, resource and screenshot evidence.
+- The real Streamlit browser executed Overview, Event Explorer, Evidence
+  Viewer, Statistics and a browser-driven MP4 realtime session to
+  `COMPLETED`.
+- Full validation: `407 passed, 1 skipped`; `python -m compileall -q .`: PASS;
+  `git diff --check`: PASS; Charter diff: empty.
+- Runtime evidence remains Git-ignored under `artifacts/validation/P7-6/`.
+  Remote RTSP, reconnect/backoff, annotated video rendering and M-007/M-008
+  final acceptance remain pending. No commit, tag or push was created.
+
+## 2026-09-23 — Phase 7-6 Release Finalization
+
+- Added the lazy, injectable `TTSService` and `TTSAlertAdapter` with stable
+  `TTS_UNAVAILABLE` / `TTS_BACKEND_FAILED` errors, event-id idempotency,
+  per-track/type cooldown and structured failure isolation.
+- Added `MonitoringService`, session-scoped monitoring assembly and the
+  Streamlit realtime page for MP4, USB Camera and RTSP. The service owns the
+  background worker and reuses the existing inference, tracking, association,
+  compliance, event, SQLite, snapshot and alert boundaries.
+- Added `configs/monitoring.yaml` and the execution-disabled
+  `configs/p7_6_validation.yaml` real Camera/RTSP validation design with
+  frozen checkpoint identity, bounded reads and Git-ignored evidence.
+- Added TTS, monitoring lifecycle, SQLite/snapshot ordering, configuration,
+  page-boundary and integration tests. Full validation:
+  `407 passed, 1 skipped`; `python -m compileall .`: PASS;
+  `git diff --check`: PASS.
+- The base Phase 7 release commit and tag already exist. At the initial
+  finalization implementation checkpoint, real RTSP, native `pyttsx3` audio
+  and browser Streamlit runtime had not yet been executed. The subsequent
+  Phase 7-6 runtime validation executed all three and recorded the results in
+  `docs/reports/phase-07/PHASE_7_6_RUNTIME_VALIDATION_RESULT.md`. This
+  finalization change set remains uncommitted for human review; no commit,
+  new tag or push was created.
+
 ## 2026-09-23 — Phase 7 Release Preparation Audit
 
 - Audited the complete uncommitted Phase 7 change set: no staged files,

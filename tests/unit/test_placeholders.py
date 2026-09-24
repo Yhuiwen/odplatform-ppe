@@ -8,7 +8,6 @@ from core.pipeline.inference_pipeline import InferencePipeline
 from infra.llm.fallback import TemplateFallback
 from infra.llm.llm_client import LLMClient
 from infra.storage.video_storage import VideoStorage
-from infra.tts.tts_service import TTSService
 from services.agent_service import AgentService
 from services.dataset_service import DatasetService
 from services.inference_service import InferenceService
@@ -28,7 +27,6 @@ PLACEHOLDER_CALLS = [
     ("report-service", lambda: ReportService().generate({})),
     ("agent-service", lambda: AgentService().ask("question")),
     ("video-storage", lambda: VideoStorage().save_clip([], Path("x.mp4"))),
-    ("tts", lambda: TTSService().speak("alert")),
     ("llm", lambda: LLMClient().complete("prompt")),
     ("fallback", lambda: TemplateFallback().generate({})),
 ]

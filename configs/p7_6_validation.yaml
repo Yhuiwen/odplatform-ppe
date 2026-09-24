@@ -1,0 +1,36 @@
+# Phase 7-6 real Camera/RTSP validation design. Execution is disabled here;
+# a separate explicit validation authorization must enable it.
+schema_version: phase7-runtime-validation-v1
+validation:
+  phase: 7
+  subphase: 7-6
+  execution_enabled: false
+  source:
+    kind: rtsp
+    location: ""
+    accepted_kinds: [usb_camera, rtsp]
+    local_video_fallback: false
+  runtime:
+    checkpoint: models/checkpoints/EXP-001/best.pt
+    checkpoint_sha256: 1c144eef0dfa06b984dde760ea5501a11746b99c1f8a9ae581790241c3871f61
+    inference_config: configs/inference.yaml
+    device_policy: cpu_only
+  limits:
+    max_frames: 120
+    open_timeout_seconds: 10
+    read_timeout_seconds: 10
+    stop_timeout_seconds: 10
+  evidence:
+    output_dir: artifacts/validation/P7-6
+    record_source_status: true
+    record_runtime_fingerprint: true
+    record_alert_results: true
+  acceptance:
+    require_alive_frames: true
+    require_clean_release: true
+    require_observable_disconnect: true
+    require_frozen_checkpoint: true
+  errors:
+    fail_closed: true
+    synthetic_frame_on_disconnect: false
+    silent_reconnect: false

@@ -25,6 +25,11 @@ def main() -> None:
                 icon=":material/search:",
             ),
             st.Page(
+                "pages/1_实时监控.py",
+                title="Realtime Monitoring",
+                icon=":material/live_tv:",
+            ),
+            st.Page(
                 "pages/2_Evidence_Viewer.py",
                 title="Evidence Viewer",
                 icon=":material/image:",

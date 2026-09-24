@@ -809,3 +809,79 @@ remain pending.
 
 Phase 7 release-preparation result: `AUDIT COMPLETE FOR HUMAN REVIEW /
 NOT PUBLISHED`.
+
+The base release was subsequently published as commit
+`a30b73c080c18d010fbaa08642868e86acb68022` with tag
+`phase-7-web-alert-platform-complete`.
+
+## Phase 7-6 Release Finalization Gates
+
+| Gate | Requirement | Evidence | Status |
+| --- | --- | --- | --- |
+| P7-6-G1 | TTS alert adapter is implemented | `infra/tts/tts_service.py` and `infra/alerts/tts.py` implement lazy backend creation, event-id idempotency, per-track/type cooldown and structured failure results | PASS |
+| P7-6-G2 | Service-owned realtime monitoring loop is implemented | `services/monitoring_service.py` owns one background worker, start/status/stop lifecycle, immutable status, source release and existing pipeline boundaries | PASS |
+| P7-6-G3 | Streamlit realtime page uses service boundaries only | `web/pages/1_实时监控.py` controls the service, refreshes status and displays counters, preview and events without direct detector/tracker/compliance imports | PASS |
+| P7-6-G4 | Real Camera/RTSP validation design is frozen | `configs/p7_6_validation.yaml` and `docs/reports/phase-07/PHASE_7_6_RUNTIME_VALIDATION_REPORT.md` define source selection, bounded reads, redaction, evidence and fail-closed handling | PASS |
+| P7-6-G5 | Full repository verification passes | `python -m pytest`: `407 passed, 1 skipped`; `python -m compileall -q .`: PASS; `git diff --check`: PASS | PASS |
+| P7-6-G6 | Frozen assets and upstream core modules remain unchanged | No dataset, mapping, training config, checkpoint or Detection/Tracking/Association/Compliance implementation was modified | PASS |
+| P7-6-G7 | No release action is performed | Finalization change set remains uncommitted; no new tag or push was created | PASS |
+| P7-6-G8 | Real RTSP runtime evidence is recorded | Controlled local MediaMTX RTSP `rtsp://127.0.0.1:8554/live` opened through `RTSPVideoSource`, read 60 frames and released cleanly; evidence is in `artifacts/validation/P7-6/rtsp/` | PASS |
+
+Phase 7-6 result: `COMPLETE / RUNTIME VALIDATION PASS / HUMAN REVIEW PASS`.
+The base Phase 7 tag remains `RELEASED`; this finalization change set does not
+create a commit, new tag or push. MP4 regression, USB Camera, native TTS,
+browser Streamlit and controlled local RTSP validation all passed. Remote RTSP,
+reconnect/backoff and long-running recovery remain unverified. The final
+release closure subsequently recorded human review PASS and published the
+reviewed change set.
+
+## Phase 7 Release Freeze Preparation Gates
+
+| Gate | Requirement | Evidence | Status |
+| --- | --- | --- | --- |
+| P7-FR-G1 | Phase 7 subphase and base-release identity are audited | `docs/reports/phase-07/PHASE_07_FINAL_RELEASE_REPORT.md` records 7-0 through 7-6 and the existing release tag/commit | PASS |
+| P7-FR-G2 | P7-6 runtime evidence is bounded and linked | MP4, USB Camera, native TTS, browser Streamlit and local RTSP evidence remains Git-ignored; remote/reconnect limitations remain explicit | PASS |
+| P7-FR-G3 | M-007 annotated demo video tool design is complete | `docs/designs/phase-07/PHASE_7_M007_ANNOTATED_DEMO_VIDEO_DESIGN.md` defines inputs, outputs, rendering, CLI, errors and verification | PASS |
+| P7-FR-G4 | M-007 implementation is not overclaimed | Charter M-007 remains `待实现`; no annotated video implementation or real annotated output was run | PASS |
+| P7-FR-G5 | Frozen assets remain unchanged | Checkpoint, training config, inference config and processed `data.yaml` hashes match their frozen identities | PASS |
+| P7-FR-G6 | Repository validation passes | `python -m pytest`, `python -m compileall -q .` and `git diff --check` pass; only the existing optional Torch test is skipped | PASS |
+| P7-FR-G7 | Release actions remain unauthorized | No commit, tag, push or Phase 8 work was performed; publication remains pending human review | PASS |
+| P7-FR-G8 | Locked Charter body remains unchanged | The requested Charter status update was withheld because the repository's locked-body hash tests reject non-status content edits; M-007 remains `待实现` | PASS |
+
+Phase 7 Release Freeze result: `PASS / HUMAN REVIEW PASS`.
+The base release remains published. The finalization and freeze-preparation
+change set was subsequently committed and published. M-008 remote-RTSP
+acceptance remains outside this result.
+
+## Phase 7 M-007 Annotated Demo Video Gates
+
+| Gate | Requirement | Evidence | Status |
+| --- | --- | --- | --- |
+| P7-M007-G1 | Frozen checkpoint and inference contract are verified | Run `20260923T144228Z-fed06724` used checkpoint `1c144eef...871f61` and config `0195c5f7...83f76c`; no download or remap occurred | PASS |
+| P7-M007-G2 | MP4 frames are processed sequentially without skipping | `VideoReader -> InferenceService` processed frame IDs `0..46` in order; no batching, async or frame skip exists in the M-007 service | PASS |
+| P7-M007-G3 | Deterministic boxes and labels are rendered | Unit tests verify clipped coordinates, class-name binding, BGR colors, `class confidence` labels and same-shape copies | PASS |
+| P7-M007-G4 | Source, processed, written and decoded output counts match | Source declared 47, service processed 47, writer appended 47 and decoding the staged MP4 observed 47 | PASS |
+| P7-M007-G5 | Output publication is atomic | Writer creates a same-volume staging directory and publishes all five artifacts through one `os.replace` directory rename | PASS |
+| P7-M007-G6 | Failures leave no partial successful output | Unit tests cover decoded count mismatch, reader failure and existing-output conflict; staging directories are removed on failure | PASS |
+| P7-M007-G7 | Real output integrity is verified | Output is 47 frames, 1280x720, 23.976 FPS, 736,856 bytes and SHA256 `293a51688d0f34170abbe9e104a1b4e31d679d072a81bf71eed6d0c9a45e8949`; 47 JSONL frame records and complete metadata exist | PASS |
+| P7-M007-G8 | Repository and frozen-boundary validation passes | `python -m pytest`: `414 passed, 1 skipped`; `python -m compileall .`: PASS; `git diff --check`: PASS; Charter, model, dataset, training config and Phase 5/6 modules unchanged | PASS |
+
+Phase 7 M-007 result: `IMPLEMENTATION COMPLETE / REAL MP4 VALIDATION PASS /
+HUMAN REVIEW PASS`. The locked Charter M-007 status remains `待实现`; the
+reviewed implementation was included in the final Phase 7 release closure.
+
+## Phase 7 Final Release Closure Gates
+
+| Gate | Requirement | Evidence | Status |
+| --- | --- | --- | --- |
+| P7-FINAL-G1 | Runtime finalization is human-reviewed PASS | `docs/reports/phase-07/PHASE_7_6_RUNTIME_VALIDATION_RESULT.md` records PASS for MP4, USB Camera, native TTS, browser Streamlit and controlled local RTSP | PASS |
+| P7-FINAL-G2 | M-007 implementation and real output are human-reviewed PASS | `docs/reports/phase-07/PHASE_7_M007_HUMAN_REVIEW_REPORT.md` verifies G1 through G8, 47/47 frames, metadata and demo SHA256 | PASS |
+| P7-FINAL-G3 | Full release gate passes | `python -m pytest -q`: `414 passed, 1 skipped`; `python -m compileall -q .`: PASS; `git diff --check`: PASS | PASS |
+| P7-FINAL-G4 | Frozen assets remain unchanged | Checkpoint, training config, inference config, processed dataset payload hash and M-007 demo SHA256 match their frozen identities | PASS |
+| P7-FINAL-G5 | Locked governance remains unchanged | Charter diff is empty; M-007 remains `待实现`; Phase goals and MUST definitions are unchanged | PASS |
+| P7-FINAL-G6 | Release publication is audited | Pending final commit/tag report records `phase-7-release-freeze-complete`; the existing `phase-7-web-alert-platform-complete` tag is preserved | PASS |
+| P7-FINAL-G7 | Phase 8 remains outside scope | No Phase 8 implementation, model, dataset, training or evaluation action is performed | PASS |
+
+Phase 7 final release closure result: `PASS / RELEASED`. Publication details
+are recorded in
+`docs/reports/phase-07/PHASE_07_RELEASE_COMPLETE_REPORT.md`.

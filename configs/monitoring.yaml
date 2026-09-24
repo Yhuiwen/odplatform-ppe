@@ -1,0 +1,28 @@
+# Phase 7 realtime monitoring runtime policy.
+schema_version: phase7-realtime-monitoring-v1
+monitoring:
+  phase: 7
+  subphase: 7-6
+  status: active
+  execution_enabled: true
+  stop_timeout_seconds: 5.0
+  max_recent_events: 20
+  sources:
+    supported: [mp4, usb_camera, rtsp]
+    local_video_fallback: false
+    synthetic_frames: false
+  processing:
+    background_worker: true
+    sequential_frames: true
+    frame_skipping: false
+    batch_inference: false
+    persist_before_alert: true
+  tts:
+    enabled: true
+    cooldown_seconds: 30.0
+    rate: 180
+    volume: 1.0
+  errors:
+    fail_closed: true
+    expose_source_state: true
+    isolate_alert_failures: true

@@ -19,9 +19,9 @@ LLM 安全分析报告和基础 Agent。
 ## 当前开发状态
 
 - 当前 Phase：Phase 7 — Web & Alert Platform
-- 当前 Subphase：Phase 7-Release — Release Preparation Audit
-- Phase 状态：RELEASE AUDIT COMPLETE FOR HUMAN REVIEW / PUBLICATION WAITING
-- Phase 7 implementation：7-0、7-1、7-2、7-3、7-4、7-5 PASS；7-Release AUDIT COMPLETE FOR HUMAN REVIEW
+- 当前 Subphase：Phase 7 Release Closure
+- Phase 状态：COMPLETE / RELEASED；7-6 RUNTIME VALIDATION PASS；M-007 HUMAN REVIEW PASS
+- Phase 7 implementation：7-0、7-1、7-2、7-3、7-4、7-5、7-6 PASS；M-007 annotated demo video IMPLEMENTED / REAL MP4 RUNTIME PASS / HUMAN REVIEW PASS；base tag `phase-7-web-alert-platform-complete`；final freeze tag `phase-7-release-freeze-complete`
 - Phase 6 — PPE Compliance Event Engine：COMPLETE / RELEASED
 - Phase 4 — Offline Inference：COMPLETE / Camera-RTSP Deferred MUST
 - EXP-001 Training：COMPLETED / M-004 已经实现
@@ -45,6 +45,8 @@ LLM 安全分析报告和基础 Agent。
 - M-013 Temporal Confirmation：IMPLEMENTED / Offline Validated
 - M-014 Event Deduplication：IMPLEMENTED / Offline Validated
 - Phase 7 architecture：FROZEN
+- TTS Alert Adapter：IMPLEMENTED / Unit Verified / Native Audio Not Run
+- Realtime Monitoring：SERVICE + STREAMLIT PAGE IMPLEMENTED / View Boundary Verified
 - 已完成准备：Phase 0 工程基线、Phase 1 数据工程，以及 P2-4 AutoDL
   runtime、依赖和数据集完整性验证
 
@@ -74,6 +76,8 @@ LLM 安全分析报告和基础 Agent。
   the SQLite-backed event query service
 - Console and in-process Web alert adapters behind one idempotent
   `AlertAdapter` contract
+- TTS alert adapter with lazy optional backend, event-id idempotency,
+  per-track/type cooldown and structured failure isolation
 - Unified `VideoSource` lifecycle for MP4, USB Camera and RTSP
 - MP4, USB Camera and RTSP adapters with source metadata, observable status,
   credential-redacted RTSP identity, connection failure handling and release
@@ -83,6 +87,10 @@ LLM 安全分析报告和基础 Agent。
   Console/Web alert delivery
 - Real USB Camera open/read/close validation and Streamlit runtime page
   validation for Overview, Event Explorer, Evidence Viewer and Statistics
+- Service-owned MP4/USB/RTSP monitoring loop with start, status, stop,
+  background-worker lifecycle and persisted-event alert ordering
+- Streamlit realtime monitoring page for source control, live counters,
+  frame preview, recent events and structured alert results
 
 ## Current Runtime
 
@@ -104,7 +112,12 @@ LLM 安全分析报告和基础 Agent。
 - Phase 7-5 USB Camera lifecycle：PASS
 - Phase 7-5 RTSP runtime：NOT RUN
 - Phase 7-5 Console/Web alerts：PASS
-- Phase 7-5 TTS：NOT IMPLEMENTED
+- Phase 7-6 TTS adapter：PASS / NATIVE WINDOWS SAPI EXECUTED
+- Phase 7-6 monitoring service：UNIT + SQLite/SNAPSHOT INTEGRATION PASS
+- Phase 7-6 Streamlit realtime page：REAL BROWSER RUNTIME PASS
+- Phase 7-6 local RTSP validation：PASS / REAL LOCAL MEDIAMTX STREAM
+- Phase 7-6 remote RTSP / reconnect / long-running recovery：NOT RUN / PENDING
+- M-007 annotated demo video tool：IMPLEMENTED / REAL MP4 RUNTIME PASS / HUMAN REVIEW PASS / CHARTER PENDING
 
 The Phase 7-5 validation runtime used Python `3.12.1`, PyTorch `2.5.1+cpu`,
 Ultralytics `8.4.157` and Streamlit `1.64.0` in an isolated CPU-only
@@ -165,9 +178,12 @@ contract 保持不变。Phase 7-4 新增统一 `VideoSource` interface 和 MP4�
 Camera、RTSP adapters，具备 `idle/opening/live/degraded/ended/failed/closed`
 状态、连接失败处理和 release cleanup；RTSP URI 在日志和 status 中去除
 credentials/query。Phase 7-4 review 时未打开真实 device/stream；Phase 7-5
-后续验证了真实 USB Camera 的 open/read/close，但 RTSP、reconnect loop 和
-monitoring service integration 仍未执行。annotation rendering、automatic
-reconciliation、retention 和 TTS 仍未实现。Phase 7 锁定目标仍为
+后续验证了真实 USB Camera 的 open/read/close，Phase 7-6 又完成了 monitoring
+service integration、TTS adapter 以及真实本地 RTSP open/read/close 验证。
+Remote RTSP、reconnect/backoff、stale-frame recovery、automatic
+reconciliation 和 retention 仍未验证。M-007 annotated demo video 工具已实现，
+并已完成 47/47 帧真实 MP4 输出验证和人工审核；M-007 的 Phase 9 Charter
+acceptance 仍未完成。Phase 7 锁定目标仍为
 `SQLite + Snapshot + TTS + Streamlit`；Email、WeChat 和 SMS 继续属于未来
 Extension。
 
@@ -175,9 +191,15 @@ Phase 7-5 已用 frozen checkpoint 和已验证 MP4 完成一次 CPU end-to-end
 runtime smoke path：47/47 帧处理，生成 1 个 `PPE_UNKNOWN` 事件，事件经
 Phase 6 JSONL、SQLite、snapshot evidence、dashboard query 和 Console/Web
 alerts 全部保持原 `event_id`。真实 USB Camera open/read/close PASS；RTSP
-未测。Phase 7-5 已通过人工审核，Phase 7 Release Preparation Audit 已完成
-但尚未获得 publication authorization；TTS、real RTSP validation、
-annotated video rendering 和 M-008 最终验收仍未完成。Phase 5 的历史
+未测。Phase 7-5 已通过人工审核，基础 Phase 7 release commit 与 tag 已存在。
+Phase 7-6 已实现 TTS、service-owned monitoring loop 和 Streamlit realtime
+页面，并完成 MP4、真实 USB Camera、native Windows SAPI TTS、真实浏览器
+Streamlit 和受控本地 MediaMTX RTSP 验证。该最终整理变更集已按授权完成
+release commit、tag 和 push；
+remote RTSP、reconnect/backoff 和 M-008 最终验收仍未完成；M-007 annotated
+demo video 已实现、完成真实 MP4 验证并通过人工审核；Charter acceptance
+仍未完成，Charter 状态仍为 `待实现`。
+Phase 5 的历史
 P5-3-G5 `BLOCKED / NOT RUN` 与 M-009/M-010 runtime evidence pending 继续
 保留；Phase 7-5 没有改写其历史结论。未来阶段占位接口会明确抛出
 `NotImplementedError`，不会返回伪造业务结果。Phase 4A 完成推理架构设计、输入/检测器边界和
@@ -352,6 +374,12 @@ git status --short
 - `docs/reports/phase-07/PHASE_7_4_CAMERA_RTSP_REPORT.md`：Phase 7-4 Camera / RTSP 输入报告
 - `docs/reports/phase-07/PHASE_7_5_RUNTIME_VALIDATION_REPORT.md`：Phase 7-5 Runtime Validation 报告
 - `docs/reports/phase-07/PHASE_7_RELEASE_AUDIT_REPORT.md`：Phase 7 Release Preparation Audit 报告
+- `docs/reports/phase-07/PHASE_7_6_RUNTIME_VALIDATION_REPORT.md`：Phase 7-6 Release Finalization 与真实输入验证设计
+- `docs/reports/phase-07/PHASE_7_6_RUNTIME_VALIDATION_RESULT.md`：Phase 7-6 实际 Runtime Validation 结果
+- `docs/reports/phase-07/PHASE_07_FINAL_RELEASE_REPORT.md`：Phase 7 Release Freeze Candidate 报告
+- `docs/designs/phase-07/PHASE_7_M007_ANNOTATED_DEMO_VIDEO_DESIGN.md`：M-007 annotated demo video 工具设计
+- `docs/reports/phase-07/PHASE_7_M007_IMPLEMENTATION_REPORT.md`：M-007 实现、真实 MP4 验证和 gate 证据
+- `docs/reports/phase-07/PHASE_07_RELEASE_COMPLETE_REPORT.md`：Phase 7 最终 release、tag 与远端验证报告
 - `docs/reports/phase-02/P2-4_FINAL_PROVISIONING_REPORT.md`：P2-4 runtime、依赖和数据集验证
 - `docs/reports/EXP-001_TRAINING_EXECUTION_REPORT.md`：EXP-001 训练结果、
   指标、产物和披露
@@ -374,13 +402,17 @@ git status --short
 当前下一允许步骤是：
 
 ```text
-WAIT FOR PHASE 7 RELEASE HUMAN REVIEW
+PHASE 8 NOT STARTED / WAIT FOR AUTHORIZATION
 ```
 
-Phase 7 Release Preparation Audit 已核对 repository、documentation、
-generated-artifact、secret 和 test 边界。审计阶段不授权 commit、push 或 tag；
-必须等待人工审核后才能执行 publication。真实 RTSP、TTS、annotated
-rendering 和 M-008 acceptance 仍未完成。
+基础 Phase 7 release commit 与 tag 已存在，最终 release closure 已完成并
+发布 `phase-7-release-freeze-complete`。Phase 7-6 finalization 已实现
+TTS adapter、service-owned MP4/USB/RTSP monitoring loop 和 Streamlit
+realtime 页面，并完成 MP4、真实 USB Camera、native Windows SAPI TTS、
+真实浏览器 Streamlit 和受控本地 MediaMTX RTSP 验证。Remote RTSP、
+reconnect/backoff、annotated video implementation 已完成并有真实 MP4 证据，
+M-007 人工审核 PASS；但 M-008 acceptance 和 Charter status 仍未完成，
+Charter 状态仍为 `待实现`。
 Phase 5 的历史 P5-3-G5 `BLOCKED / NOT RUN` 继续保留。M-009/M-010
 已增加 Phase 7-5 runtime evidence，但 Charter acceptance 仍未完成；
 Phase 7-5 不把历史 Phase 5 block 改写为 PASS，也不修改冻结 dataset、

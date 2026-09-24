@@ -15,7 +15,7 @@
 | P4 | Offline Inference | 本地图片与 MP4 视频结构化推理流水线；Camera/RTSP 延期实施，仍保留 V1 MUST 归属 | 已经实现（Offline Inference COMPLETE；ADR-018） |
 | P5 | Tracking & Association | ByteTrack + Person-PPE Association | 已经实现（COMPLETE / RELEASED；tag `phase-5-tracking-association-complete`；P5-3-G5 historical `BLOCKED / NOT RUN` followed by explicit release authorization） |
 | P6 | Compliance & Events | PPE 合规规则、时序判断、Event Engine | 已经实现（COMPLETE / RELEASED；tag `phase-6-compliance-event-engine-complete`） |
-| P7 | Web & Alerts | SQLite + Snapshot + TTS + Streamlit | 实现中（7-0 至 7-5 PASS；7-Release audit complete for review；publication WAITING） |
+| P7 | Web & Alerts | SQLite + Snapshot + TTS + Streamlit | 已经实现（COMPLETE / RELEASED；base tag `phase-7-web-alert-platform-complete`；final freeze tag `phase-7-release-freeze-complete`；M-007 implementation + real MP4 validation + human review PASS） |
 | P8 | LLM & Agent | LLM Report + Fallback + Basic Agent | 待实现 |
 | P9 | Integration & Delivery | 全链路测试、性能分析、文档、Demo、答辩交付 | 待实现 |
 
@@ -66,9 +66,10 @@ The following internal subphase order is frozen by ADR-022:
 | 7-2 | Evidence Snapshot: atomic file write, relative path policy, integrity and event association | COMPLETE / HUMAN REVIEW PASS |
 | 7-3 | Dashboard and Alerts: Streamlit pages plus Console and Web alert adapters | COMPLETE / HUMAN REVIEW PASS |
 | 7-4 | Camera/RTSP: unified `VideoSource` input adapters and observable source lifecycle | COMPLETE / HUMAN REVIEW PASS |
-| 7-4b | Real-time monitoring integration and annotated video rendering for M-007/M-008 | WAITING |
+| 7-4b | Real-time monitoring integration and annotated video rendering for M-007/M-008 | COMPLETE / REAL MP4 RUNTIME PASS / HUMAN REVIEW PASS; M-008 and Charter acceptance remain pending |
 | 7-5 | Runtime Validation: integrated source-to-event-to-dashboard/alert evidence | COMPLETE / HUMAN REVIEW PASS |
-| 7-Release | Phase 7 release audit, tag and remote publication only after all gates pass | AUDIT COMPLETE FOR HUMAN REVIEW / NOT PUBLISHED |
+| 7-Release | Phase 7 release audit, tag and remote publication only after all gates pass | FINAL RELEASE COMPLETE; base tag `phase-7-web-alert-platform-complete`; final freeze tag `phase-7-release-freeze-complete` |
+| 7-6 | Release finalization: TTS, service-owned monitoring loop and real-source validation | COMPLETE / RUNTIME VALIDATION PASS / HUMAN REVIEW PASS |
 
 Console and Web alerts are the first implementation priority in 7-3, but TTS
 remains a required V1 adapter under M-017. Email, WeChat and SMS are future
@@ -81,19 +82,27 @@ and Phase 7-4 implements the unified MP4/USB Camera/RTSP input adapters.
 Phase 7-5 validates one integrated MP4 runtime path through the frozen
 checkpoint, tracking, association, compliance/events, JSONL, SQLite, evidence
 snapshot, dashboard and Console/Web alert boundaries. It also validates a real
-USB Camera lifecycle and the four Streamlit pages. Real RTSP,
-reconnect/backoff, stale-frame detection, monitoring integration, annotation
-rendering, reconciliation automation, retention cleanup and TTS remain
-pending. These slices do not change the locked phase goal, camera deferral,
+USB Camera lifecycle and the four Streamlit pages. Phase 7-6 finalization
+adds the TTS adapter, a service-owned MP4/USB/RTSP monitoring loop and a
+Streamlit realtime page. P7-6 then exercised a real USB Camera, native TTS,
+browser Streamlit and a controlled local MediaMTX RTSP stream. Remote RTSP,
+reconnect/backoff, stale-frame detection, reconciliation automation and
+retention cleanup remain pending. The M-007 annotated demo video tool is
+implemented and its 47/47-frame real MP4 output passed frame-count and hash
+verification and human review. M-007 implementation completion does not
+complete the locked Charter acceptance, so the Charter status remains
+`待实现`. These slices do not change the locked
+phase goal, camera deferral,
 M-007/M-008 ownership, M-015 through M-020 definitions, or any frozen
 model/data/training asset.
 
-Phase 7 Release Preparation Audit verifies the uncommitted release change set,
-ignored generated-artifact boundaries, absence of credential/model/media
-artifacts, documentation consistency for 7-0 through 7-5, and the complete
-repository test baseline. It does not authorize publication: commit, push and
-tag remain pending explicit human review, and the remaining V1 limitations
-are not converted into completion claims.
+The historical Phase 7 Release Preparation Audit verified the original release
+change set and publication boundary. The base release tag and remote commit
+now exist. The authorized release closure subsequently committed the Phase 7-6
+runtime validation, M-007 implementation and final documentation, and published
+the annotated tag `phase-7-release-freeze-complete`. The remaining V1
+limitations, M-008 remote RTSP behavior and Phase 9 Charter acceptance are not
+converted into completion claims. Phase 8 has not started.
 
 ## 4. 状态规则
 

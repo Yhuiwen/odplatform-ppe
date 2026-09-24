@@ -37,6 +37,7 @@ MODULES = [
     "infra.database.migrations",
     "infra.alerts.base",
     "infra.alerts.console",
+    "infra.alerts.tts",
     "infra.alerts.web",
     "infra.storage.snapshot_storage",
     "infra.storage.video_storage",
@@ -65,6 +66,7 @@ MODULES = [
     "services.snapshot_service",
     "services.alert_service",
     "services.event_query_service",
+    "services.monitoring_service",
     "services.report_service",
     "services.agent_service",
     "examples.phase6_demo",
@@ -75,6 +77,7 @@ MODULES = [
     "utils.system_utils",
     "web.dashboard_support",
     "web.Home",
+    "web.monitoring_support",
 ]
 
 

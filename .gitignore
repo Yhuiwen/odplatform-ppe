@@ -43,6 +43,7 @@ artifacts/runs/*
 !artifacts/runs/.gitkeep
 artifacts/reports/*
 !artifacts/reports/.gitkeep
+artifacts/inference/
 artifacts/validation/
 artifacts/events/*.sqlite3
 artifacts/events/*.sqlite3-*
