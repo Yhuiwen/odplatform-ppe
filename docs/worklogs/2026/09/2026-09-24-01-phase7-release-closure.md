@@ -28,6 +28,10 @@ Evidence:
 - `docs/reports/phase-07/PHASE_07_RELEASE_COMPLETE_REPORT.md`
 - `docs/reports/phase-07/PHASE_7_M007_HUMAN_REVIEW_REPORT.md`
 - `docs/reports/phase-07/PHASE_7_6_RUNTIME_VALIDATION_RESULT.md`
+- Release commit: `07e7986cf1e5a803a25dcac58ee2cce4e6c50c20`.
+- Annotated tag: `phase-7-release-freeze-complete`,
+  object `abb365cb4029ad079717da6cce9abb13eb18317b`.
+- Existing tag `phase-7-web-alert-platform-complete` remains unchanged.
 
 Risk:
 

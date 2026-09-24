@@ -13,12 +13,12 @@ validation evidence and final release documentation.
 | --- | --- |
 | Branch | `main` |
 | Release base HEAD | `a30b73c080c18d010fbaa08642868e86acb68022` |
-| Final Release Commit SHA | `PENDING_RELEASE_COMMIT` |
-| Final HEAD / report commit | `PENDING_REPORT_COMMIT` |
+| Final Release Commit SHA | `07e7986cf1e5a803a25dcac58ee2cce4e6c50c20` |
+| Final HEAD / report commit | The documentation commit containing this report; resolve with `git rev-parse HEAD` |
 | Commit message | `phase-7: finalize runtime and annotated demo release` |
 | New tag | `phase-7-release-freeze-complete` |
-| Tag object SHA | `PENDING_ANNOTATED_TAG_OBJECT` |
-| Tag target commit | `PENDING_RELEASE_COMMIT` |
+| Tag object SHA | `abb365cb4029ad079717da6cce9abb13eb18317b` |
+| Tag target commit | `07e7986cf1e5a803a25dcac58ee2cce4e6c50c20` |
 | Existing Phase 7 tag | `phase-7-web-alert-platform-complete` |
 | Existing tag object | `d97c8249c756dec33a9bb149bf837871b59b3503` |
 | Existing tag target | `a30b73c080c18d010fbaa08642868e86acb68022` |
@@ -151,13 +151,14 @@ checkpoint, training configuration and inference contract remain unchanged.
 
 | Ref | Local SHA | Remote SHA | Status |
 | --- | --- | --- | --- |
-| `refs/heads/main` | `PENDING_REPORT_COMMIT` | `PENDING_REMOTE_MAIN` | PENDING_VERIFICATION |
-| `refs/tags/phase-7-web-alert-platform-complete` | `d97c8249c756dec33a9bb149bf837871b59b3503` | `PENDING_OLD_TAG_REMOTE` | PENDING_VERIFICATION |
-| `refs/tags/phase-7-release-freeze-complete` | `PENDING_ANNOTATED_TAG_OBJECT` | `PENDING_NEW_TAG_REMOTE` | PENDING_VERIFICATION |
+| `refs/heads/main` | `07e7986cf1e5a803a25dcac58ee2cce4e6c50c20` | `07e7986cf1e5a803a25dcac58ee2cce4e6c50c20` | MATCH |
+| `refs/tags/phase-7-web-alert-platform-complete` | `d97c8249c756dec33a9bb149bf837871b59b3503` | `d97c8249c756dec33a9bb149bf837871b59b3503` | MATCH / UNCHANGED |
+| `refs/tags/phase-7-release-freeze-complete` | `abb365cb4029ad079717da6cce9abb13eb18317b` | `abb365cb4029ad079717da6cce9abb13eb18317b` | MATCH |
 
-The final publication fields are recorded after tag creation and remote
-verification. A commit cannot contain its own final commit or annotated-tag
-object hash; the post-release report commit records those immutable identities.
+The final release commit and annotated tag object were verified against the
+remote before this metadata-only report commit. A commit cannot contain its own
+final commit hash; this report therefore records the immutable release commit
+and tag identities and resolves final report HEAD with `git rev-parse HEAD`.
 
 ## 10. Known Limitations
 
@@ -179,5 +180,5 @@ object hash; the post-release report commit records those immutable identities.
 Phase 7: COMPLETE / RELEASED
 Phase 8: NOT STARTED
 Publication: AUTHORIZED AND VERIFIED
-Working tree: PENDING_FINAL_VERIFICATION
+Working tree: CLEAN AFTER REPORT COMMIT
 ```

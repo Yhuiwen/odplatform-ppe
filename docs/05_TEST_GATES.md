@@ -879,7 +879,7 @@ reviewed implementation was included in the final Phase 7 release closure.
 | P7-FINAL-G3 | Full release gate passes | `python -m pytest -q`: `414 passed, 1 skipped`; `python -m compileall -q .`: PASS; `git diff --check`: PASS | PASS |
 | P7-FINAL-G4 | Frozen assets remain unchanged | Checkpoint, training config, inference config, processed dataset payload hash and M-007 demo SHA256 match their frozen identities | PASS |
 | P7-FINAL-G5 | Locked governance remains unchanged | Charter diff is empty; M-007 remains `待实现`; Phase goals and MUST definitions are unchanged | PASS |
-| P7-FINAL-G6 | Release publication is audited | Pending final commit/tag report records `phase-7-release-freeze-complete`; the existing `phase-7-web-alert-platform-complete` tag is preserved | PASS |
+| P7-FINAL-G6 | Release publication is audited | Release commit `07e7986cf1e5a803a25dcac58ee2cce4e6c50c20`; annotated tag object `abb365cb4029ad079717da6cce9abb13eb18317b` targets the release commit; existing `phase-7-web-alert-platform-complete` tag is unchanged | PASS |
 | P7-FINAL-G7 | Phase 8 remains outside scope | No Phase 8 implementation, model, dataset, training or evaluation action is performed | PASS |
 
 Phase 7 final release closure result: `PASS / RELEASED`. Publication details
