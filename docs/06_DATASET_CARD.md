@@ -320,3 +320,9 @@ artifact fingerprint before a freeze decision; ADR-012 freezes the accepted
 artifact as `CSS-PPE-10-V1`. Phase 1C-2 implements the frozen seven-class
 mapping without modifying the frozen source. P1D-1 has now completed quality
 assessment; final release and training-preparation decisions remain with P1E.
+
+## V1 split integrity revision R2 (2026-10-08)
+
+Two valid/test dHash candidates were visually reviewed and confirmed as same-scene neighboring video frames. Under ADR-028, a new ignored dataset `data/processed/css-ppe-10-v1-split-r2` copies the original payload and moves the two test image/label pairs into validation. Train/valid/test counts are 2603/116/80; every training file remains byte-identical. Original source payload SHA256 remains `bc762204e2305164cfdbc492d15269b84c4ce4ff3cfdcdc805baf84c5616237b`. Revised payload SHA256 is `c08aff491e086fb8f97ebda28d1db738ab2fee6d4ea1c8959fa2e3cb1f0d12a3`.
+
+R2 exact and dHash<=5 cross-split candidates: zero. This is a bounded integrity audit, not proof against every unobserved source-scene similarity. The unchanged EXP-001 was evaluated on all 80 revised test images; Precision 0.795859, Recall 0.709828, mAP50 0.729892, mAP50-95 0.462068 (seven classes; five PPE classes individually recorded). Reference matching/AP check PASS. Old training and EVAL-001 metrics retain their original split limitations. No retraining or frozen payload replacement occurred. [Quality](reports/phase-09/V1_SPLIT_R2_QUALITY.md), [evaluation](reports/phase-09/V1_SPLIT_R2_EVALUATION.json).

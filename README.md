@@ -18,39 +18,22 @@ LLM 安全分析报告和基础 Agent。
 
 ## 当前开发状态
 
-- 当前 Phase：Phase 8 — LLM & Agent
-- 当前 Subphase：Phase 8 Final Integration Release
-- Phase 状态：P8-0 至 P8-5 `COMPLETE / HUMAN REVIEW PASS / CHECKPOINTED`；P8-5D/P8-5P `HUMAN REVIEW PASS`；P8-6 architecture `HUMAN REVIEW PASS`；P8-6.1/P8-6.2/P8-6.3 `HUMAN REVIEW PASS`；P8-6.4 architecture `HUMAN REVIEW PASS`；P8-6.4.1 candidate parser/validator `HUMAN REVIEW PASS`；P8-6.4.2 LLM planner adapter `HUMAN REVIEW PASS`；P8-6.4.3 AgentService orchestration `HUMAN REVIEW PASS`；P8-6 Agent implementation checkpoint 已发布 tag `phase-8-controlled-agent-complete`；P8-FI architecture/API/Web/E2E `HUMAN REVIEW PASS`；Phase 8 `FINAL RELEASED`，release tag `phase-8-final-integration-complete`；Phase 9 `NOT STARTED`
-- Provider 状态：ONE OPENAI-COMPATIBLE TRANSPORT IMPLEMENTED / REAL PROVIDER VALIDATED / STRICT JSON PASS / PHASE8-REPORT-V1 PASS / GROUNDING VALID / FALLBACK NOT USED
-- Phase 7 状态：COMPLETE / RELEASED；7-6 RUNTIME VALIDATION PASS；M-007 HUMAN REVIEW PASS
-- Phase 7 implementation：7-0、7-1、7-2、7-3、7-4、7-5、7-6 PASS；M-007 annotated demo video IMPLEMENTED / REAL MP4 RUNTIME PASS / HUMAN REVIEW PASS；base tag `phase-7-web-alert-platform-complete`；final freeze tag `phase-7-release-freeze-complete`
-- Phase 6 — PPE Compliance Event Engine：COMPLETE / RELEASED
-- Phase 4 — Offline Inference：COMPLETE / Camera-RTSP Deferred MUST
-- EXP-001 Training：COMPLETED / M-004 已经实现
-- Phase 3 Evaluation：PASS / M-005 已经实现
-- Release model：`models/checkpoints/EXP-001/best.pt`
-- Dataset：READY
-- Environment：READY
-- EXP-001 Configuration：FROZEN / P2-5.1 COMPLETE
-- YOLO11n Initialization Weight：REGISTERED / P2-5.2 COMPLETE
-- Dependency Lock：FROZEN / P2-5.3 COMPLETE
-- Remote Weight Copy：VERIFIED / P2-5.4 COMPLETE
-- Training：COMPLETED / P2-5.5
-- Inference Runtime：FROZEN / `INF-RUNTIME-001`
-- Single Image Inference：VALIDATED / FROZEN CHECKPOINT
-- Video：VALIDATED / FROZEN CHECKPOINT
-- Camera / RTSP：Deferred MUST / Input Adapters IMPLEMENTED / USB Runtime PASS / RTSP Pending / M-008 PENDING
-- M-009 Tracking：IMPLEMENTED / Phase 7-5 Runtime Evidence Recorded / Charter Acceptance Pending
-- M-010 Association：IMPLEMENTED / Phase 7-5 Runtime Evidence Recorded / Charter Acceptance Pending
-- M-011 Helmet Rule：IMPLEMENTED / Offline Validated
-- M-012 Vest Rule：IMPLEMENTED / Offline Validated
-- M-013 Temporal Confirmation：IMPLEMENTED / Offline Validated
-- M-014 Event Deduplication：IMPLEMENTED / Offline Validated
-- Phase 7 architecture：FROZEN
-- TTS Alert Adapter：IMPLEMENTED / Unit Verified / Native Audio Not Run
-- Realtime Monitoring：SERVICE + STREAMLIT PAGE IMPLEMENTED / View Boundary Verified
-- 已完成准备：Phase 0 工程基线、Phase 1 数据工程，以及 P2-4 AutoDL
-  runtime、依赖和数据集完整性验证
+当前为 Phase 9 的 V1 交付补齐：完整检测/事件/查询链路已有运行证据，正在进行最终验收整理。RTSP 与长稳定测试按用户本轮指示不纳入交付判定，相关历史风险继续保留。
+
+- 本地启动：`.venv-final-demo\Scripts\python.exe -m streamlit run web/Home.py --server.port 8502 --server.address 127.0.0.1`
+- 预检：`.venv-final-demo\Scripts\python.exe scripts/preflight.py`
+- 回归：`.venv-final-demo\Scripts\python.exe -m pytest -q`
+- 实时 CPU：授权 OpenVINO 416 配置；原离线 640 配置保留。
+- DeepSeek：安全助手和报告共用 Git 忽略的 `configs/llm.local.json`，无配置或调用失败使用标记降级结果。
+- 原数据集两组 valid/test 邻近帧泄漏已确认；新独立划分版本及补充评估见最终报告，旧指标保留历史解释。
+- Phase 4 — Offline Inference：历史离线阶段完成；实时流 deferred MUST 已由后续阶段实现。
+- Camera / RTSP: Deferred MUST implemented; M-008 CHARTER ACCEPTED through Camera; remote RTSP excluded from this review.
+- 中文 TTS 已有 Windows SAPI 实测证据；Camera 验收 PASS 满足章程 Camera 或 RTSP 条件。
+- [部署、备份与故障恢复](docs/V1_DEPLOYMENT_GUIDE.md)
+- [演示流程与答辩材料索引](docs/V1_DEMO_AND_DEFENSE.md)
+- [当前 V1 补齐结果与限制](docs/reports/phase-09/V1_COMPLETION_REPORT.md)
+
+历史阶段记录保存在 `docs/reports/`，不得把历史未授权/未测记录当成当前功能状态，也不得据功能实现推断全部验收完成。
 
 ## Completed Capabilities
 
@@ -94,7 +77,7 @@ LLM 安全分析报告和基础 Agent。
 - Streamlit realtime monitoring page for source control, live counters,
   frame preview, recent events and structured alert results
 
-## Phase 8 Implementation Status
+## Phase 8 Implementation Status（历史阶段记录）
 
 - P8-0 is human-reviewed PASS and does not add an LLM provider, external API
   call, Agent framework, dependency or secrets.
@@ -131,7 +114,7 @@ LLM 安全分析报告和基础 Agent。
   unchanged deterministic `TemplateFallback`. Fallback output remains
   `TEMPLATE_FALLBACK` with `degraded=true`; fallback failure returns
   `REPORT_UNAVAILABLE` without an invalid report.
-- P8-5 uses environment-only credential resolution, a finite timeout, no
+- P8-5 originally used environment-only credential resolution; the current server also supports an ignored project-local configuration. It uses, a finite timeout, no
   retries and a `262144`-byte response limit. Historical attempts include a
   configuration non-execution and a `REPORT_SCHEMA_INVALID` rejection followed
   by fallback PASS. A final separately authorized manual request against
@@ -208,7 +191,8 @@ LLM 安全分析报告和基础 Agent。
   fixture-driven E2E demo now validates the complete Web facade, API, Agent,
   registry, audit and UI projection path without a provider or model and has
   passed human review. Phase 8 is `FINAL RELEASED` under
-  `phase-8-final-integration-complete`; Phase 9 is `NOT STARTED`.
+  `phase-8-final-integration-complete`; Phase 9 P9-A is `PASS`, and
+  P9-B is now PARTIAL after authorized P9-B.1 validation.
 - M-021, M-022 and M-023 remain `待实现` in the locked Charter; P8-0 through P8-5 are
   human-reviewed PASS and checkpointed. P8-6 architecture and P8-6.1 through
   P8-6.3 are human-reviewed PASS. P8-6.4 is `ARCHITECTURE FREEZE COMPLETE /
@@ -220,9 +204,18 @@ LLM 安全分析报告和基础 Agent。
   passed human review. Phase 8 final integration is released under
   `phase-8-final-integration-complete`; durable audit storage, memory,
   autonomous loops and real provider planning calls remain not implemented,
-  and Phase 9 is not started.
+  and Phase 9 P9-A is PASS; P9-B is PARTIAL after authorized P9-B.1.
 
 ## Current Runtime
+
+- Phase 9 final demo：`FINAL-DEMO-RUNTIME-001`，Windows 11 AMD64，Python
+  3.12.1，CPU only；完整安装入口为
+  `locks/FINAL-DEMO-RUNTIME-001/requirements.txt`。在该环境运行
+  `python scripts/preflight.py` 或 `python scripts/run_demo.py --check`。
+  `pip install .` 只安装项目包，不安装完整运行依赖。P9-B.1 修订 lock
+  固定 `lap==0.5.13`，第二个干净环境已验证 ByteTrack 运行前后包集合一致；
+  P9-B 全链路验收仍为 PARTIAL。
+- 下列 `INF-RUNTIME-001` 是不可变的历史推理运行时：
 
 - Runtime ID：`INF-RUNTIME-001`
 - Python：3.10.4
@@ -556,64 +549,4 @@ git status --short
 
 ## 下一阶段
 
-当前下一允许步骤是：
-
-```text
-PHASE 9 AUTHORIZATION / NOT STARTED / DO NOT START OR IMPLEMENT DURABLE AUDIT,
-MEMORY, AUTONOMOUS LOOP OR REAL PROVIDER PLANNING CALL WITHOUT NEW
-AUTHORIZATION
-```
-
-Phase 7 已完成并发布最终 tag `phase-7-release-freeze-complete`。Phase 8
-P8-0 至 P8-5 均已通过人工审核，并由
-`phase-8-provider-pipeline-complete` interim checkpoint tag 记录。P8-6 已完成
-Basic Safety Agent 架构冻结并通过人工审核：静态只读工具注册表、
-deny-by-default 权限、确定性 planner、四类受控工具、结构化失败、P8-5
-fallback 复用和 append-only audit 边界均已记录；不新增 LLM tool calling
-或 Agent framework。P8-6.1 已实现 immutable registry、权限检查、
-bounded argument validation、四类工具的现有 service adapter 和 audit
-metadata generation，并通过人工审核。P8-6.2 已实现 `AgentIntent`、
-`AgentPlan`、确定性 intent classification、intent-to-tool 映射、参数验证、
-registry resolve 和 permission preflight；planner 不执行工具，并已通过人工
-审核。P8-6.3 已实现 `phase8-agent-audit-v1`、不可变 `AuditEvent`、
-append-only in-memory store abstraction、`AgentAuditService`、privacy
-filtering 和 planner integration，并通过人工审核；durable storage 仍未实现。
-P8-6.4 已通过人工审核，冻结可选 LLM candidate 边界、独立 candidate
-contract、严格解析与 deterministic fallback，明确 provider 不能直接执行
-工具、不能绕过 `ToolRegistry` 或权限检查。P8-6.4.1 已实现
-`phase8-agent-plan-candidate-v1` schema、bounded strict JSON parser、
-request binding/意图/tool/参数/权限校验和 deterministic conversion 到
-`phase8-agent-plan-v1`，并通过 mock registry 证明不会调用
-`ToolRegistry.execute`；P8-6.4.1 已通过人工审核。P8-6.4.2 实现
-provider-independent planner request builder、injected candidate client
-boundary、strict validator integration、bounded audit metadata 和
-deterministic fallback；forbidden candidate capability 直接拒绝且不会被
-重新解释为更高权限，并已通过人工审核。P8-6.4.3 实现 typed Agent
-request/result、`AgentService` 编排、validated-plan-only registry execution、
-每路径 audit recording、planner fallback、structured tool failure 和
-audit-unavailable fail-closed；已通过人工审核，并纳入 interim checkpoint
-tag `phase-8-controlled-agent-complete`。P8-FI 架构已通过人工审核：API
-boundary 已实现 trusted identity、bounded request validation、existing
-`AgentService` single-call boundary 和 UI-safe response projection，并通过
-人工审核；Web / Streamlit layer 已实现 `web/agent_support.py`、AI report
-和 Safety Assistant 页面，只暴露五个 approved fields，已完成
-API/Web/integration focused tests（`27 passed`）并通过人工审核。
-deterministic E2E demo 现已覆盖 Web facade、Agent API、AgentService、
-ToolRegistry、append-only audit 和 UI projection 的完整只读路径，现已通过
-人工审核。Phase 8 final integration 已以 `FINAL RELEASED` 状态发布，release
-tag 为 `phase-8-final-integration-complete`。durable audit storage、memory、
-autonomous loop 和 reasoning 仍未实现。
-P8-5 的
-历史 `REPORT_SCHEMA_INVALID`、P8-5D diagnostics 和 P8-5P prompt-v2 证据继续
-保留；后续另行授权的人工请求通过 strict JSON、`phase8-report-v1` 和
-grounding，返回 `PROVIDER_VALIDATED`、`degraded=false`、fallback NOT
-USED。这个 checkpoint 不是 Phase 8 final release：M-021、M-022、M-023
-仍为 `待实现`，Basic Agent orchestrator 已实现并通过人工审核，Phase 9
-未开始。P8-6.1 至 P8-6.3 已通过人工审核；P8-6.4 architecture freeze
-已通过人工审核；P8-6.4.1 plan candidate validator 和 P8-6.4.2 LLM
-planner adapter 已通过人工审核；P8-6.4.3 AgentService orchestration
-已通过人工审核并由 `phase-8-controlled-agent-complete` 记录。P8-FI
-architecture、API boundary 和 Web / Streamlit integration 已通过人工审核；
-deterministic E2E demo 已实现并通过人工审核。Phase 8 final integration 已
-发布为 `phase-8-final-integration-complete`。不得实现 durable audit store、
-memory、autonomous loop、真实 provider planning request 或进入 Phase 9。
+按 [V1 补齐报告](docs/reports/phase-09/V1_COMPLETION_REPORT.md) 完成最终人工演示复核。历史冻结、授权和故障证据保留在相应日期报告中；最新判断以报告、当前状态和验收门为准。

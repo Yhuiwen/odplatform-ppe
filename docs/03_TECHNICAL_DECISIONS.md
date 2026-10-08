@@ -320,6 +320,13 @@ This file is an append-only ADR log. Historical entries must not be deleted.
 | Phase 8 | tag: `phase-8-llm-agent-complete`            |
 | Phase 9 | GitHub Release + final tag                   |
 
+> Superseding release-identity clarification (2026-09-25): this ADR-017 table
+> records the original Phase 8 tag plan. The later Phase 8 Final Integration
+> release used `phase-8-final-integration-complete` as its actual final tag.
+> The Git tag and Phase 8 final-release documentation are authoritative for
+> the released identity. `phase-8-llm-agent-complete` is not the current final
+> release tag; no historical Git tag is changed by this clarification.
+
 ## Release Rules
 
 - 只有 Phase Gate 全部 PASS 后允许发布。
@@ -697,3 +704,64 @@ serialization and context-schema validation. Report-level grounding validation
 remains with P8-2 because the `phase8-report-v1` contract is not implemented in
 P8-1. Provider selection and Agent planning remain later decisions. M-021,
 M-022 and M-023 remain `待实现`, and Phase 9 is not started.
+## ADR-024 — Bounded vest evidence confirmation after conflicting detections
+
+- Date: 2026-10-07
+- Status: ACCEPTED FOR TARGETED PHASE 9 FIX, pending human review
+- Authorization: user explicitly approved the smallest rule repair after the 2026-10-07 vest false-negative diagnosis.
+
+### Context
+
+The 19-second local MP4 `4afa6b121fe5db806c3ff416bafdf571.mp4` visibly contains a worker without a reflective vest. The frozen model emits `no_vest`, but intermittent overlapping `vest` and `PPE_UNKNOWN` findings repeatedly reset the original strictly consecutive 1-second timer. The longest uninterrupted `NO_VEST` run was 28 frames / 0.9 seconds, so no event was persisted. Removing only the lower-confidence overlapping class did not extend that run.
+
+### Decision
+
+For `NO_VEST` only, the temporal filter uses a track-scoped rolling 1.5-second evidence window. Confirmation requires at least one run of the existing five consecutive violation frames, at least one second from first to latest violation within the window, at least 60% violation observations in the window, and a current violation finding. Five consecutive compliant frames reset the vest candidate. A missing track clears its candidate. `NO_HELMET` and `PPE_UNKNOWN` retain the original strict temporal filter. The model checkpoint, inference/tracker/association configuration, event schema, persistence, and alert ordering stay unchanged.
+
+### Consequences and risk
+
+This deliberately changes the previously frozen vest confirmation semantics to tolerate brief contradictory classifications. It can increase vest false positives on other scenes, so broad-scene evaluation remains open. The 60% ratio and 1.5-second window are fixed policy values in the temporal filter and must not be presented as measured universal accuracy. The event confidence still reflects the current confirming `no_vest` detection; it is not an aggregate confidence.
+
+### Evidence
+
+Focused tests cover short conflict recovery and compliant reset. Full repository regression passed (`773 passed`). The isolated full-chain MP4 run at `artifacts/p9b/20261007T070737Z-82c133f8/outputs/full_chain.json` completed 570/570 frames and produced exactly one `NO_VEST` and one `NO_HELMET`, with SQLite rows, verified snapshots, and delivered Console/Web alerts. See `docs/reports/phase-09/P9D_VEST_CONFIRMATION_FIX_REPORT.md`.
+
+## ADR-025 — Realtime CPU OpenVINO profile
+
+- Date: 2026-10-07
+- Status: Accepted for the user-authorized CPU speed change
+- Authorization: the user explicitly allowed changes to the frozen CPU configuration to reach at least 24 processed FPS.
+
+### Decision
+
+Realtime monitoring uses `configs/inference_cpu_fast.yaml`: the same frozen project-trained checkpoint and five-class mapping, exported to OpenVINO 2025.2.0 at 416 pixels, with four CPU inference threads and one OpenCV thread. The original 640-pixel `configs/inference.yaml` remains the offline evaluation reference. The derived graph's XML, BIN and metadata SHA256 values are checked before first inference; the source checkpoint is also checked before load. Since a loaded OpenVINO graph no longer reads the source checkpoint, its 5.5 MB hash is not recomputed on every frame. The export is a local generated asset under `models/exports/`, reproducible with `scripts/export_cpu_openvino.py`. This does not change tracking, association, temporal confirmation, event schema or the no-skip sequential frame policy.
+
+### Evidence and limits
+
+On the local i5-1340P, the supplied 570-frame MP4 completed twice through the monitoring service at 28.836 and 29.414 processed FPS after warm-up, with `NO_HELMET=1` and `NO_VEST=1` each run. The benchmark includes decode, inference, tracking, association, event persistence, snapshot and annotated JPEG preview; alert delivery is stubbed for those controlled runs. A third run with real Console/Web/TTS adapters reached 26.000 FPS, with six alerts delivered and none failed. The 416-pixel profile is not claimed to preserve broad-scene accuracy. Camera, RTSP and long-run memory stability remain to be measured. The earlier 640-pixel lock and historical P9-C evidence are unchanged.
+
+## ADR-026 — Server-configured DeepSeek report invocation
+
+Date: 2026-10-08. Status: accepted for implementation following the user's request to connect DeepSeek Flash and their confirmation that local configuration was entered.
+
+The standard Agent application and deterministic planner remain unchanged. A configured application router delegates only the typed GENERATE_REPORT operation to a separately composed report facade with a server-owned SYSTEM identity, which has the existing provider:invoke capability. ASK operations retain the local SAFETY_REPORTER facade, including questions asking to generate reports. The report question is normalized by the existing facade; the browser cannot select identity, model, endpoint, credentials or planner candidates. No role/capability policy or tool registry is changed.
+
+Credentials come from process environment or explicit Windows user variables named by the existing YAML policy. Missing/invalid settings keep the local application. The provider client is built without making a request. The existing strict report parser, grounding validator and fallback remain authoritative. For the official DeepSeek Flash endpoint only, the transport explicitly disables thinking to reduce response latency; other transports retain their original payload.
+
+A local PowerShell launcher uses official DeepSeek endpoint/model defaults, reads existing variables, and prompts privately for a missing credential. It starts the existing Streamlit entry point, with secrets only in process memory/environment. Real external validation remains pending because all three configuration variables were absent in process and Windows user settings during verification.
+
+## ADR-027 — Configured DeepSeek safety assistant
+
+Date: 2026-10-08. Status: accepted following the explicit request to connect the large model to the safety assistant.
+
+ASK may use the configured provider to propose a candidate through the existing LLMPlannerAdapter. The existing candidate validator, static tool registry, forbidden-request checks and permission policy remain authoritative. A server-owned SYSTEM identity enables the existing planning capability; browser input cannot select identity or credentials. Candidate dates and filters are bound to the validated caller selection; mismatches trigger deterministic fallback. Explicit report routing remains unchanged.
+
+After local tools execute, the provider may select/order up to eight supplied Chinese presentation statements by integer ID. It cannot introduce prose, counts, evidence or new claims. Invalid selection and provider failure preserve the local answer. Request caching prevents refresh from repeating calls. Credentials remain in the configured server environment. Version-aware module upgrades support the already running Streamlit process without restarting its credential-bearing environment.
+
+## ADR-028 — V1 split-integrity revision and completion
+
+Date: 2026-10-08. Authorized by the user's request to implement the V1 audit closure items except RTSP and long stability.
+
+The two reviewed valid/test candidates are confirmed same-scene neighboring video frames. Create CSS-PPE-10-V1-SPLIT-R2 outside Git, leaving frozen V1 payload, training configuration, checkpoint and historical metrics intact. Move the two test neighbors and labels into validation; preserve every train byte. Never promote validation-tuned examples into test. Re-run quality checks and evaluate the unchanged checkpoint on the revised test set as supplemental evidence. This does not retrospectively make old validation/test metrics independent. The original release model remains the trained V1 model; no retraining is claimed.
+
+Complete quality charts, provider output budget for complete strict JSON reports, regression isolation and deployment/demo documentation. No schema/grounding weakening, public deployment, RTSP or long stability acceptance is authorized by this increment.

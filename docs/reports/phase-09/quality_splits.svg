@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="212" role="img">
+<rect width="100%" height="100%" fill="white"/>
+<text x="20" y="30" font-size="20">Bounding box distribution</text>
+<text x="20" y="80" font-size="15">train</text>
+<rect x="145" y="60" width="500.00" height="28" fill="#326da8"/>
+<text x="655.00" y="80" font-size="15">29256</text>
+<text x="20" y="124" font-size="15">valid</text>
+<rect x="145" y="104" width="9.66" height="28" fill="#326da8"/>
+<text x="164.66" y="124" font-size="15">565</text>
+<text x="20" y="168" font-size="15">test</text>
+<rect x="145" y="148" width="9.47" height="28" fill="#326da8"/>
+<text x="164.47" y="168" font-size="15">554</text>
+</svg>

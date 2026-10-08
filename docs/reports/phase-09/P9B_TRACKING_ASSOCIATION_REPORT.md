@@ -1,0 +1,19 @@
+# P9-B Tracking and Association — 2026-09-25
+
+Real 47-frame MP4 smoke run `20260925T091230Z-21b1895e`: 76 person detections, 66 track outputs, observed session track IDs 1 and 2, one PPE association result. The single `no_vest` detection at frame 0 had confidence 0.29290858, `status=unknown`, no track assignment, containment ratio 0 and IoU 0. It was **not** force-assigned by nearest distance. The 66 per-track compliance findings were `PPE_UNKNOWN:unknown`. A track ID denotes only this tracking session; it is not a person identity.
+
+The source shows some one/two-person frames, but does not provide controlled ground truth for ID switches, crossing, occlusion, exit/re-entry, small/occluded/multiple PPE, ambiguous two-person PPE, or conflicting evidence. Those scene gates are **SCENE_ASSET_MISSING / NOT VALIDATED**. Candidate-score distribution and reliable lost/recovered counts were not recorded. No tracker, association or compliance threshold was changed. Full frame-to-track evidence is in `artifacts/p9b/20260925T091230Z-21b1895e/outputs/full_chain.json`.
+
+P9-B.1 clean MP4 reproduced the same 66 track outputs and one unknown PPE association. The 30-second real USB run added 143 track outputs and 288 associations (3 unknown), with real NO_HELMET and NO_VEST events for session track 1. It does not provide controlled crossing, occlusion or re-entry ground truth. G8 remains PARTIAL; no threshold was changed.
+
+## P9-B.2 per-frame real-scene trace
+
+Run `20260925T101624Z-b0117ef1` is a live 25.395-second Camera 0 scene. Its `outputs/full_chain.json` records 103 processed frames with `frame_id`, `track_id`, bbox and confidence on each frame, and 206 PPE candidate records with PPE class/confidence/bbox, candidate person ID/confidence/bbox, containment ratio, IoU, selected ID and status. The visually observed scene contains one person. Track 1 appears on all 103 processed frames; no duplicate track or ID switch is observed in this run. At frame 0 the person bbox is `(172.825,212.121,485.576,471.145)` with confidence 0.8194. At frame 50 it is `(146.854,211.148,516.790,471.275)` with confidence 0.7889. These are session tracking results, not identity ground truth.
+
+At frame 0, `no_hardhat` confidence 0.8550 has containment 1.0/IoU 0.1093 and `no_vest` confidence 0.8246 has containment 1.0/IoU 0.2986 against track 1; both are associated. All 206 associations in this scene select track 1, with zero UNKNOWN. The earlier real MP4 frame 0 remains an explicit UNKNOWN example with zero candidate geometry, rather than a forced nearest assignment. No threshold or association policy changed.
+
+The local asset search found only the short 47-frame project MP4 and two historical WebM source clips; contact-sheet review found no controlled crossing, overlap, exit/re-entry or ambiguous two-person PPE scene. The user reported no participant available to stage such a scene. Therefore ID recovery after occlusion/re-entry, multiple-person ID switches and ambiguous PPE ownership remain **NOT VALIDATED**. G8 remains PARTIAL: the new per-frame real-scene evidence is substantial, but the requested complex-scene coverage is absent.
+
+## P9-B.3 Charter clarification
+
+The preceding G8 PARTIAL judgement applied complex-scene coverage as an additional gate. The locked M-009/M-010 criteria require mature ByteTrack with stable observed person IDs and recorded configuration/version, plus correct PPE association and explicit unassociated results for explainable failures. The real 103-frame USB trace and real associated/UNKNOWN evidence satisfy those clauses. The authorized G8 asks for recorded real-scene Tracking/Association evidence. **G8 is re-adjudicated PASS on its locked criterion.** Crossing, occlusion, re-entry and multi-person ambiguity remain unvalidated robustness limits, not added MUST conditions. See `P9B3_CHARTER_GATE_READJUDICATION_REPORT.md`.

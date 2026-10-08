@@ -1,5 +1,231 @@
 # Test Gates
 
+## 2026-10-07 P9-D Overview/source/time gate
+
+- **Targeted PASS:** database query orders by event time before pagination; grouped source filters cover MP4, USB and RTSP. Source labels omit filenames/addresses; visible recent-event rows omit event ID.
+- Populated Overview AppTest renders trend and source label. Focused tests: 13 passed. Full `.venv-final-demo/Scripts/python.exe -m pytest -q`: **786 passed**.
+- Manual responsive browser review and physical camera/RTSP display: NOT VERIFIED. P9-D broader human review remains PARTIAL. [Report](reports/phase-09/P9D_OVERVIEW_SOURCE_SORT_REPORT.md).
+
+## 2026-10-07 P9-D operator flow gate
+
+- **Targeted PASS:** AppTest verifies a single USB start click enables Stop, and a single Stop click enables Start. Event status changes persist in SQLite both ways and are reread on rerun. Event action records the selected ID; Evidence Viewer preselects it.
+- Existing empty-page and monitoring integration tests: 18 passed. New focused UI tests: 3 passed. Full `.venv-final-demo/Scripts/python.exe -m pytest -q`: **783 passed**.
+- Physical USB capture, manual browser navigation and narrow-viewport visual review: NOT VERIFIED. Broader P9-D human review remains PARTIAL. [Report](reports/phase-09/P9D_EVENT_OPERATOR_FLOW_REPORT.md).
+
+## 2026-10-07 realtime CPU 24 FPS MP4 gate
+
+- **PASS for supplied local MP4 on this machine:** final production-path profile, 570/570 frames, 19.767 s / 28.836 FPS and 19.379 s / 29.414 FPS; both completed with 1774 detections, `NO_HELMET=1`, `NO_VEST=1`, no processing error.
+- Actual Console/Web/TTS adapters active: 570/570 frames, 21.923 s / 26.000 FPS, same two events, six alerts delivered, none failed. Streamlit port 8502 health endpoint: `ok` after restart.
+- Focused detector and monitoring tests: 15 passed; new profile/integrity tests: 3 passed. Full `.venv-final-demo/Scripts/python.exe -m pytest -q`: 780 passed. `pip check` and `git diff --check`: PASS.
+- The warm benchmark includes decode, inference, tracker, association, event/snapshot persistence and annotated JPEG preview; the third run includes real alert delivery. Camera/RTSP, browser-rendered 24 FPS, broad-scene accuracy and long-run resource stability: NOT VERIFIED. P9-C overall remains PARTIAL. [Report](reports/phase-09/P9_CPU_24FPS_REPORT.md).
+
+## 2026-10-07 processed-frame live preview check
+
+- Focused command: `.venv-final-demo/Scripts/python.exe -m pytest -q tests/unit/test_monitoring_preview.py tests/integration/test_monitoring_service.py tests/e2e/test_p9d_pages.py tests/e2e/test_full_ppe_pipeline.py tests/unit/test_annotated_demo_video.py` → 26 passed.
+- Documentation governance command: `.venv-final-demo/Scripts/python.exe -m pytest -q tests/unit/test_documentation_governance.py` → 31 passed.
+- An isolated real-MP4 service run completed 47/47 frames with 77 detections. Its last preview image differed from the source frame by an absolute pixel sum of 3,863,910, confirming rendering on a copy.
+- The MJPEG test received two different JPEGs on one HTTP response and rejected an invalid token with 404. Streamlit AppTest rendered the session preview URL.
+- Targeted code/protocol gate: PASS. Browser visual playback and remote-browser compatibility: NOT VERIFIED. Phase 9 overall and P9-C remain PARTIAL.
+
+
+## 2026-10-07 monitoring preview refresh check
+
+- Focused command: `.venv-final-demo/Scripts/python.exe -m pytest -q tests/e2e/test_p9d_pages.py tests/integration/test_monitoring_service.py tests/test_image_inference.py` → 22 passed.
+- Reference/documentation command: `.venv-final-demo/Scripts/python.exe -m pytest -q tests/unit/test_reference_assets.py tests/unit/test_documentation_governance.py` → 38 passed.
+- Fresh localhost:8502 browser run with `artifacts/validation/P4C-2/input/construction-workers-public-domain.mp4`: preview visible at frame 23 while running; processing completed at 47/47 frames with one confirmed PPE_UNKNOWN event.
+- This is a display cadence check, not a throughput or long-run resource gate. P9-C remains PARTIAL.
+
+## Current Phase 9 P9-C.3i Inference Worker Lifecycle Gate (2026-10-07)
+
+**P9-C.3i PASS as attribution; P9-C overall PARTIAL.** C3I-G1–G4
+PASS: fresh 20-minute T0/T1/T2/T3 completed 149/150/149/150 cycles;
+T3 matched historical H0. C3I-G5/G6 PASS: all cells, including
+conditional T4, passed per-frame Detection fixture semantics, 47
+frames/77 detections per cycle, unchanged service/detector/model IDs
+and clean worker/source exit. C3I-G7 PASS: T0/T1/T2/T3/T4 diagnostic
+thread create/join counts were 0/0, 1/1, 149/149, 150/150 and
+151/151. C3I-G8 PASS: T4 ran only after T2 and T3 both grew at H0
+scale. C3I-G9/G10 PASS: T2/T3 RSS +0.10446/+0.10432 MiB/cycle versus
+T0/T1/T4 +0.00144/+0.00231/+0.00331. Fresh-thread real inference
+interaction is strongly supported; material MonitoringService-specific
+growth is not. A separately authorized native-runtime/thread-lifecycle
+boundedness study is the next minimal action. C3I-G11/G12 PASS: 762
+tests, compileall, preflight, demo/pip/diff checks, byte-identical
+`pip freeze`, frozen hashes and Git release identity. Retained owner
+and production unbounded leak are not confirmed. P9-C.4 and P9-D/E/F
+remain unauthorized. See the [P9-C.3i report](reports/phase-09/P9C3I_INFERENCE_WORKER_LIFECYCLE_REPORT.md).
+
+## Current Phase 9 P9-C.3h Downstream Boundary Gate (2026-10-07)
+
+**P9-C.3h PASS as attribution; P9-C overall PARTIAL.** C3H-G1–G3
+passed: H0/H1/H2 fresh one-cycle smokes shared 47 real cached frames,
+77 real detections and 66 precomputed tracks; H1/H2 matched RP
+association/compliance, and H2 confirmed the frame-24, track-1,
+timestamp-1.001 `PPE_UNKNOWN` event. C3H-G4 passed: fresh 10-minute
+H0/H1/H2 completed 72/68/69 cycles with post-exit validation and
+2–10 RSS +0.10190/+0.10508/+0.10653 MiB/cycle. C3H-G5 passed:
+**FIRST MATERIAL DOWNSTREAM DIVERGENCE: NONE**, since H0 already
+showed RP-scale growth. C3H-G6 passed: fresh matched 20-minute H0/RP
+completed 142/150 cycles with +0.10318/+0.10255 MiB/cycle and
+positive 10–20 slopes. C3H-G7 was NOT TRIGGERED: conditional
+H3/H4/H5 were unnecessary. C3H-G8–G10 passed: formal business
+downstream is not required for this cached-frame growth; owner and
+indefinite leak remain unproven; next minimal attribution targets
+real-inference output and MonitoringService frame/session lifecycle.
+C3H-G11/G12 passed: 755 tests, compileall, preflight, demo/pip/diff
+checks, exact dependency inventory, frozen model/config/MP4/fixtures/
+dataset/lock and Git release identity. P9-C.4 and P9-D/E/F remain
+unauthorized. See the [P9-C.3h report](reports/phase-09/P9C3H_INFERENCE_DOWNSTREAM_BOUNDARY_REPORT.md).
+
+## Current Phase 9 P9-C.3g Lean Interaction Matrix Gate (2026-10-04)
+
+**P9-C.3g PASS as an attribution increment; P9-C overall PARTIAL.**
+C3G-G1/G2 passed: one unified unwrapped PP/PR/RP/RR cached-frame
+runner, external sampler and four matching one-cycle business
+signatures. C3G-G3–G6 passed: fresh 20-minute cells completed
+150/150/149/148 full cycles, totaling 597 unique SQLite rows and
+verified snapshots, 1,194 Console/Web deliveries, zero failures and
+clean final workers/samplers. C3G-G7/G8 passed: 2–20-minute RSS
+slopes +0.01245/+0.00156/+0.10231/+0.10512 MiB/cycle show a
+strong real-inference increment with either tracker, no material
+positive tracker increment and a weak factorial interaction term.
+C3G-G9 passed: cached RP/RR still grow, so fresh source/decode is
+not required for this 20-minute growth. C3G-G10 passed: a matched
+RP versus association/compliance-only diagnostic control is the
+smallest proposed next step, requiring new authorization. C3G-G11/
+G12 passed: 742 tests, compileall, preflight, demo/pip/diff checks,
+exact package inventory and frozen model/config/MP4/fixture/dataset/
+Git identity. Production retained owner and indefinite leak remain
+unconfirmed; P9-C.4 and P9-D/E/F are unauthorized. See the
+[C3g report](reports/phase-09/P9C3G_LEAN_INTERACTION_MATRIX_REPORT.md).
+
+## Current Phase 9 P9-C.3f Final Lean Full-Graph Gate (2026-09-27)
+
+**P9-C.3f PARTIAL / SUSPICIOUS_CONTINUED_GROWTH; P9-C overall
+PARTIAL.** C3F-G1/G2 passed: formal unwrapped graph audit and two-cycle
+external-sampler smoke. C3F-G3/G4/G9 passed: a fresh process ran
+3602.625 seconds, 692 complete 47-frame real MP4 cycles with joined
+worker and formal source-close path. C3F-G5/G6 passed: 692 unique
+SQLite rows and verified snapshot metadata/files/hashes/dimensions,
+1,384 Console/Web deliveries, zero failures. C3F-G7/G8 measured all
+six RSS windows and three warm slopes; five warm means increased
+469.88 → 483.40 → 496.78 → 510.16 → 521.17 MiB and 30–60 slope
+remained +1.2200 MiB/min. **Evidence/classification PASS, stability
+acceptance BLOCKED.** C3F-G10–G13 passed: four post-run Dashboard
+pages with zero exceptions and correct totals/evidence, identical
+package inventories, 731 tests plus compileall/preflight/demo/pip/diff
+checks, and unchanged frozen model/config/MP4/dataset/Git identity.
+The lean run reproduces resource growth but does not confirm an
+unbounded production leak or owner. P9-C.4 and P9-D/E/F remain
+unauthorized pending human decision. See the [C3f report](reports/phase-09/P9C3F_FINAL_LEAN_FULL_GRAPH_STABILITY_REPORT.md).
+
+## Current Phase 9 P9-C.3e N-Harness Bridge Gate (2026-09-27)
+
+**P9-C.3e PASS / DIAGNOSTIC HARNESS CONTRIBUTION SUPPORTED;
+P9-C overall PARTIAL.** C3E-G1/G2 passed: 20-item N/S4 wiring diff,
+200-row rolling caps, auxiliary history, JSONL and fixed frame-object
+cardinality audited. C3E-G3 passed: one-cycle S4/H semantic comparison
+had zero differences. C3E-G4/G5 passed: H completed 150 cycles/events
+in 20 minutes, reproducing N-scale sustained RSS (+0.03127 versus
+historical +0.0238 MiB/cycle) and virtually the same traced slope
+(+0.05637 versus +0.0566 MiB/min). C3E-G6 passed: Case A triggered
+matched 150-cycle J, which was +0.00408 MiB/cycle and +0.02986
+MiB/min at 10–20 minutes against H +0.22384. C3E-G7–G9 passed:
+instrumentation contribution supported, production leak unconfirmed,
+and P9-C.3f was the sole next action at that checkpoint.
+C3E-G10/G11 passed: 723 tests, compileall, preflight, demo check,
+pip check, diff check, unchanged pip freeze/frozen hashes/dataset and
+release identity. Lean real production full-graph boundedness is
+unverified at that checkpoint; the completed P9-C.3f result is
+recorded above. P9-C.4 and P9-D/E/F were not started. See the
+[C3e report](reports/phase-09/P9C3E_N_HARNESS_BRIDGE_REPORT.md).
+
+## Current Phase 9 P9-C.3d Monitoring/Downstream Attribution Gate (2026-09-27)
+
+**P9-C.3d PASS / N RESIDUAL NOT REPRODUCED; P9-C overall PARTIAL.**
+C3D-G1/G2 passed: S0 formal MonitoringService lifecycle completed
+150 cycles/7050 frames with balanced source/worker counts and near
+plateau +0.000344 MiB/cycle warm RSS. C3D-G3/G4 passed: S1–S4 each
+completed 75 separately paced cycles with slopes −0.00302,
++0.000827, +0.00197 and +0.00464 MiB/cycle; no material first
+divergence was evidenced against historical N +0.0238. C3D-G5/G6
+were NOT REQUIRED by their conditional triggers, so tracker ×
+downstream interaction is NOT TESTED. C3D-G7–G9 passed: traced/RSS,
+thread/status/container evidence, suspect ranking and the single
+N-harness bridge next action are recorded. C3D-G10/G11 passed:
+715 tests, compileall, preflight, demo check, pip check, unchanged
+pip freeze/frozen hashes/dataset and untouched HEAD/origin/main/tag.
+Production full-graph boundedness remains unproven; P9-C.4 and
+P9-D/E/F unauthorized. See the
+[C3d report](reports/phase-09/P9C3D_DOWNSTREAM_INTERACTION_ATTRIBUTION_REPORT.md).
+
+## Current Phase 9 P9-C.3c Tracker Native Lifecycle Gate (2026-09-27)
+
+**P9-C.3c PASS / NEITHER CLEARLY; P9-C overall PARTIAL.** Read-only
+ByteTrack lifecycle audit completed. P/Q/R each ran 149 paced tracker-only
+cycles in 20 minutes; R used 7,003 real updates. Warm RSS was P +0.00155,
+Q +0.00080 and R +0.00168 MiB/cycle, against L−N's directional +0.0192.
+All isolated late windows approached plateau; no path reproduced material
+continuing growth, so C3C-G7 60-minute extension was NOT REQUIRED.
+C3C-G1–G11 complete (G7 NOT REQUIRED by its conditional trigger), including
+the update-vs-reset decision, N residual, 706 passing tests and unchanged
+frozen identities/dependencies. Full-graph boundedness remains unproven; P9-C.4
+and P9-D/E/F remain unauthorized. See the
+[C3c report](reports/phase-09/P9C3C_TRACKER_NATIVE_ATTRIBUTION_REPORT.md).
+
+## Current Phase 9 P9-C.3b Inference/Tracker Isolation Gate (2026-09-26)
+
+M completed 125 cycles of real variable-frame inference in 20.125 minutes;
+cycles 1/75/125 matched the real Detection fixture. Its warm RSS slope was
++0.0470 MiB/min, +0.00736 MiB/cycle, and late slope near zero. The real
+Track fixture passed a second independent ByteTrack generation (47 frames,
+66 tracks). L/N one-cycle semantic equivalence passed. Paced N completed
+150 cycles/events in 20 minutes with 150 SQLite rows, 150 snapshots and
+300 alert deliveries; RSS slope was +0.1779 MiB/min or +0.0238 MiB/cycle
+versus L +0.3211/+0.0430. Python traced slopes were effectively equal.
+**C3B-G1–G12 PASS**, including 698 full tests, compileall, preflight,
+demo check, pip check, diff check and unchanged frozen hashes/dependencies.
+Tracker contribution is supported,
+standalone inference contribution weak; full-graph boundedness is not
+established. P9-C overall remains PARTIAL, P9-C.4 and P9-D/E/F unauthorized.
+See [C3b report](reports/phase-09/P9C3B_INFERENCE_TRACKER_ISOLATION_REPORT.md).
+
+## Current Phase 9 P9-C.3a Downstream Isolation Gate (2026-09-26)
+
+**P9-C.3a PASS / MULTI-CONTRIBUTOR PATTERN; P9-C overall PARTIAL.** A
+hash-checked 47-frame real model fixture contained 77 detections and passed
+an independent full detection recheck. One-cycle K/L detection, tracking,
+association, compliance, event confirmation frame, SQLite, snapshot and
+alert semantics matched. Paced L completed 148 cycles/events in 20 minutes
+versus K's 150. RSS slope was +0.3211 versus +0.9737 MiB/min, and
+per-cycle/event slopes were +0.0430 versus +0.1291 MiB; traced Python
+slopes were near equal. C3A-G1–G10 PASS, including 693 full tests and
+frozen identity. Exact native owner and full-graph boundedness remain
+unproven; P9-C.4 and P9-D/E/F are unauthorized. See the
+[C3A report](reports/phase-09/P9C3A_PRECOMPUTED_DETECTION_CONTROL_REPORT.md).
+
+## Current Phase 9 P9-C.3 Attribution Gate (2026-09-26)
+
+P9-C.3 is PARTIAL / ATTRIBUTION INCONCLUSIVE. A real full-chain baseline reproduced MP4 RSS growth;
+source-only 60-minute RSS reached a near-plateau, and event/alert/Python
+retention controls do not explain the full rise. A predecoded-frame full-chain
+control still rose +0.9737 MiB/min without per-cycle MP4 decode/open/close.
+The exact owner remains unproven. P9-C overall remains PARTIAL;
+P9-D/E/F are not authorized. See
+[P9-C.3 report](reports/phase-09/P9C3_RESOURCE_GROWTH_ATTRIBUTION_REPORT.md).
+
+## Current Phase 9 P9-C.2 Long-Run Gate (2026-09-25)
+
+**P9-C.2 PARTIAL; P9-C.3 RESOURCE LEAK ATTRIBUTION REQUIRED; P9-D not
+authorized.** The bounded-observer synthetic test and USB/MP4 60-minute
+correctness, source lifecycle, SQLite/evidence/alerts, warm Stop/restart and
+post-run Dashboard checks passed. C2-G8 has sufficient classification evidence:
+USB STABLE_PLATEAU (+0.0484 MiB/min warm RSS), MP4
+SUSPICIOUS_MONOTONIC_GROWTH (+1.2478 MiB/min warm RSS). The latter prevents a
+P9-C.2 stability PASS until attributed. Thread and handle windows were stable.
+See [C2-G1–G14 matrix](reports/phase-09/P9C2_LONG_RUN_STABILITY_REPORT.md#gate-matrix).
+Earlier P9-B G1–G13 acceptance remains PASS and is not reopened.
+
 ## Gate Rules
 
 - A Gate is PASS only when its stated evidence exists and was executed.
@@ -1304,3 +1530,145 @@ Phase 8 result:
 `FINAL RELEASED`.
 
 Phase 9 remains `NOT STARTED`.
+
+## Phase 9 P9-B.3 Human Visual Sign-Off and Closure (2026-09-25)
+
+The user replied `pass` to the specified real USB Camera 0 Realtime
+Monitoring visual checklist. HUMAN VISUAL REVIEW PASS. The existing
+Charter-based G8/G10 adjudication and G1–G13 matrix now close with all
+Gates PASS. P9-B RESULT: PASS. M-008/M-009/M-010 acceptance is recorded;
+P9-C remains NOT AUTHORIZED and Phase 9 final delivery Gate remains pending.
+See `P9B3_CHARTER_GATE_READJUDICATION_REPORT.md`.
+
+## Phase 9 P9-B.3 Charter Gate Re-adjudication (2026-09-25)
+
+Against the locked Charter text, G8 and G10 satisfy their technical
+criteria. M-009/M-010 require mature ByteTrack, observed stable person IDs,
+recorded configuration/version, PPE association and explicit unassociated
+results for explainable failures; the real 103-frame USB trace and UNKNOWN
+case provide these. M-008 requires Camera OR RTSP live read/detect/display,
+observable failure and no fabricated frames; real Camera 0 browser evidence
+and failed index 64 provide these. Crossing/occlusion/re-entry and a
+five-second Stop bound are not written as MUST conditions. Fresh full suite:
+684 passed; compileall, preflight, demo check, pip check and diff check PASS.
+G1–G13 technical criteria PASS. P9-B is READY FOR HUMAN VISUAL SIGN-OFF;
+the user's review and final release-status update are pending. P9-C is not
+authorized. See `P9B3_CHARTER_GATE_READJUDICATION_REPORT.md`.
+
+## Phase 9 P9-B.2 Tracking and USB Closure Review (2026-09-25)
+
+The real 103-frame USB trace records every track bbox/confidence and 206 PPE
+candidate measurements; the single observed track had no ID switch, while
+controlled complex scenes remain unvalidated. Direct browser review showed
+live preview, events, verified snapshot and Stop/restart. Five real USB
+processed-frame cycles ended STOPPED without error, and invalid index 64
+remained SOURCE_OPEN_FAILED with zero frames/events. The post-read Stop race
+was repaired, but Stop during already-running cold inference can still time
+out. Full suite: 684 passed; preflight, demo check, compileall, pip check and
+diff check PASS. G1–G7, G9, G11–G13 PASS; G8/G10 PARTIAL. P9-B PARTIAL;
+P9-C NOT READY. Phase 9 final Charter acceptance pending.
+
+## Phase 9 P9-B.1 Runtime and Camera Closure (2026-09-25)
+
+`FINAL-DEMO-RUNTIME-001`: revised 79-pin lock including `lap==0.5.13`,
+independent clean install, `pip check` PASS, enhanced preflight PASS, real
+47-frame ByteTrack run PASS, before/after package set identical. Runtime is
+`RE-FROZEN / VERIFIED STABLE` for exercised paths. Clean default suite:
+681 passed. USB Camera processed 143 frames, produced real NO_HELMET/NO_VEST
+events with SQLite/snapshot/alert evidence; invalid index returned
+SOURCE_OPEN_FAILED and no frames. G1–G7, G9, G11–G13 PASS; G8 and G10 PARTIAL
+for controlled real scenes, actual live-page visual review and short
+cold-start stop timeout. P9-B remains PARTIAL; P9-C NOT READY.
+
+## Phase 9 P9-B Full Chain Validation Gate (2026-09-25)
+
+P9-B is `PARTIAL / HUMAN REVIEW PENDING`; P9-C is not ready. The real 47-frame
+MonitoringService MP4 run persisted one PPE_UNKNOWN event with verified
+snapshot and Console/Web alerts. G2–G6, G11 and G13 passed. G1, G7–G10
+and G12 remain partial or not run because violation scenes, Camera/RTSP full
+chain and clean frozen runtime validation are missing.
+Ultralytics installed unpinned `lap==0.5.13` into `.venv-final-demo` during the
+run. See `docs/reports/phase-09/P9B_FULL_CHAIN_VALIDATION_REPORT.md` for the
+per-gate evidence and limits.
+
+## Phase 9 P9-A Audit Gate (2026-09-25)
+
+| Check | Evidence | Result |
+| --- | --- | --- |
+| Pre-read and identity | Governance clarification, main/origin aligned, Phase 8 tag preserved | PASS |
+| Static audit | `docs/reports/phase-09/P9A_FINAL_AUDIT_REPORT.md` and matrices | PASS |
+| Final demo runtime lock | Candidate only; clean environment and complete package inventory missing | PENDING |
+| Compileall | `python -m compileall -q core infra services utils web scripts` | PASS |
+| Full pytest | 666 passed, 1 skipped, 1 stale M-007 governance assertion failed | FAIL |
+| P9-B authorization | Not granted | WAITING |
+
+P9-A is `PARTIAL / IN PROGRESS`. Phase 9 P9-G1 through P9-G4 are pending.
+
+## Phase 9 P9-A.1 Final Runtime Freeze Gates (2026-09-25)
+
+| Gate | Evidence | Result |
+| --- | --- | --- |
+| P9A-G1 | M-007 governance assertion repaired; 31 governance tests pass | PASS |
+| P9A-G2 | New ignored Python 3.12.1 `.venv-final-demo` | PASS |
+| P9A-G3 | Root OpenCV pin, clean install, `pip check` clean | PASS |
+| P9A-G4 | Full pytest `676 passed, 0 failed, 0 skipped` | PASS |
+| P9A-G5 | `compileall` over core/infra/services/utils/web/scripts | PASS |
+| P9A-G6 | Real image, frozen checkpoint, 5 detections | PASS |
+| P9A-G7 | Real MP4, 47/47 frames, 77 detections | PASS |
+| P9A-G8 | Streamlit HTTP 200 and seven AppTest page imports | PASS |
+| P9A-G9 | One native Windows SAPI TTS call returned successfully | PASS |
+| P9A-G10 | Read-only preflight and run_demo --check | PASS |
+| P9A-G11 | 78-pin actual-environment final lock | PASS |
+| P9A-G12 | Model/inference hashes and historical contracts/tags unchanged | PASS |
+| P9A-G13 | `git diff --check` | PASS |
+
+P9-A: `PASS / FINAL-DEMO-RUNTIME-001 FROZEN / VALIDATED`. P9-B:
+`READY / WAITING FOR HUMAN AUTHORIZATION`. P9-G1 through P9-G4 remain pending.
+# P9-D UI/UX gates — 2026-10-07
+
+G1–G10: implemented; empty-data AppTests and local browser checks passed for inspected states. G11: **PARTIAL** (exact 1366×768 and 1920×1080 viewports pending). G12: **PASS** (eight Streamlit entry files on empty data). G13: **PASS** (`771 passed`). G14: **PARTIAL** (preflight, `run_demo.py --check`, pip check, and diff check passed; completed browser demo pending). G15: **PASS for P9-D edits** (backend/model/runtime files not edited in this increment; existing Phase 9 working tree changes preserved). Overall P9-D: **PARTIAL / HUMAN UI REVIEW REQUIRED**. [Report](reports/phase-09/P9D_UI_UX_POLISH_REPORT.md).
+## 2026-10-07 focused `NO_VEST` repair gate
+
+ADR-024 authorization recorded. Synthetic conflict recovery and compliant reset tests: PASS. Full pytest: **773 passed**. Supplied MP4 570-frame isolated full-chain smoke: **PASS** (`completed`, `NO_VEST` 1, `NO_HELMET` 1, SQLite 2, verified snapshots 2, alerts delivered 4, failed 0). Scope is a targeted false-negative repair; broad-scene accuracy remains unverified. P9-D UI responsive and human review gates stay PARTIAL. P9-C remains PARTIAL/FROZEN. [Evidence](reports/phase-09/P9D_VEST_CONFIRMATION_FIX_REPORT.md).
+
+## 2026-10-07 Agent result page presentation gate
+
+Focused Web boundary, final-integration, and P9-D page tests: **22 passed**. Recognized statistic labels and separate result slots are covered. Browser result-state visual check remains pending after a stale-module service restart; P9-D remains PARTIAL.
+
+## 2026-10-07 AI report localization gate
+
+Focused Web boundary, final integration and P9-D page tests: **23 passed**. Fresh browser generation on the ordinary six-event database displayed Chinese findings and all three Chinese recommendations. P9-D's broader responsive and human review gates remain PARTIAL.
+
+## 2026-10-07 API English text gate
+
+Generated alert API texts are English for all three event types, while TTS voice output remains Chinese. Focused alert/TTS/Web boundary tests: **23 passed**. Full repository regression: **790 passed**. Gate: **PASS** for fixed, generated API text; field/enumeration and event schemas unchanged. Dynamic user/provider content is preserved verbatim. P9-D overall review and P9-C status are unchanged. [Evidence](reports/phase-09/P9D_API_ENGLISH_TEXT_REPORT.md).
+
+## 2026-10-07 English page path gate
+
+The three requested Streamlit pages declare ASCII URL paths. Focused tests: **21 passed**; all three local HTTP paths returned 200. Gate: **PASS for navigation configuration**, with client-side browser rendering not separately inspected. P9-D broader review remains open. [Evidence](reports/phase-09/P9D_ENGLISH_PAGE_PATHS_REPORT.md).
+
+## 2026-10-08 Chinese Streamlit shell gate
+
+PASS for the requested native menu and deployment chooser presentation: browser-visible Chinese text, rerun and dialog open/close verified; screenshots saved. Focused page and Agent Web boundary tests: **19 passed**. External deployment actions, screen recording and printing were not invoked. Review selectors after any Streamlit frontend upgrade. Overall Phase 9 status remains unchanged. [Evidence](reports/phase-09/P9D_CHINESE_SHELL_REPORT.md).
+
+## 2026-10-08 DeepSeek report integration gate
+
+PASS for code composition and offline verification: 81 tests passed, including explicit-report-only invocation, ordinary ASK isolation, successful grounded provider result, timeout fallback and compatible transport payloads. Startup PowerShell syntax: no errors. Real DeepSeek invocation: **NOT RUN / credential configuration missing**. No Charter acceptance or Phase 9 closure claimed. [Evidence](reports/phase-09/P9D_DEEPSEEK_REPORT_INTEGRATION.md).
+
+## 2026-10-08 DeepSeek assistant gate
+
+PASS for code and offline verification: 90 tests covering successful planning, scope conflict fallback, forbidden requests/candidates, invalid statement IDs, provider failure, refresh deduplication and direct form submission. Real-provider observation is recorded in [report](reports/phase-09/P9D_DEEPSEEK_ASSISTANT_INTEGRATION.md). Overall Phase 9 acceptance is unchanged.
+
+## 2026-10-08 Local LLM configuration gate
+
+PASS: 35 targeted configuration/assistant/report/transport tests; real local configuration loads; Git ignore and untracked checks pass; tracked-file credential scan passes. No successful live-provider claim or Phase 9 closure.
+
+## 2026-10-08 Assistant refresh repair gate
+
+PASS: 37 targeted configuration, assistant/report, Web boundary and page tests. Real provider probe HTTP 200 and complete assistant flow success / assistant_llm on temporary fixture verified. Original browser session rendering was not checked. Overall Phase 9 acceptance unchanged.
+
+## 2026-10-08 V1 scoped completion gates
+
+Data R2 quality/integrity and 80-image evaluation: PASS; real report success/fallback: PASS; deployment preflight/pip check/compileall/delivery checker: PASS. Full repair regression: 810 PASS. Subsequent bounded transport/chart/hash changes: 61 targeted PASS. Two README/link failures in final rerun were repaired and separately rerun: 2 PASS. Final full-rerun totals are recorded in the [completion report](reports/phase-09/V1_COMPLETION_REPORT.md). Local credentials ignored/untracked; no schema relaxation. RTSP and long stability are explicitly outside this increment's acceptance.
+
+Final rerun closure: 808 passed / 2 documentation failures; both repaired and rerun PASS. Follow-up 5-test documentation/configuration set PASS. All 810 collected cases have passing evidence across the full run and repair reruns; no single post-documentation full-suite PASS is claimed. Delivery checker and credential scan PASS.

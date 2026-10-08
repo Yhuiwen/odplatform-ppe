@@ -8,6 +8,255 @@ reviews; the statuses below reflect the current accepted records.
 
 ## Current Phase
 
+- **P9-D Overview/source/time refinement (2026-10-07): targeted gate PASS.**
+  Visible event tables hide IDs; time sorting is available in event, overview
+  and monitoring views; source labels and grouped filters use `mp4`,
+  `usb{id}` and `rtsp` while preserving raw database values. The new Overview
+  presents pending work, persistent-event KPIs, trends and handling progress.
+  Populated-page validation and full regression (786 passed) succeeded.
+  Manual responsive browser review remains open. See the
+  [report](reports/phase-09/P9D_OVERVIEW_SOURCE_SORT_REPORT.md) and
+  [worklog](worklogs/2026/10/2026-10-07-09-overview-source-sort.md).
+
+- **P9-D monitoring/event operator flow (2026-10-07): targeted gate PASS.**
+  USB start/stop button state now updates after one click; alert KPI explains
+  per-channel delivery counts. Event rows provide Chinese status/actions,
+  persist `OPEN`/`RESOLVED`, and navigate to the selected event in Evidence
+  Viewer. Redundant lower details and native English read-only table menus
+  are removed. Full regression: 783 passed. Physical USB and manual narrow
+  browser review remain open. See the [report](reports/phase-09/P9D_EVENT_OPERATOR_FLOW_REPORT.md)
+  and [worklog](worklogs/2026/10/2026-10-07-08-event-operator-flow.md).
+
+- **Realtime CPU speed target on the supplied MP4 (2026-10-07): PASS for
+  the bounded local-video gate.** ADR-025 selects a 416-pixel OpenVINO
+  monitoring profile derived from the same frozen checkpoint. Two corrected
+  production-path 570-frame runs reached 28.836 and 29.414 processed FPS,
+  with one `NO_HELMET` and one `NO_VEST` event each. A third run with real
+  Console/Web/TTS alerts reached 26.000 FPS, with six delivered and none failed.
+  The Streamlit service was restarted on port 8502. Full suite: 780 passed.
+  Camera/RTSP throughput, browser display cadence, broad-scene accuracy and
+  long-run resource stability are not verified; P9-C overall remains PARTIAL.
+  See the [report](reports/phase-09/P9_CPU_24FPS_REPORT.md) and
+  [worklog](worklogs/2026/10/2026-10-07-07-cpu-24fps-openvino.md).
+
+- **P9-C.3i inference worker/session lifecycle isolation
+  (2026-10-07): PASS as an attribution increment; P9-C overall
+  PARTIAL.** Fresh 20-minute T0/T1 direct/persistent inference were
+  near stable at +0.00144/+0.00231 MiB/cycle. T2 fresh inference
+  worker per cycle without `MonitoringService` and T3 formal H0 grew
+  at +0.10446/+0.10432 MiB/cycle. Conditional T4 retained H0
+  session churn but routed inference through one persistent thread;
+  it fell to +0.00331 MiB/cycle and a flat late window. Real inference
+  × fresh worker-thread lifecycle is strongly supported for this
+  20-minute growth; a material MonitoringService-specific increment
+  is not supported. Retained owner and production unbounded leak are
+  **NOT CONFIRMED**. Five semantic/exit gates, 762 tests and frozen
+  checks passed. **P9-C.4 and P9-D/E/F remain unauthorized.** See the
+  [P9-C.3i report](reports/phase-09/P9C3I_INFERENCE_WORKER_LIFECYCLE_REPORT.md)
+  and [worklog](worklogs/2026/10/2026-10-07-02-p9c3i-worker-lifecycle.md).
+
+- **P9-C.3h real-inference downstream boundary isolation
+  (2026-10-07): PASS as an attribution increment; P9-C overall
+  PARTIAL.** H0/H1/H2 fresh 10-minute screens completed 72/68/69
+  real-inference, precomputed-track cycles at +0.10190/+0.10508/
+  +0.10653 MiB/cycle. H0 omitted formal Association/Compliance/
+  Event/SQLite/Snapshot/Alert yet already showed RP-scale growth.
+  A fresh matched 20-minute H0/RP pair completed 142/150 cycles,
+  with +0.10318/+0.10255 MiB/cycle and continuing late slopes.
+  **FIRST MATERIAL DOWNSTREAM DIVERGENCE: NONE; H0 already at RP
+  scale.** Formal business downstream is not required for this
+  20-minute cached-frame rise; the P9-C.3g inference × downstream
+  wording is superseded as a causal requirement. The specific
+  inference/MonitoringService lifecycle owner and production
+  unbounded leak remain **NOT CONFIRMED**. Full suite 755 PASS;
+  frozen identities unchanged. **P9-C.4 and P9-D/E/F remain
+  unauthorized.** See the [P9-C.3h report](reports/phase-09/P9C3H_INFERENCE_DOWNSTREAM_BOUNDARY_REPORT.md)
+  and [worklog](worklogs/2026/10/2026-10-07-01-p9c3h-downstream-boundary.md).
+
+- **P9-C.3g lean inference × tracker interaction matrix
+  (2026-10-04): PASS as an attribution increment; P9-C overall
+  PARTIAL.** Four fresh 20-minute cached-frame full-downstream controls
+  completed PP/PR/RP/RR at 150/150/149/148 cycles. All one-cycle
+  business signatures matched; 597 events, SQLite rows and verified
+  snapshots, and 1,194 alert deliveries had zero failures. The
+  2–20-minute RSS slopes were +0.01245/+0.00156/+0.10231/+0.10512
+  MiB/cycle. Real inference has a strong increment with either tracker;
+  real ByteTrack does not. **Inference × downstream interaction is
+  SUPPORTED; tracker × downstream NOT SUPPORTED as a material positive
+  effect; inference × tracker WEAK.** Cached-frame RP/RR growth means
+  fresh source/decode is not required over this control. Production
+  unbounded leak and retained owner remain **NOT CONFIRMED**. Full suite
+  742 PASS; frozen identities and package inventory unchanged.
+  **P9-C.4 and P9-D/E/F remain unauthorized; further attribution
+  decision required.** See the [P9-C.3g report](reports/phase-09/P9C3G_LEAN_INTERACTION_MATRIX_REPORT.md)
+  and [worklog](worklogs/2026/10/2026-10-04-01-p9c3g-lean-interaction-matrix.md).
+
+- **P9-C.3f final lean real full-graph boundedness confirmation
+  (2026-09-27): PARTIAL / SUSPICIOUS_CONTINUED_GROWTH.** A fresh
+  process ran the real MP4 → YOLO → ByteTrack → association →
+  compliance/event → SQLite/snapshot → Console/Web graph for 3602.625 s
+  with only an external resource sampler. It completed 692 × 47 =
+  32,524 frames, 692 unique events and verified snapshots, and 1,384
+  successful alerts. Worker/source exit, four post-run Dashboard pages,
+  731 tests, frozen hashes and package inventory passed. Warm RSS
+  window means rose 469.88 → 483.40 → 496.78 → 510.16 → 521.17 MiB;
+  30–60 min slope was +1.2200 MiB/min. Resource growth is reproduced
+  under lean real full-graph observation, but a retained owner and
+  unbounded production memory leak are **NOT CONFIRMED**. **P9-C overall
+  remains PARTIAL. P9-D/E/F and P9-C.4 are not authorized; further
+  decision is required.** See the [P9-C.3f report](reports/phase-09/P9C3F_FINAL_LEAN_FULL_GRAPH_STABILITY_REPORT.md)
+  and [worklog](worklogs/2026/09/2026-09-27-04-p9c3f-final-lean-full-graph.md).
+
+- **P9-C.3e N-harness bridge attribution (2026-09-27): PASS /
+  DIAGNOSTIC HARNESS CONTRIBUTION SUPPORTED.** S4/H one-cycle business
+  semantics matched, including compliance, event frame, SQLite,
+  snapshot SHA256 and alerts. H reused N's observation assembly for
+  150 cycles/events in 20 minutes and reproduced sustained RSS
+  +0.03127 MiB/cycle, with traced slope +0.05637 MiB/min against
+  historical N +0.0238 and +0.0566. Matched lean J also ran 150
+  cycles/events in 20 minutes at +0.00408 MiB/cycle; its 10–20-minute
+  slope was +0.02986 MiB/min versus H +0.22384. N remains a
+  reproducible instrumented observation. No single diagnostic
+  container leak or production downstream leak is confirmed.
+  **At the P9-C.3e checkpoint**, P9-C overall was PARTIAL and lean real
+  full-graph boundedness remained unverified. P9-C.3f was the next
+  authorized confirmation at that time; its outcome is recorded above.
+  P9-C.4 and P9-D/E/F remain unauthorized. See the
+  [P9-C.3e report](reports/phase-09/P9C3E_N_HARNESS_BRIDGE_REPORT.md)
+  and [worklog](worklogs/2026/09/2026-09-27-03-p9c3e-n-harness-bridge.md).
+
+- **P9-C.3d Monitoring lifecycle/downstream isolation (2026-09-27):
+  PASS / N RESIDUAL NOT REPRODUCED.** S0 ran 150 formal
+  MonitoringService cycles in 20 minutes with 7050 cached real frames,
+  balanced workers/sources and +0.000344 MiB/cycle warm RSS. S1–S4
+  each ran 75 cycles in separate processes with slopes −0.00302,
+  +0.000827, +0.00197 and +0.00464 MiB/cycle. S4 completed 75 SQLite
+  rows, 75 snapshots and 150 delivered alerts, but did not reproduce
+  historical N +0.0238 MiB/cycle. No material first stage divergence
+  was evidenced; conditional 20-minute and tracker interaction pairs
+  were therefore not run. N's observed/recorded harness differs from
+  the lean staged control. **P9-C overall PARTIAL; production full-graph
+  bound and unbounded-leak claim both unproven; P9-C.4 and P9-D/E/F
+  unauthorized.** See the
+  [P9-C.3d report](reports/phase-09/P9C3D_DOWNSTREAM_INTERACTION_ATTRIBUTION_REPORT.md)
+  and [worklog](worklogs/2026/09/2026-09-27-02-p9c3d-monitoring-downstream-isolation.md).
+
+- **P9-C.3c ByteTrack native lifecycle attribution (2026-09-27): PASS /
+  NEITHER CLEARLY.** P persistent update, Q construct/reset only and R
+  combined tracker-only each completed 149 paced cycles over 20 minutes.
+  Warm RSS slopes were +0.00155, +0.00080 and +0.00168 MiB/cycle,
+  respectively, far below L−N's directional +0.0192 MiB/cycle gap.
+  Their late windows approached a plateau; no isolated path qualified
+  for a 60-minute boundedness extension. The prior L/N reduction remains
+  a valid directional observation, but P/Q/R do not identify a standalone
+  tracker leak. Tracker/downstream interaction and N residual remain open.
+  **P9-C overall PARTIAL; full-graph boundedness unproven; P9-C.4 and
+  P9-D/E/F unauthorized.** See the
+  [P9-C.3c report](reports/phase-09/P9C3C_TRACKER_NATIVE_ATTRIBUTION_REPORT.md)
+  and [worklog](worklogs/2026/09/2026-09-27-01-p9c3c-tracker-native-attribution.md).
+
+- **P9-C.3b inference/tracker isolation (2026-09-26): PASS / CONTRIBUTION
+  NARROWED.** M ran real inference on all 47 cached MP4 frames for 125
+  cycles/20.125 minutes; its warm RSS slope was +0.0470 MiB/min and
+  +0.00736 MiB/cycle, weak as a standalone explanation of K−L.
+  Independently reverified real tracks passed L/N one-cycle semantic
+  equivalence. N ran 150 paced cycles/events in 20 minutes with the real
+  downstream graph; RSS was +0.1779 MiB/min and +0.0238 MiB/cycle versus
+  L's +0.3211 and +0.0430. Real ByteTrack update/reset is a supported
+  contributor, while non-tracker residual and inference/downstream
+  interaction remain unresolved. **Unbounded full-graph leak is not
+  confirmed; P9-C overall remains PARTIAL.** P9-C.4 and P9-D/E/F remain
+  unauthorized. See the [P9-C.3b report](reports/phase-09/P9C3B_INFERENCE_TRACKER_ISOLATION_REPORT.md)
+  and [worklog](worklogs/2026/09/2026-09-26-03-p9c3b-inference-tracker-isolation.md).
+
+- **P9-C.3a precomputed-detection control (2026-09-26): PASS /
+  MULTI-CONTRIBUTOR PATTERN.** The real 47-frame fixture contains 77
+  independently reverified detections. One-cycle K/L downstream semantics
+  matched. Over 20 minutes, L completed 148 cycles/events versus K's 150;
+  its RSS slope was +0.3211 versus +0.9737 MiB/min (about 67% lower),
+  with nearly equal Python-traced slopes. Real inference or its downstream
+  interaction contributes to K's larger growth, while residual L growth
+  remains unexplained. This does not prove a YOLO leak or full-graph
+  boundedness. **P9-C overall remains PARTIAL; P9-C.4 and P9-D/E/F are not
+  authorized.** Full regression: 693 PASS. See the
+  [P9-C.3a report](reports/phase-09/P9C3A_PRECOMPUTED_DETECTION_CONTROL_REPORT.md)
+  and [worklog](worklogs/2026/09/2026-09-26-02-p9c3a-precomputed-detection-control.md).
+
+- **P9-C.3 resource growth attribution (2026-09-26): PARTIAL / INCONCLUSIVE.** The
+  full-chain 30-minute baseline reproduced rising MP4 RSS; Python-traced
+  memory and alert idempotency state account for only a small fraction. A
+  source-only 60-minute control reached a near-plateau in its final 30
+  minutes, so it cannot establish a bound for the separate full-chain rise.
+  A 20-minute predecoded-frame full-chain control still rose +0.9737
+  MiB/min, so repeated source decoding is not the sole owner. The precise
+  full-chain allocation owner remains unknown. P9-C remains PARTIAL;
+  P9-D/E/F remain unauthorized. See the
+  [P9-C.3 attribution report](reports/phase-09/P9C3_RESOURCE_GROWTH_ATTRIBUTION_REPORT.md).
+
+- **Current P9-C.2 long-run result (2026-09-25): PARTIAL.** The bounded
+  observer passed its 20,000-record cap test. USB Camera 0 completed an
+  uninterrupted 60-minute chain and 40-second restart with consistent
+  SQLite/evidence/alerts and warm RSS plateau (+0.0484 MiB/min). A separate
+  60-minute MP4 process completed 675 full 47-frame cycles with consistent
+  evidence, but its warm RSS rose monotonically (+1.2478 MiB/min) without a
+  proven owner. **P9-C.3 RESOURCE LEAK ATTRIBUTION REQUIRED; P9-C overall is
+  not PASS; P9-D/E/F are not authorized.** P9-A, P9-B and P9-C.1 remain PASS.
+  See [P9-C.2 report](reports/phase-09/P9C2_LONG_RUN_STABILITY_REPORT.md)
+  and [memory attribution](reports/phase-09/P9C2_MEMORY_ATTRIBUTION_REPORT.md).
+
+- P9-B.3 human closure (2026-09-25): the user replied `pass` to the USB
+  Camera 0 Realtime Monitoring visual checklist. **HUMAN VISUAL REVIEW PASS;
+  G1–G13 PASS; P9-B RESULT: PASS.** M-008/M-009/M-010 satisfy the locked
+  Charter acceptance criteria. The cold-inference Stop timeout and complex
+  scene coverage remain documented limitations. **P9-C NOT AUTHORIZED**;
+  Phase 9 final delivery acceptance remains pending. See the
+  [P9-B.3 Charter gate report](reports/phase-09/P9B3_CHARTER_GATE_READJUDICATION_REPORT.md).
+
+- P9-B.3 Charter re-adjudication (2026-09-25): the locked M-009/M-010 and
+  M-008 criteria are satisfied by the existing real Camera, tracking,
+  association and failure evidence. G8 and G10 are PASS on their stated
+  technical criteria; controlled complex scenes and a five-second cold Stop
+  bound are not locked acceptance clauses. A fresh full suite passed 684/684.
+  **P9-B is READY FOR HUMAN VISUAL SIGN-OFF**, with user confirmation still
+  pending; do not mark final P9-B PASS or Charter statuses accepted yet.
+  P9-C is not authorized. See the
+  [P9-B.3 Charter gate report](reports/phase-09/P9B3_CHARTER_GATE_READJUDICATION_REPORT.md).
+  Handover: [P9-B.3 worklog](worklogs/2026/09/2026-09-25-04-p9b3-charter-gate-readjudication.md).
+
+- P9-B.2 follow-up (2026-09-25): real browser inspection of USB Camera 0
+  showed live preview, growing metrics, `NO_HELMET`/`NO_VEST` events,
+  verified evidence and clean Stop/restart. Five processed-frame USB cycles
+  exited normally, and a 103-frame scene now has per-frame tracking and PPE
+  candidate geometry. The post-read Stop race was fixed. A Stop requested
+  during noninterruptible cold inference can still exceed the five-second
+  join, and controlled crossing/occlusion/re-entry or ambiguous multi-person
+  evidence is unavailable. **P9-B remains PARTIAL (G8/G10); P9-C NOT READY.**
+  See [stop lifecycle](reports/phase-09/P9B_MONITORING_STOP_LIFECYCLE_REPORT.md)
+  and [M-008 assessment](reports/phase-09/P9B_M008_FINAL_ACCEPTANCE_REPORT.md).
+
+- Phase 9 P9-B Full Chain Validation & Acceptance is `PARTIAL / HUMAN REVIEW
+  PENDING` after authorized P9-B.1 (2026-09-25). The first real MP4 run
+  exposed Ultralytics' lazy `lap` installation. The unpublished
+  `FINAL-DEMO-RUNTIME-001` lock now pins `lap==0.5.13`; a second clean
+  Python 3.12.1 environment repeated the real 47-frame MonitoringService
+  chain without package drift, so the runtime is `RE-FROZEN / VERIFIED
+  STABLE` for the exercised paths. The real MP4 produced a complete
+  `PPE_UNKNOWN` trace. A 30-second USB full-chain run processed 143 frames
+  and generated real `NO_HELMET` and `NO_VEST` Camera events, SQLite rows,
+  verified snapshots and alerts. The same clean MP4 database reached four
+  Dashboard pages, Analytics, Report and Agent. Controlled complex scenes,
+  a sustained construction-site violation clip, live-page visual review and
+  short cold-start stop reliability remain open. P9-C is not ready.
+  Handover: [P9-B.1 worklog](worklogs/2026/09/2026-09-25-03-p9b1-runtime-repair.md).
+  See [P9-B report](reports/phase-09/P9B_FULL_CHAIN_VALIDATION_REPORT.md).
+
+- Phase 9 P9-A Final Audit & Runtime Freeze: `PASS / FINAL-DEMO-RUNTIME-001
+  FROZEN / VALIDATED` on Windows 11 AMD64, Python 3.12.1, CPU only at its
+  completion. Phase 8 remains FINAL RELEASED. P9-B was subsequently
+  authorized; Phase 9 final Charter acceptance is pending. See the
+  [P9-A.1 runtime freeze report](reports/phase-09/P9A_FINAL_DEMO_RUNTIME_FREEZE_REPORT.md)
+  and [P9-A audit](reports/phase-09/P9A_FINAL_AUDIT_REPORT.md).
+
 - Phase 8 COMPLETE / FINAL RELEASED — LLM & Agent. P8-0 Architecture and
   Contract Freeze is
   `COMPLETE / HUMAN REVIEW PASS / CHECKPOINTED`. P8-1 Deterministic Safety
@@ -94,7 +343,7 @@ reviews; the statuses below reflect the current accepted records.
   `phase-8-final-integration-complete`. M-021, M-022 and M-023 remain
   `待实现` in the locked Charter; durable audit storage, memory, autonomous
   loops and real provider planning requests remain not implemented, and
-  Phase 9 is not started.
+  Phase 9 P9-A is in progress; P9-B is not authorized.
 - Phase 7 COMPLETE / RELEASED — Web & Alerts. Base commit
   `a30b73c080c18d010fbaa08642868e86acb68022` carries annotated tag
   `phase-7-web-alert-platform-complete`; final release closure publishes
@@ -103,8 +352,8 @@ reviews; the statuses below reflect the current accepted records.
   service-owned MP4/USB/RTSP monitoring loop and the Streamlit realtime page;
   MP4, USB Camera, native TTS, browser Streamlit and controlled local RTSP
   validation all passed. M-007 annotated demo video is implemented, validated
-  on a real 47/47-frame MP4 and human-reviewed PASS. M-007 remains `待实现`
-  in the locked Charter pending Phase 9 acceptance. Remote RTSP reconnect
+  on a real 47/47-frame MP4 and human-reviewed PASS. M-007 Charter final
+  acceptance remains pending in Phase 9. Remote RTSP reconnect
   behavior, reconciliation automation and retention remain pending.
   M-015 through M-020 remain `待实现` in the locked Charter until full
   acceptance.
@@ -125,7 +374,7 @@ reviews; the statuses below reflect the current accepted records.
   `6da6213f0cc541765f231c81b4264a98f01d5f4a`; the current documentation is
   now synchronized to `COMPLETE / RELEASED`.
 - Phase 4 remains `Offline Inference COMPLETE` for its released offline scope.
-- Current next allowed step: `PHASE 9 AUTHORIZATION / NOT STARTED / DO NOT
+- Current next allowed step: `P9-B PARTIAL / P9-C NOT READY / DO NOT
   START OR IMPLEMENT DURABLE AUDIT STORE, MEMORY, AUTONOMOUS LOOP OR REAL
   PROVIDER PLANNING CALLS WITHOUT NEW AUTHORIZATION`.
 
@@ -425,7 +674,8 @@ reviews; the statuses below reflect the current accepted records.
   metadata artifacts and rollback. A frozen-checkpoint CPU run processed
   47/47 frames into a 47-frame 1280x720 MP4 with SHA256
   `293a51688d0f34170abbe9e104a1b4e31d679d072a81bf71eed6d0c9a45e8949`.
-  The Charter M-007 status remains `待实现`; the authorized Phase 7 release
+  M-007 is implemented, real-MP4 validated and human-reviewed; Charter final
+  acceptance remains pending in Phase 9. The authorized Phase 7 release
   closure committed and published the reviewed implementation.
 - Phase 1 Data remains `实现中` in the Master Plan. M-001, M-002 and M-003
   remain `待实现` in the Charter; completed data substeps are not a claim of
@@ -597,13 +847,15 @@ reviews; the statuses below reflect the current accepted records.
 
 ### Deferred MUST ownership
 
-- M-007 annotated video rendering: `待实现`; the tool design is complete at
-  `docs/designs/phase-07/PHASE_7_M007_ANNOTATED_DEMO_VIDEO_DESIGN.md` and the
-  implementation passed one real 47/47-frame MP4 validation. Human review and
-  Phase 9 final acceptance remain pending. Phase 7 owns delivery and Phase 9
-  owns final Charter acceptance.
-- M-008 Camera/RTSP: `待实现`; Phase 7 live-input/real-time monitoring
-  integration owns delivery, Phase 9 owns final Charter acceptance.
+- M-007 annotated video rendering: `IMPLEMENTED / REAL MP4 RUNTIME PASS /
+  HUMAN REVIEW PASS / CHARTER FINAL ACCEPTANCE PENDING IN PHASE 9`. The design
+  is at `docs/designs/phase-07/PHASE_7_M007_ANNOTATED_DEMO_VIDEO_DESIGN.md`;
+  the implementation passed real 47/47-frame MP4 validation. Phase 7 owns
+  delivery and Phase 9 owns final Charter acceptance.
+- M-008 Camera/RTSP: `已经实现 / CHARTER ACCEPTANCE PASS IN P9-B`;
+  Phase 7 live-input/real-time monitoring integration owns delivery, and
+  Phase 9 recorded final M-008 Charter acceptance after the user's visual
+  PASS. This does not claim final acceptance of Phase 9 as a whole.
 - Neither requirement is an Extension. ADR-019 clarifies the assignment;
   Charter definitions and acceptance criteria remain unchanged.
 - Phase 4 Offline Inference completion does not set P4-G3 to PASS or complete
@@ -698,9 +950,21 @@ reviews; the statuses below reflect the current accepted records.
 
 ## Next Allowed Step
 
-`PHASE 9 AUTHORIZATION / NOT STARTED / DO NOT START OR IMPLEMENT DURABLE AUDIT
-STORE, MEMORY, AUTONOMOUS LOOP OR REAL PROVIDER PLANNING CALLS WITHOUT NEW
-AUTHORIZATION`.
+`P9-A PASS / P9-B PASS / P9-C.1 PASS / P9-C.2 PARTIAL /
+P9-C.3 PARTIAL / P9-C.3a–e PASS / P9-C.3f PARTIAL / P9-C.3g PASS /
+P9-C.3h PASS AS ATTRIBUTION INCREMENT / P9-C.3i PASS AS ATTRIBUTION
+INCREMENT / P9-C OVERALL PARTIAL /
+P9-D/E/F NOT AUTHORIZED`. The 60-minute lean full graph run reproduced
+sustained RSS growth. The staged cached-frame controls found RP-scale
+growth already in H0. P9-C.3i then reproduced that growth with real
+inference in a fresh thread per cycle, without MonitoringService; a
+persistent inference thread collapsed the rate even while H0 sessions
+continued. The next minimal proposed step is separately authorized
+thread-lifecycle boundedness/native-runtime attribution. No retained
+production owner or unbounded leak is confirmed. P9-C.4 and P9-D/E/F
+are not authorized.
+Durable audit store, agent memory, autonomous loops and real provider
+planning calls remain outside authorized Phase 9 work.
 
 P8-0, P8-1, P8-2, P8-3 and P8-4 are human-reviewed PASS. P8-5 implements one
 OpenAI-compatible provider transport behind the frozen P8-4 boundary and
@@ -741,4 +1005,71 @@ projection path; it is `IMPLEMENTATION COMPLETE / HUMAN REVIEW PASS`.
 Phase 8 final integration is `FINAL RELEASED` under
 `phase-8-final-integration-complete`. Durable audit storage, memory,
 autonomous loops and real provider planning execution remain not implemented,
-and Phase 9 has not started. M-021, M-022 and M-023 remain `待实现`.
+and Phase 9 P9-A is PASS while P9-B remains PARTIAL. M-021,
+M-022 and M-023 remain `待实现`.
+# P9-D UI/UX polish — 2026-10-07
+
+P9-D is **PARTIAL / AWAITING HUMAN UI REVIEW**. Seven formal Streamlit pages now use a shared Chinese presentation system. Empty-data AppTests and the full repository suite pass (`771 passed`); preflight, demo check, compileall, pip check, and diff check pass. The local browser displayed the existing 2026-09-23 event. Exact 1366×768 and 1920×1080 review and a completed UI MP4 demo remain open. P9-C remains **PARTIAL / FROZEN**, with no resource fix claimed. See [P9-D report](reports/phase-09/P9D_UI_UX_POLISH_REPORT.md) and [worklog](worklogs/2026/10/2026-10-07-01-p9d-ui-polish.md).
+## 2026-10-07 P9-D follow-up: reflective vest confirmation
+
+The user authorized ADR-024, a targeted `NO_VEST` temporal confirmation repair. The supplied 570-frame MP4 now produces the previously missing `NO_VEST` event plus the existing `NO_HELMET` event in an isolated full-chain smoke; both persisted with verified evidence and delivered alerts. Full suite: `773 passed`. This focused fix is **PASS for the supplied video**, with broader false-positive evaluation open. The prior P9-D UI status remains PARTIAL pending human responsive/demo review, and P9-C remains PARTIAL/FROZEN. See [repair report](reports/phase-09/P9D_VEST_CONFIRMATION_FIX_REPORT.md) and [handover](worklogs/2026/10/2026-10-07-02-vest-confirmation-repair.md).
+
+## 2026-10-07 — AI report and assistant presentation follow-up
+
+- Recognized Agent statistics display as Chinese event counts, types, statuses, and times. Report and assistant retain separate results across navigation.
+- Focused Web boundary and page tests: 22 passed. Browser result-state visual review remains open. P9-D stays PARTIAL; P9-C is unchanged.
+- [Worklog](worklogs/2026/10/2026-10-07-03-agent-result-pages.md).
+
+## 2026-10-07 — AI report body localization
+
+- Corrected the report page's remaining English fallback-template statements and recommendation text in the presentation layer. A fresh six-event browser report showed Chinese findings and three Chinese priority recommendations.
+- Focused Web and page tests: 23 passed. P9-D remains PARTIAL; no report contract, provider or event data changed.
+- [Worklog](worklogs/2026/10/2026-10-07-04-report-localization.md).
+
+## 2026-10-07 — Realtime monitoring display cadence
+
+- Monitoring preview fragment refreshes every 0.3 seconds instead of every 1.0 second; start/stop no longer request a redundant full rerun.
+- A fresh localhost browser run processed all 47 frames of the short MP4 and displayed the preview while frame counts advanced. Focused regression: 22 passed.
+- This improves display cadence only. The measured hot CPU inference baseline is about 7.3 FPS on the supplied 1280×720 MP4; model/runtime configuration and the P9-C resource status are unchanged.
+- [Report](reports/phase-09/P9D_MONITORING_REFRESH_REPORT.md) and [worklog](worklogs/2026/10/2026-10-07-05-monitoring-refresh.md).
+
+## 2026-10-07 — Processed-frame live preview
+
+- Monitoring now draws frozen-class detection labels/boxes on a copy of each fully processed frame and publishes the newest JPEG to a session-tokenized loopback MJPEG stream. The Streamlit page mounts this image outside its statistics/event fragment, so later service-side frame-rate work does not require changing the page's 0.3-second refresh interval.
+- The 47-frame real-MP4 service smoke completed 47/47 frames with 77 detections and a changed annotated last-frame image. Stream/projection and adjacent pipeline tests: 26 passed. Browser visual replay is pending because browser control was unavailable.
+- This is a local-browser display path; remote browser access to the loopback preview is not verified. Frozen model, event schema and temporal rules are unchanged. P9-D UI review and P9-C resource work remain open.
+- [Report](reports/phase-09/P9D_PROCESSED_FRAME_STREAM_REPORT.md) and [worklog](worklogs/2026/10/2026-10-07-06-processed-frame-stream.md).
+
+## 2026-10-07 — API text language
+
+- Generated alert API messages for `NO_HELMET`, `NO_VEST`, and `PPE_UNKNOWN` are English. Chinese TTS speech remains intact through an event-type-specific spoken projection, satisfying M-017. Agent API fixed fields, errors, and responses were inspected and already English; Chinese input parsing and localized pages remain.
+- Focused regression: 23 passed. Full repository suite: 790 passed. Contract keys, enum values, and stored event schema are unchanged. [Report](reports/phase-09/P9D_API_ENGLISH_TEXT_REPORT.md); [worklog](worklogs/2026/10/2026-10-07-10-api-english-alerts.md).
+
+## 2026-10-07 — English page URL paths
+
+- Explicit Streamlit URL paths are `/Monitoring`, `/AI_Report`, and `/AI_Assistant` for the three pages shown by the user. Chinese sidebar labels and source filenames remain.
+- Focused tests: 21 passed. Local HTTP requests returned 200 on all three paths. [Report](reports/phase-09/P9D_ENGLISH_PAGE_PATHS_REPORT.md); [worklog](worklogs/2026/10/2026-10-07-11-english-page-paths.md).
+
+## 2026-10-08 — Chinese native toolbar and deployment chooser
+
+Native Streamlit toolbar/menu/deployment text now displays in Chinese using a project-owned presentation script. Browser verification confirmed both surfaces and rerun/open/close behavior; 19 focused tests passed. Streamlit package files are untouched. [Report](reports/phase-09/P9D_CHINESE_SHELL_REPORT.md); [handover](worklogs/2026/10/2026-10-08-01-chinese-streamlit-shell.md).
+
+## 2026-10-08 — DeepSeek report connection
+
+The AI report runtime optionally connects the existing provider client through a server-owned report-only application router. The page distinguishes configured/unconfigured settings and validated LLM output from template fallback. Official DeepSeek Flash uses non-thinking mode. The secure local startup helper is `scripts/start_deepseek_demo.ps1`. Relevant tests: 81 passed. Real provider acceptance is pending: the process and Windows user environment lacked all three expected variables during verification. [Report](reports/phase-09/P9D_DEEPSEEK_REPORT_INTEGRATION.md); [handover](worklogs/2026/10/2026-10-08-02-deepseek-report.md).
+
+## Latest increment: DeepSeek safety assistant (2026-10-08)
+
+Safety assistant ASK now supports configured provider planning and Chinese presentation of verified local query results, with request-bound scope and failure fallback. 90 targeted tests passed. See [report](reports/phase-09/P9D_DEEPSEEK_ASSISTANT_INTEGRATION.md). Overall acceptance status remains unchanged.
+
+## 2026-10-08 Local project LLM configuration
+
+The authorized project credential is stored only in ignored local configuration; safety assistant and reports share the server resolver. 35 targeted tests passed; loaded configuration and absence from tracked files verified. [Handover](worklogs/2026/10/2026-10-08-04-local-llm-config.md). Live provider response remains unverified in this increment.
+
+## 2026-10-08 Assistant repair
+
+Resolved provider configuration changes rebuild the assistant session. Real DeepSeek HTTP 200 and full assistant success / assistant_llm verified using temporary fixture data; 37 targeted tests passed. [Worklog](worklogs/2026/10/2026-10-08-05-assistant-config-refresh.md). Existing browser sessions should refresh and submit again.
+
+## Latest V1 completion increment (2026-10-08)
+
+Implemented the audit closure items at the user's request, excluding RTSP and long stability. New split R2 resolves the reviewed valid/test near duplicates; train bytes and original frozen assets unchanged. Quality charts and supplemental 80-image evaluation PASS. Real report on 52 persisted events returned LLM / non-degraded / grounded-valid; same-scope fallback verified. Deployment/recovery and demo/defense index are provided. [Completion report](reports/phase-09/V1_COMPLETION_REPORT.md), [deployment guide](V1_DEPLOYMENT_GUIDE.md), [demo index](V1_DEMO_AND_DEFENSE.md). No unrestricted final Charter acceptance or long-stability closure is asserted.

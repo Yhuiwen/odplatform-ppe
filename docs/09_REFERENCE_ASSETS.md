@@ -111,3 +111,20 @@ definitions, or explicit non-V1 scope.
 - API keys, `.env` files, credentials, and tokens: no copying or reuse.
 - If a real credential is discovered in the reference package, treat it as
   exposed and do not use it.
+
+## REF-003: Teacher ODPlatform archive (performance design reference)
+
+| Field | Value |
+| --- | --- |
+| Asset ID | REF-003 |
+| Asset Name | Teacher ODPlatform archive |
+| Provider | Teacher / course-provided, identified by the user |
+| Original Filename | `odplatform.zip` |
+| SHA-256 | `8044a78d64ed5bd9e2dad3ee130e28f1aa617f51b7d192aa991b0ee63957a527` |
+| Asset Type | Course reference implementation archive |
+| License / Permission Status | TO VERIFY; reference only, no redistribution permission established |
+| Repository Inclusion | NO |
+| Purpose | Performance architecture reference for frame capture, inference, and UI progress separation |
+| Allowed Usage | Read selected implementation ideas and independently implement within ODPlatform-PPE contracts |
+| Forbidden Usage | Copy source, models, credentials, data, or database into this repository |
+| Verification Status | ZIP SHA-256 computed on 2026-10-07; selected Python source entries read directly from archive without extraction |

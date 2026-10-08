@@ -1,5 +1,28 @@
 # Open Source Usage
 
+## Phase 9 Overview reference (2026-10-07)
+
+The [Worksite Safety Monitor](https://github.com/worksite-safety/worksite-safety-monitor)
+repository was consulted in REFERENCE mode for its general charts plus event
+grid dashboard structure. Its repository states AGPL-3.0-or-later and provides
+a [license file](https://github.com/worksite-safety/worksite-safety-monitor/blob/main/LICENSE).
+No source code, styles, data, images or assets were copied. The implementation
+uses the project's existing Streamlit components, Altair charting and persisted
+event repository. Existing VoxDroid and SiteGuard references remain as recorded
+below.
+
+## Realtime CPU backend (2026-10-07)
+
+OpenVINO 2025.2.0 is installed as a pinned package-manager dependency for the
+user-authorized realtime CPU profile (ADR-025). It executes an export of this
+project's frozen YOLO11 checkpoint through Ultralytics' public export/predict
+APIs. No OpenVINO source or third-party business code was copied. The local
+derived graph is ignored by Git and can be regenerated with
+`scripts/export_cpu_openvino.py`. Upstream documentation:
+https://docs.openvino.ai/2025/get-started/install-openvino/install-openvino-pip.html
+and https://docs.ultralytics.com/integrations/openvino/ . Distribution must
+continue to honor the existing Ultralytics AGPL-3.0 review boundary.
+
 ## Usage Modes
 
 | Mode | Meaning |

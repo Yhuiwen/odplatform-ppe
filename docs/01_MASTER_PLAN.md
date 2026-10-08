@@ -17,7 +17,7 @@
 | P6 | Compliance & Events | PPE 合规规则、时序判断、Event Engine | 已经实现（COMPLETE / RELEASED；tag `phase-6-compliance-event-engine-complete`） |
 | P7 | Web & Alerts | SQLite + Snapshot + TTS + Streamlit | 已经实现（COMPLETE / RELEASED；base tag `phase-7-web-alert-platform-complete`；final freeze tag `phase-7-release-freeze-complete`；M-007 implementation + real MP4 validation + human review PASS） |
 | P8 | LLM & Agent | LLM Report + Fallback + Basic Agent | 已经实现（COMPLETE / FINAL RELEASED；interim tag `phase-8-controlled-agent-complete`；release tag `phase-8-final-integration-complete`；P8-FI architecture/API/Web/E2E `HUMAN REVIEW PASS`；Charter M-021–M-023 仍待 Phase 9 acceptance） |
-| P9 | Integration & Delivery | 全链路测试、性能分析、文档、Demo、答辩交付 | 待实现 |
+| P9 | Integration & Delivery | 全链路测试、性能分析、文档、Demo、答辩交付 | P9-A PASS / FINAL-DEMO-RUNTIME-001 RE-FROZEN / VERIFIED STABLE；P9-B PASS / HUMAN VISUAL REVIEW PASS；P9-C.1 PASS；P9-C.2 PARTIAL / P9-C.3 PARTIAL / P9-C.3a PASS / MULTI-CONTRIBUTOR PATTERN；P9-C overall PARTIAL；P9-D/E/F NOT AUTHORIZED；Phase 9 Gate 与最终交付验收待完成 |
 
 ## 2. 阶段依赖
 

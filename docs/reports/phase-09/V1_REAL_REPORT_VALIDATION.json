@@ -1,0 +1,122 @@
+{
+  "status": "PASS",
+  "scope": "Actual SQLite events from 2026-09-01 through 2026-10-08 inclusive UTC",
+  "provider_status": "LLM",
+  "degraded": false,
+  "grounding_status": "valid",
+  "source_context_sha256": "ab908471cb2115ed6d6a19b7df5dfca8c04d87491869beed7f0cb76d353da8a1",
+  "report_response_sha256": "5f02e6f44db65a0ebd95c7f6763343afe85450db1f1bd45a4c07d48b290c614a",
+  "executive_summary": [
+    {
+      "claim_id": "EXEC-001",
+      "kind": "observation",
+      "statement": "The reporting period from 2026-09-01T00:00:00Z to 2026-10-08T23:59:59Z contains 52 persisted events, with the earliest at 2026-09-23T13:58:26Z and the latest at 2026-10-08T02:44:06Z.",
+      "fact_refs": [],
+      "metric_refs": [
+        "analytics.event_total_count",
+        "analytics.first_occurrence",
+        "analytics.last_occurrence"
+      ],
+      "event_refs": [],
+      "track_refs": [],
+      "source_refs": [],
+      "evidence_refs": [],
+      "numeric_claims": [
+        {
+          "metric_ref": "analytics.event_total_count",
+          "value": 52
+        }
+      ]
+    },
+    {
+      "claim_id": "EXEC-002",
+      "kind": "observation",
+      "statement": "Events by type are NO_HELMET 24, NO_VEST 20 and PPE_UNKNOWN 8.",
+      "fact_refs": [],
+      "metric_refs": [
+        "analytics.event_count.by_type.NO_HELMET",
+        "analytics.event_count.by_type.NO_VEST",
+        "analytics.event_count.by_type.PPE_UNKNOWN"
+      ],
+      "event_refs": [],
+      "track_refs": [],
+      "source_refs": [],
+      "evidence_refs": [],
+      "numeric_claims": [
+        {
+          "metric_ref": "analytics.event_count.by_type.NO_HELMET",
+          "value": 24
+        },
+        {
+          "metric_ref": "analytics.event_count.by_type.NO_VEST",
+          "value": 20
+        },
+        {
+          "metric_ref": "analytics.event_count.by_type.PPE_UNKNOWN",
+          "value": 8
+        }
+      ]
+    },
+    {
+      "claim_id": "EXEC-003",
+      "kind": "observation",
+      "statement": "Events by status are open 49, resolved 3, acknowledged 0 and dismissed 0.",
+      "fact_refs": [],
+      "metric_refs": [
+        "analytics.event_count.by_status.acknowledged",
+        "analytics.event_count.by_status.dismissed",
+        "analytics.event_count.by_status.open",
+        "analytics.event_count.by_status.resolved"
+      ],
+      "event_refs": [],
+      "track_refs": [],
+      "source_refs": [],
+      "evidence_refs": [],
+      "numeric_claims": [
+        {
+          "metric_ref": "analytics.event_count.by_status.acknowledged",
+          "value": 0
+        },
+        {
+          "metric_ref": "analytics.event_count.by_status.dismissed",
+          "value": 0
+        },
+        {
+          "metric_ref": "analytics.event_count.by_status.open",
+          "value": 49
+        },
+        {
+          "metric_ref": "analytics.event_count.by_status.resolved",
+          "value": 3
+        }
+      ]
+    },
+    {
+      "claim_id": "EXEC-004",
+      "kind": "observation",
+      "statement": "All 52 events have a persisted relative snapshot reference and none are missing evidence.",
+      "fact_refs": [],
+      "metric_refs": [
+        "analytics.evidence.available_count",
+        "analytics.evidence.missing_count"
+      ],
+      "event_refs": [],
+      "track_refs": [],
+      "source_refs": [],
+      "evidence_refs": [],
+      "numeric_claims": [
+        {
+          "metric_ref": "analytics.evidence.available_count",
+          "value": 52
+        },
+        {
+          "metric_ref": "analytics.evidence.missing_count",
+          "value": 0
+        }
+      ]
+    }
+  ],
+  "fallback_status": "TEMPLATE_FALLBACK",
+  "fallback_reason": "PROVIDER_MALFORMED_RESPONSE",
+  "fix": "Bounded report max_tokens=16384; previous response truncated at 19967 bytes"
+}

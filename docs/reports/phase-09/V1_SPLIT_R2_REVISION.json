@@ -1,0 +1,15 @@
+{
+  "version": "split-revision-v1",
+  "source_payload_sha256": "bc762204e2305164cfdbc492d15269b84c4ce4ff3cfdcdc805baf84c5616237b",
+  "revised_payload_sha256": "c08aff491e086fb8f97ebda28d1db738ab2fee6d4ea1c8959fa2e3cb1f0d12a3",
+  "moves_from_test_to_valid": [
+    "test/images/Movie-on-10-31-22-at-10_08-AM_mov-24_jpg.rf.c50014f3510a484e5bd565460fd0fd5c.jpg",
+    "test/images/youtube-198_jpg.rf.e89faeb9765c6bd6cece5434d140f4af.jpg",
+    "test/labels/Movie-on-10-31-22-at-10_08-AM_mov-24_jpg.rf.c50014f3510a484e5bd565460fd0fd5c.txt",
+    "test/labels/youtube-198_jpg.rf.e89faeb9765c6bd6cece5434d140f4af.txt"
+  ],
+  "train_byte_identical": true,
+  "reason": "Confirmed neighboring video frames across valid/test",
+  "method": "Move test neighbors to validation; never move validation-tuned data into test",
+  "remaining_cross_split_candidates": 0
+}
