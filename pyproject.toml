@@ -8,7 +8,9 @@ version = "0.1.0"
 description = "YOLO11-based construction PPE compliance and alert platform"
 readme = "README.md"
 requires-python = ">=3.10"
-# Runtime dependencies are planned centrally in requirements.txt.
+# Package metadata is intentionally dependency-free. Install the complete
+# final-demo runtime from locks/FINAL-DEMO-RUNTIME-001/requirements.txt;
+# `pip install .` alone is not a complete application installation.
 dependencies = []
 
 [tool.setuptools.packages.find]

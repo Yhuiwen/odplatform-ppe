@@ -13,9 +13,9 @@ from core.schemas.events import PersistedEvent, format_utc_timestamp
 __all__ = ["AlertService"]
 
 _ALERT_TEXT = {
-    ComplianceEventType.NO_HELMET: "未佩戴安全帽",
-    ComplianceEventType.NO_VEST: "未穿反光背心",
-    ComplianceEventType.PPE_UNKNOWN: "PPE 状态未知",
+    ComplianceEventType.NO_HELMET: "No hard hat detected",
+    ComplianceEventType.NO_VEST: "No reflective vest detected",
+    ComplianceEventType.PPE_UNKNOWN: "PPE status unknown",
 }
 
 

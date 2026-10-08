@@ -384,6 +384,8 @@ class EventQuery:
     event_type: ComplianceEventType | None = None
     status: EventStatus | None = None
     source: str | None = None
+    source_group: str | None = None
+    sort_order: str = "desc"
     limit: int = 100
     offset: int = 0
 
@@ -424,6 +426,11 @@ class EventQuery:
             if not isinstance(self.source, str) or not self.source.strip():
                 raise ValueError("source must be a non-empty string or None")
             object.__setattr__(self, "source", self.source.strip())
+        if self.source_group is not None:
+            if self.source_group not in {"mp4", "rtsp"} and re.fullmatch(r"usb\d+", self.source_group) is None:
+                raise ValueError("source_group must be mp4, rtsp or usb{id}")
+        if self.sort_order not in {"asc", "desc"}:
+            raise ValueError("sort_order must be asc or desc")
         if isinstance(self.limit, bool) or not isinstance(self.limit, int):
             raise TypeError("limit must be an integer")
         if not 1 <= self.limit <= 1000:

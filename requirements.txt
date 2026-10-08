@@ -1,7 +1,10 @@
 # Runtime planned dependencies for later phases.
 # Phase 0 does not require installing the heavy runtime stack.
 ultralytics>=8.3,<9
-opencv-python>=4.10,<5
+openvino==2025.2.0
+# Ultralytics ByteTrack matching imports lap lazily and otherwise auto-installs it.
+lap==0.5.13
+opencv-python==5.0.0.93
 pydantic>=2.9,<3
 PyYAML>=6.0,<7
 streamlit>=1.39,<2

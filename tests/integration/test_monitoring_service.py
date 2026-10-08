@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime, timezone
+from threading import Event, Thread
 from types import SimpleNamespace
 
 from PIL import Image
@@ -192,6 +193,8 @@ def _service(
     source,
     *,
     event_loader=None,
+    preview_renderer=None,
+    preview_sink=None,
 ) -> tuple[MonitoringService, _Alerts]:
     alerts = _Alerts()
 
@@ -223,6 +226,8 @@ def _service(
         alert_service=alerts,
         source_factory=lambda request: source,
         event_loader=event_loader or persisted,
+        preview_renderer=preview_renderer,
+        preview_sink=preview_sink,
     )
     return service, alerts
 
@@ -248,6 +253,30 @@ def test_monitoring_service_processes_frames_in_order_and_releases_source() -> N
     assert status.tracks == 2
     assert status.events_generated == 1
     assert alerts.events[0].snapshot == "20260923/event_EVT-monitor-01.jpg"
+
+
+def test_completed_frame_is_rendered_and_published_after_processing() -> None:
+    published = []
+
+    class Renderer:
+        def render(self, frame, detections):
+            assert detections[0].frame_id == frame.frame_id
+            result = frame.image.copy()
+            result.putpixel((0, 0), (255, 0, frame.frame_id))
+            return result
+
+    service, _ = _service(
+        _FakeSource([_frame(0), _frame(1)]),
+        preview_renderer=Renderer(),
+        preview_sink=lambda frame_id, image: published.append(
+            (frame_id, image.getpixel((0, 0)))
+        ),
+    )
+    service.start(MonitoringSourceRequest(SourceType.MP4, "test.mp4"))
+    assert service.wait(timeout=2)
+    assert published == [(0, (255, 0, 0)), (1, (255, 0, 1))]
+    assert service.status().latest_frame.getpixel((0, 0)) == (255, 0, 1)
+    assert service.status().frames_processed == 2
 
 
 def test_monitoring_service_reports_source_failure_and_closes() -> None:
@@ -345,3 +374,85 @@ def test_monitoring_service_preserves_existing_event_identity(tmp_path) -> None:
     assert service.wait(timeout=2)
 
     assert repository.get("EVT-monitor-01").id == "EVT-monitor-01"
+
+
+def test_stop_during_read_skips_inference_and_closes_once() -> None:
+    entered = Event()
+    release = Event()
+
+    class BlockingSource(_FakeSource):
+        close_count = 0
+
+        def read(self):
+            entered.set()
+            assert release.wait(timeout=3)
+            return super().read()
+
+        def close(self):
+            self.close_count += 1
+            super().close()
+
+    source = BlockingSource([_frame(0)])
+    service, alerts = _service(source)
+    service.start(MonitoringSourceRequest(SourceType.MP4, "test.mp4"))
+    assert entered.wait(timeout=2)
+    stopped = []
+    caller = Thread(target=lambda: stopped.append(service.stop(timeout=2)))
+    caller.start()
+    assert service._stop_event.wait(timeout=1)
+    release.set()
+    caller.join(timeout=3)
+    assert not caller.is_alive()
+    assert service.wait(timeout=1)
+    assert stopped[0].state is MonitoringState.STOPPED
+    assert stopped[0].error_code is None
+    assert service.status().frames_processed == 0
+    assert source.read_frame_ids == [0]
+    assert source.close_count == 1
+    assert alerts.events == []
+    assert service._thread is not None and not service._thread.is_alive()
+    assert service.stop().state is MonitoringState.STOPPED
+    assert source.close_count == 1
+
+
+def test_stop_idle_and_restart_after_clean_stop() -> None:
+    first = _FakeSource([_frame(0)])
+    second = _FakeSource([_frame(0)])
+    service, _ = _service(first)
+    sources = iter((first, second))
+    service.source_factory = lambda _request: next(sources)
+    assert service.stop().state is MonitoringState.IDLE
+    request = MonitoringSourceRequest(SourceType.MP4, "test.mp4")
+    for source in (first, second):
+        service.start(request)
+        assert service.wait(timeout=2)
+        assert source.closed
+        assert service.stop().state is MonitoringState.COMPLETED
+    assert service._thread is not None and not service._thread.is_alive()
+
+
+def test_active_inference_timeout_is_observable_then_worker_exits() -> None:
+    entered = Event()
+    release = Event()
+
+    class BlockingInference(_Inference):
+        def infer_frame(self, frame, *, source):
+            entered.set()
+            assert release.wait(timeout=3)
+            return super().infer_frame(frame, source=source)
+
+    source = _FakeSource([_frame(0), _frame(1)])
+    service, _ = _service(source)
+    service.inference_service = BlockingInference()
+    service.start(MonitoringSourceRequest(SourceType.MP4, "test.mp4"))
+    assert entered.wait(timeout=2)
+    pending = service.stop(timeout=0.01)
+    assert pending.error_code == "MONITORING_STOP_TIMEOUT"
+    assert pending.state is MonitoringState.STOPPING
+    release.set()
+    assert service.wait(timeout=2)
+    assert service.status().state is MonitoringState.STOPPED
+    assert service.status().error_code == "MONITORING_STOP_TIMEOUT"
+    assert source.closed
+    assert source.read_frame_ids == [0]
+    assert service._thread is not None and not service._thread.is_alive()

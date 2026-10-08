@@ -10,6 +10,8 @@ from infra.tts.tts_service import (
     TTSService,
     TTSUnavailableError,
 )
+from services.alert_service import AlertService
+from core.schemas.events import EventStatus, PersistedEvent
 
 
 def _message(
@@ -76,6 +78,25 @@ def test_tts_alert_adapter_delivers_and_deduplicates() -> None:
     assert second.status is AlertStatus.SKIPPED
     assert second.error_code == "ALERT_DUPLICATE"
     assert spoken == [message.message]
+
+
+def test_english_api_alert_preserves_chinese_voice() -> None:
+    event = PersistedEvent(
+        id="EVT-tts-english",
+        timestamp="2026-09-23T12:34:56Z",
+        track_id=7,
+        type=ComplianceEventType.NO_VEST,
+        confidence=0.91,
+        snapshot=None,
+        status=EventStatus.OPEN,
+    )
+    message = AlertService.message_for_event(event)
+    spoken: list[str] = []
+    adapter = TTSAlertAdapter(TTSService(speaker=spoken.append))
+
+    assert message.message.isascii()
+    assert adapter.send(message).status is AlertStatus.DELIVERED
+    assert spoken == ["track 7: 未穿反光背心 (0.91)"]
 
 
 def test_tts_alert_adapter_applies_track_type_cooldown() -> None:

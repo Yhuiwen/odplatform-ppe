@@ -413,7 +413,7 @@ def test_no_unregistered_phase_1b_dataset_or_model_artifacts_exist() -> None:
             continue
         relative_parts = path.relative_to(PROJECT_ROOT).parts
         if any(
-            part in {".git", ".pytest_cache", "__pycache__"}
+            part in {".git", ".pytest_cache", "__pycache__", ".venv", ".venv-final-demo", ".venv-final-demo-verify", "venv"}
                 for part in relative_parts
             ):
                 continue

@@ -93,6 +93,9 @@ class YOLODetector:
         self.runtime_id = str(runtime.get("id", ""))
         self.expected_ultralytics = str(runtime.get("ultralytics", ""))
         self.expected_torch = str(runtime.get("torch", ""))
+        self.backend = str(runtime.get("backend", "pytorch"))
+        self.expected_openvino = str(runtime.get("openvino", ""))
+        self.cpu_threads = int(runtime.get("cpu_threads", 0))
 
         model_path = Path(str(model_config.get("path", ""))).expanduser()
         self.model_path = (
@@ -100,6 +103,9 @@ class YOLODetector:
         )
         self.expected_model_sha256 = str(model_config.get("sha256", "")).lower()
         self.expected_model_size = int(model_config.get("size_bytes", -1))
+        export_path = Path(str(model_config.get("export_path", ""))).expanduser()
+        self.export_path = export_path if export_path.is_absolute() else PROJECT_ROOT / export_path
+        self.expected_export_sha256 = model_config.get("export_sha256", {})
         if bool(model_config.get("auto_download", True)):
             raise InferenceConfigurationError(
                 "Frozen inference configuration must disable model downloads"
@@ -140,6 +146,16 @@ class YOLODetector:
     def _validate_config_values(self) -> None:
         if not self.runtime_id:
             raise InferenceConfigurationError("Runtime ID is required")
+        if self.backend not in {"pytorch", "openvino"}:
+            raise InferenceConfigurationError("Unsupported inference backend")
+        if self.backend == "openvino" and (
+            not self.expected_openvino
+            or self.cpu_threads <= 0
+            or not isinstance(self.expected_export_sha256, dict)
+            or set(self.expected_export_sha256) != {"best.xml", "best.bin", "metadata.yaml"}
+            or any(len(str(value)) != 64 for value in self.expected_export_sha256.values())
+        ):
+            raise InferenceConfigurationError("OpenVINO export identity or CPU threads are invalid")
         if self.expected_model_size <= 0:
             raise InferenceConfigurationError("Checkpoint size must be positive")
         if len(self.expected_model_sha256) != 64:
@@ -187,7 +203,10 @@ class YOLODetector:
         self._ensure_execution_enabled()
         if image is None:
             raise InvalidImageError("Frame image cannot be None")
-        self._verify_checkpoint()
+        # The OpenVINO graph is immutable for this detector session. Its source
+        # checkpoint is checked before loading, then is not read during frames.
+        if self.backend != "openvino" or self._model is None:
+            self._verify_checkpoint()
         model = self._load_model()
 
         results = model.predict(
@@ -255,20 +274,29 @@ class YOLODetector:
             return self._model
 
         self._validate_runtime_versions()
+        if self.backend == "openvino":
+            self._verify_export()
         if self._model_factory is not None:
-            model = self._model_factory(self.model_path)
+            model = self._model_factory(self.export_path if self.backend == "openvino" else self.model_path)
         else:
             try:
                 from ultralytics import YOLO
+                if self.backend == "openvino":
+                    import cv2
+                    import torch
+
+                    torch.set_num_threads(self.cpu_threads)
+                    cv2.setNumThreads(1)
             except ImportError as exc:
                 raise InferenceRuntimeError(
                     "Ultralytics is not installed in the frozen runtime"
                 ) from exc
             try:
-                model = YOLO(str(self.model_path), task="detect")
+                model_path = self.export_path if self.backend == "openvino" else self.model_path
+                model = YOLO(str(model_path), task="detect")
             except Exception as exc:
                 raise InferenceRuntimeError(
-                    f"Could not load frozen checkpoint: {self.model_path.name}"
+                    f"Could not load inference model: {model_path.name}"
                 ) from exc
 
         self._validate_model_class_names(model)
@@ -278,10 +306,10 @@ class YOLODetector:
     def _validate_runtime_versions(self) -> None:
         if self._model_factory is not None:
             return
-        for package, expected in (
-            ("torch", self.expected_torch),
-            ("ultralytics", self.expected_ultralytics),
-        ):
+        packages = [("torch", self.expected_torch), ("ultralytics", self.expected_ultralytics)]
+        if self.backend == "openvino":
+            packages.append(("openvino", self.expected_openvino))
+        for package, expected in packages:
             if package == "torch":
                 try:
                     import torch
@@ -301,6 +329,19 @@ class YOLODetector:
                 raise InferenceRuntimeError(
                     f"{package} version mismatch: expected {expected}, observed {observed}"
                 )
+
+    def _verify_export(self) -> None:
+        """Verify the derived OpenVINO artifact before first use."""
+        for name, expected in self.expected_export_sha256.items():
+            path = self.export_path / name
+            if not path.is_file():
+                raise CheckpointIntegrityError(f"OpenVINO export file missing: {path}")
+            digest = hashlib.sha256()
+            with path.open("rb") as handle:
+                for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+                    digest.update(chunk)
+            if digest.hexdigest() != str(expected).lower():
+                raise CheckpointIntegrityError(f"OpenVINO export SHA256 mismatch: {path.name}")
 
     def _validate_model_class_names(self, model: Any) -> None:
         names = getattr(model, "names", None)

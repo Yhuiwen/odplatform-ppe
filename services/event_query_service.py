@@ -67,6 +67,8 @@ class EventQueryService:
         event_type: str | None = None,
         status: str | None = None,
         source: str | None = None,
+        source_group: str | None = None,
+        sort_order: str = "desc",
         limit: int = 100,
         offset: int = 0,
     ) -> EventPage:
@@ -80,6 +82,8 @@ class EventQueryService:
                 event_type=event_type,
                 status=status,
                 source=source,
+                source_group=source_group,
+                sort_order=sort_order,
                 limit=limit,
                 offset=offset,
             )
@@ -96,6 +100,9 @@ class EventQueryService:
 
     def sources(self) -> tuple[str, ...]:
         return self.event_repository.sources()
+
+    def sources_for_events(self, events: tuple[PersistedEvent, ...]) -> dict[str, str]:
+        return self.event_repository.sources_for_event_ids(tuple(event.id for event in events))
 
     def snapshot_events(
         self,

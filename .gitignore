@@ -3,6 +3,10 @@ __pycache__/
 *$py.class
 
 .venv/
+.venv-final-demo/
+.venv-final-demo-verify/
+build/
+*.egg-info/
 venv/
 .env
 .env.*
@@ -45,6 +49,11 @@ artifacts/reports/*
 !artifacts/reports/.gitkeep
 artifacts/inference/
 artifacts/validation/
+artifacts/p9b/
+artifacts/p9c/
+artifacts/p9c2/
+artifacts/p9c3/
+artifacts/p9c3d/
 artifacts/events/*.sqlite3
 artifacts/events/*.sqlite3-*
 artifacts/events/*.db
@@ -73,3 +82,9 @@ experiments/reports/*
 *.pt
 *.pth
 *.weights
+configs/llm.local.json
+
+# Raw diagnostic runs remain local; curated evidence lives in docs/reports.
+artifacts/p9c3g/
+artifacts/p9c3h/
+artifacts/p9c3i/

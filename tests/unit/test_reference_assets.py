@@ -118,7 +118,7 @@ def test_no_obvious_api_key_assignment_is_present() -> None:
             continue
         relative_parts = path.relative_to(PROJECT_ROOT).parts
         if any(
-            part in {".git", ".pytest_cache", "__pycache__"}
+            part in {".git", ".pytest_cache", "__pycache__", ".venv", ".venv-final-demo", ".venv-final-demo-verify", "venv"}
             for part in relative_parts
         ):
             continue

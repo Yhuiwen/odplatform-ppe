@@ -111,7 +111,11 @@ def test_risk_register_contains_required_risks() -> None:
 
 def test_local_markdown_links_do_not_point_to_missing_files() -> None:
     link_pattern = re.compile(r"\[[^\]]+\]\(([^)]+)\)")
-    markdown_files = list(PROJECT_ROOT.rglob("*.md"))
+    markdown_files = [
+        path for path in PROJECT_ROOT.rglob("*.md")
+        if path.relative_to(PROJECT_ROOT).parts[0]
+        not in {".venv", ".venv-final-demo", ".venv-final-demo-verify", "venv"}
+    ]
     for markdown_file in markdown_files:
         content = markdown_file.read_text(encoding="utf-8")
         for target in link_pattern.findall(content):
@@ -169,7 +173,7 @@ def test_phase4_offline_scope_adjustment_is_documented() -> None:
         if re.search(r"Camera\s*/\s*RTSP\s*[:：]", line, re.I)
     )
     assert re.search(r"deferred.*must", camera_status, re.I)
-    assert re.search(r"M-008\s+PENDING", camera_status, re.I)
+    assert re.search(r"M-008\s+CHARTER\s+ACCEPTED", camera_status, re.I)
 
 
 def _section(content: str, heading_pattern: str) -> str:
@@ -222,7 +226,8 @@ def test_deferred_requirements_keep_charter_must_classification(requirement: str
     rows = [row for row in _rows(must) if row[0] == requirement]
     assert len(rows) == 1, f"{requirement} must occur once in the MUST table"
     assert len(rows[0]) == 4
-    assert rows[0][-1] == "待实现", f"Deferred requirement prematurely completed: {rows[0]}"
+    expected_status = "待实现" if requirement == "M-007" else "已经实现"
+    assert rows[0][-1] == expected_status, f"Unexpected Charter status: {rows[0]}"
     assert not any(requirement in cell for row in _rows(extensions) for cell in row)
     assert not _extension_classifications(charter)
 
@@ -247,11 +252,20 @@ def test_deferred_ownership_and_status_agree(requirement: str, topic: str) -> No
     assert item, f"Missing status ownership for {requirement}"
     assert re.search(r"Phase\s+7\b", item.group())
     assert re.search(r"Phase\s+9\b", item.group())
-    assert re.search(
-        rf"^- {requirement}\b[^\n]*?:\s*`待实现`(?=\s*[;；]|\s*$)",
-        ownership,
-        re.M,
-    ), f"{requirement} must remain pending in its own status entry"
+    if requirement == "M-007":
+        entry = item.group()
+        assert re.search(r"IMPLEMENTED", entry, re.I)
+        assert re.search(r"REAL MP4 RUNTIME PASS", entry, re.I)
+        assert re.search(r"HUMAN REVIEW PASS", entry, re.I)
+        assert re.search(r"CHARTER FINAL ACCEPTANCE PENDING IN PHASE 9", entry, re.I)
+        assert not re.search(r"FINAL ACCEPTED|CHARTER COMPLETE", entry, re.I)
+        assert not re.search(r"^- M-007\b[^\n]*?:\s*`待实现`", entry, re.M)
+    else:
+        assert re.search(
+            rf"^- {requirement}\b[^\n]*?:\s*`已经实现\s*/\s*CHARTER ACCEPTANCE PASS IN P9-B`",
+            ownership,
+            re.M,
+        ), f"{requirement} acceptance must be recorded in its own status entry"
     assert re.search(r"Offline\s+Inference\s+COMPLETE", status)
     assert re.search(r"Phase\s+5\s+(?:WAITING|IN PROGRESS)", status)
 

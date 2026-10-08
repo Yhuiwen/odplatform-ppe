@@ -7,10 +7,17 @@ from threading import Lock
 from typing import Callable
 
 from core.schemas.alerts import AlertMessage, AlertResult, AlertStatus
+from core.schemas.compliance import ComplianceEventType
 from infra.alerts.base import BaseAlertAdapter
 from infra.tts.tts_service import TTSService, TTSServiceError
 
 __all__ = ["TTSAlertAdapter"]
+
+_SPOKEN_ALERT_TEXT = {
+    ComplianceEventType.NO_HELMET: "未佩戴安全帽",
+    ComplianceEventType.NO_VEST: "未穿反光背心",
+    ComplianceEventType.PPE_UNKNOWN: "PPE 状态未知",
+}
 
 
 class TTSAlertAdapter(BaseAlertAdapter):
@@ -78,7 +85,12 @@ class TTSAlertAdapter(BaseAlertAdapter):
                 )
 
         try:
-            self.service.speak(message.message)
+            spoken = (
+                f"track {message.track_id}: "
+                f"{_SPOKEN_ALERT_TEXT[message.alert_type]} "
+                f"({message.confidence:.2f})"
+            )
+            self.service.speak(spoken)
         except TTSServiceError as exc:
             return AlertResult(
                 event_id=message.event_id,

@@ -282,6 +282,13 @@ class EventRepository:
         if query.source is not None:
             clauses.append("e.source = ?")
             parameters.append(query.source)
+        if query.source_group == "mp4":
+            clauses.append("e.source LIKE 'mp4:%'")
+        elif query.source_group == "rtsp":
+            clauses.append("e.source LIKE 'rtsp:%'")
+        elif query.source_group is not None:
+            clauses.append("e.source = ?")
+            parameters.append("usb:" + query.source_group[3:])
         if not clauses:
             return "", parameters
         return " WHERE " + " AND ".join(clauses), parameters
@@ -301,7 +308,7 @@ class EventRepository:
                 rows = connection.execute(
                     self._select_sql()
                     + where
-                    + " ORDER BY e.occurred_at DESC, e.event_id ASC"
+                    + f" ORDER BY e.occurred_at {query.sort_order.upper()}, e.event_id ASC"
                     + " LIMIT ? OFFSET ?",
                     (*parameters, query.limit, query.offset),
                 ).fetchall()
@@ -432,6 +439,23 @@ class EventRepository:
         except sqlite3.Error as exc:
             raise DatabaseQueryError("could not list event sources") from exc
         return tuple(str(row["source"]) for row in rows)
+
+    def sources_for_event_ids(self, event_ids: tuple[str, ...]) -> dict[str, str]:
+        """Return raw source metadata for a bounded set of visible events."""
+        if not event_ids:
+            return {}
+        if len(event_ids) > 1000 or any(not isinstance(value, str) or not value for value in event_ids):
+            raise ValueError("event_ids must contain at most 1000 non-empty strings")
+        placeholders = ",".join("?" for _ in event_ids)
+        try:
+            with self.database.connection() as connection:
+                rows = connection.execute(
+                    f"SELECT event_id, source FROM events WHERE event_id IN ({placeholders})",
+                    event_ids,
+                ).fetchall()
+        except sqlite3.Error as exc:
+            raise DatabaseQueryError("could not query event sources") from exc
+        return {str(row["event_id"]): str(row["source"]) for row in rows}
 
     def list_events(
         self,

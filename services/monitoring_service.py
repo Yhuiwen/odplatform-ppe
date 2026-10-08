@@ -234,6 +234,8 @@ class MonitoringService:
         execution_enabled: bool = True,
         stop_timeout_seconds: float = 5.0,
         max_recent_events: int = 20,
+        preview_renderer: Any | None = None,
+        preview_sink: Callable[[int, Any], None] | None = None,
         clock: Callable[[], datetime] | None = None,
         monotonic_clock: Callable[[], float] | None = None,
     ) -> None:
@@ -296,6 +298,8 @@ class MonitoringService:
         self.execution_enabled = bool(execution_enabled)
         self.stop_timeout_seconds = normalized_stop_timeout
         self.max_recent_events = max_recent_events
+        self.preview_renderer = preview_renderer
+        self.preview_sink = preview_sink
         self.clock = clock or (lambda: datetime.now(timezone.utc))
         self.monotonic_clock = monotonic_clock or monotonic
         self._status = MonitoringStatus()
@@ -313,7 +317,6 @@ class MonitoringService:
 
     def status(self) -> MonitoringStatus:
         """Return the latest immutable status projection."""
-
         with self._status_lock:
             return self._status
 
@@ -416,6 +419,11 @@ class MonitoringService:
             while not self._stop_event.is_set():
                 frame = source.read()
                 if frame is None:
+                    break
+                # Stop may be requested while a live source is blocking in
+                # read(). Do not begin a new, potentially slow inference for
+                # a frame returned after that request.
+                if self._stop_event.is_set():
                     break
                 self._process_frame(frame, source_metadata)
         except Exception as exc:
@@ -525,6 +533,22 @@ class MonitoringService:
                 }
             )
 
+        preview_frame = frame.image
+        if self.preview_renderer is not None:
+            try:
+                preview_frame = self.preview_renderer.render(
+                    frame, normalized_detections
+                )
+            except Exception:
+                # A display failure must not discard confirmed events.
+                preview_frame = frame.image
+        if self.preview_sink is not None:
+            try:
+                self.preview_sink(frame.frame_id, preview_frame)
+            except Exception:
+                # The preview transport is separate from the event pipeline.
+                pass
+
         with self._status_lock:
             current = self._status
             combined_recent = (
@@ -547,7 +571,7 @@ class MonitoringService:
                 latest_frame_timestamp=frame.timestamp,
                 latest_frame_at=format_utc_timestamp(self.clock()),
                 recent_events=combined_recent,
-                latest_frame=frame.image,
+                latest_frame=preview_frame,
             )
 
     def _persist_event(

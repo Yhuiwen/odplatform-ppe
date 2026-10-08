@@ -1,6 +1,8 @@
 import json
 from datetime import datetime, timezone
 
+import pytest
+
 from core.schemas.alerts import AlertMessage, AlertResult, AlertStatus
 from core.schemas.compliance import ComplianceEventType
 from core.schemas.events import EventStatus, PersistedEvent
@@ -52,9 +54,10 @@ def test_console_and_web_adapters_deliver_and_deduplicate() -> None:
         alert_type=event.type,
         confidence=event.confidence,
         snapshot=event.snapshot,
-        message="track 7: 未佩戴安全帽 (0.91)",
+        message="track 7: No hard hat detected (0.91)",
     )]
     assert web.history()[0].event_id == event.id
+    assert json.loads(console_lines[0])["message"].isascii()
 
 
 def test_alert_service_isolates_adapter_failure() -> None:
@@ -109,3 +112,24 @@ def test_web_adapter_reports_publisher_failure_without_history() -> None:
     assert result.status is AlertStatus.FAILED
     assert result.error_code == "ALERT_ADAPTER_FAILED"
     assert adapter.history() == ()
+
+
+@pytest.mark.parametrize("event_type,expected", [
+    (ComplianceEventType.NO_HELMET, "No hard hat detected"),
+    (ComplianceEventType.NO_VEST, "No reflective vest detected"),
+    (ComplianceEventType.PPE_UNKNOWN, "PPE status unknown"),
+])
+def test_generated_alert_api_message_is_english(event_type, expected) -> None:
+    event = PersistedEvent(
+        id="EVT-English",
+        timestamp="2026-09-23T12:34:56Z",
+        track_id=7,
+        type=event_type,
+        confidence=0.91,
+        snapshot=None,
+        status=EventStatus.OPEN,
+    )
+    message = AlertService.message_for_event(event)
+    assert expected in message.message
+    assert message.message.isascii()
+    assert message.to_dict()["alert_type"] == event_type.value

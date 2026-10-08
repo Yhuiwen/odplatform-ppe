@@ -1,0 +1,91 @@
+# Realtime CPU profile derived from the frozen checkpoint; see ADR-025.
+schema_version: inference-runtime-freeze-v1
+inference:
+  phase: 4
+  subphase: 4B-0
+  status: frozen
+  execution_enabled: false
+  runtime:
+    id: INF-CPU-OV-416-001
+    os: windows-x86_64
+    python: 3.10.4
+    torch: 2.5.1+cpu
+    torchvision: 0.20.1
+    ultralytics: 8.4.157
+    numpy: 2.2.6
+    opencv_python: 5.0.0.93
+    pillow: 12.3.0
+    dependency_source: locks/EVAL-001/requirements.txt
+    backend: openvino
+    openvino: 2025.2.0
+    cpu_threads: 4
+  model:
+    path: models/checkpoints/EXP-001/best.pt
+    sha256: 1c144eef0dfa06b984dde760ea5501a11746b99c1f8a9ae581790241c3871f61
+    size_bytes: 5479891
+    auto_download: false
+    export_path: models/exports/best_cpu_416_openvino_model
+    export_sha256:
+      best.bin: 0557fd575452e97bff71d5bae19071c7060aa8881372267ccf45ff8801961331
+      best.xml: 394cfec6a43c2b96f003429776c16ce1c1abc94c866fade15abaf5457b48c7ad
+      metadata.yaml: 0d841c806fc21e505495c99bc4a7ee53ddf0c64dc8bac0d77eadd1993dc8fd53
+  device:
+    policy: cpu_only
+    device: cpu
+    auto: false
+    cuda_authorized: false
+  preprocessing:
+    imgsz: 416
+    batch: 1
+  detection:
+    conf_threshold: 0.25
+    iou_threshold: 0.45
+    max_det: 300
+    class_filter:
+    - 0
+    - 1
+    - 2
+    - 3
+    - 4
+    class_names:
+    - person
+    - hardhat
+    - no_hardhat
+    - vest
+    - no_vest
+  input:
+    image_extensions:
+    - .jpg
+    - .jpeg
+    - .png
+    - .bmp
+    - .webp
+    video_extensions:
+    - .mp4
+    - .avi
+    - .mov
+    - .mkv
+    camera: device_index_or_uri
+    rtsp_schemes:
+    - rtsp://
+    - rtsps://
+    local_video_fallback: false
+  output:
+    schema: core/schemas/detection.py
+    result_type: DetectionResult
+    structured_format: json_records
+    root: artifacts/inference
+    log: artifacts/logs/inference
+    rendering: pending_phase_4b_1
+  errors:
+    fail_closed: true
+    checkpoint_hash_mismatch: refuse
+    model_load_failure: fail
+    runtime_unavailable: fail
+    invalid_device: fail
+    unsupported_source: fail
+    decode_failure: fail
+    stream_timeout: observable_failure
+    silent_frame_skip: false
+    model_download: false
+    silent_class_remap: false

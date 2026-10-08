@@ -1,15 +1,26 @@
-"""Full integration demo entry point for Phase 9.
+"""Safe final-demo entry point: validate, then print the launch command."""
 
-NOT IMPLEMENTED - FUTURE PHASE
-"""
+from __future__ import annotations
+
+import argparse
+
+try:
+    from scripts.preflight import main as run_preflight
+except ModuleNotFoundError:
+    from preflight import main as run_preflight
 
 
-def main() -> None:
-    raise NotImplementedError(
-        "The complete integration demo belongs to Phase 9 "
-        "(NOT IMPLEMENTED - FUTURE PHASE)"
-    )
+def main() -> int:
+    parser = argparse.ArgumentParser(description="Validate final-demo readiness")
+    parser.add_argument("--check", action="store_true", help="preflight only")
+    args = parser.parse_args()
+    result = run_preflight()
+    if result != 0:
+        return result
+    if not args.check:
+        print("Launch: .venv-final-demo\\Scripts\\python.exe -m streamlit run web/Home.py")
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

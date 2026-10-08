@@ -5,6 +5,7 @@ monitoring:
   subphase: 7-6
   status: active
   execution_enabled: true
+  inference_config: configs/inference_cpu_fast.yaml
   stop_timeout_seconds: 5.0
   max_recent_events: 20
   sources:

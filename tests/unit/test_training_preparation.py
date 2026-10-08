@@ -218,7 +218,14 @@ def test_p2_5_1_configuration_is_frozen_and_training_is_disabled() -> None:
     assert ".gitkeep" in run_entries
     assert ".gitkeep" in report_entries
 
-    pt_files = set(PROJECT_ROOT.rglob("*.pt"))
+    def project_files(pattern: str) -> set[Path]:
+        return {
+            path for path in PROJECT_ROOT.rglob(pattern)
+            if path.relative_to(PROJECT_ROOT).parts[0]
+            not in {".venv", ".venv-final-demo", ".venv-final-demo-verify", "venv"}
+        }
+
+    pt_files = project_files("*.pt")
     approved_pt_files = {
         WEIGHT_PATH,
         PROJECT_ROOT / "models" / "checkpoints" / "EXP-001" / "best.pt",
@@ -227,8 +234,8 @@ def test_p2_5_1_configuration_is_frozen_and_training_is_disabled() -> None:
         PROJECT_ROOT / "experiments" / "runs" / "EXP-001" / "weights" / "last.pt",
     }
     assert pt_files.issubset(approved_pt_files)
-    assert not list(PROJECT_ROOT.rglob("*.pth"))
-    assert not list(PROJECT_ROOT.rglob("*.weights"))
+    assert not project_files("*.pth")
+    assert not project_files("*.weights")
     baseline = _load_yaml(BASELINE_CONFIG_PATH)
     augmentation = _load_yaml(AUGMENTATION_CONFIG_PATH)
     assert baseline["status"] == "CONFIGURATION_FROZEN"
