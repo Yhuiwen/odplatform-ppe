@@ -1,552 +1,139 @@
-# ODPlatform-PPE
+# 智慧工地 PPE 安全运营平台
 
-基于 YOLO11 的智慧工地 PPE 违规检测与智能告警平台。
+**ODPlatform-PPE — Construction PPE Safety Operations Platform**
 
-## 项目简介
+平台面向工地人员的安全帽、反光衣穿戴监测，结合目标检测、人员跟踪、规则判断、事件持久化、证据留存和智能分析，实现从视频监控到安全事件处理的闭环。当前交付范围是 **Windows 本地 V1 演示**；[当前状态](docs/02_CURRENT_STATUS.md)与[限制](#运行状态与限制)按各自证据单独披露。
 
-项目最终目标是在智慧工地场景中形成完整工程闭环：
+## 项目展示
 
-```text
-数据 -> 训练 -> 评估 -> 推理 -> 人员关联 -> 规则判断
-     -> 事件管理 -> 告警 -> 留证 -> 查询 -> 分析
+下图是仓库中已有的真实安全助手界面截图，展示了中文导航与本地查询结果。图中的接口超时提示也是该次运行的真实状态；它不代表提供方始终可用。
+
+![安全助手真实运行界面](docs/reports/phase-09/P9D_DEEPSEEK_ASSISTANT_STATUS.png)
+
+监控画面、事件与证据的完整人工演示步骤见[演示与答辩索引](docs/V1_DEMO_AND_DEFENSE.md)。当前仓库尚无适合公开展示的监控全链路截图。
+
+## 主要功能
+
+| 能力 | 当前实现与证据边界 |
+| --- | --- |
+| YOLO11 PPE 检测 | 项目训练的 YOLO11n 检测 person、安全帽/未戴安全帽、反光衣/未穿反光衣，并保留 machinery、vehicle 两类场景目标；支持图片与按序 MP4 推理。[训练与评估](docs/reports/phase-09/V1_COMPLETION_REPORT.md) |
+| 人员跟踪与 PPE 关联 | 通过 Ultralytics 集成的 ByteTrack 跟踪 person，关联 PPE 候选；有歧义时保留 unknown，不强行归属。[P9-B 验收](docs/reports/phase-09/P9B3_CHARTER_GATE_READJUDICATION_REPORT.md) |
+| 多帧规则与事件 | Helmet/Vest 规则经时序确认后创建违规事件；活动周期内去重，并支持恢复与冷却。反光衣短暂冲突证据处理遵循 [ADR-024](docs/03_TECHNICAL_DECISIONS.md)。 |
+| 记录、留证与告警 | SQLite 持久化事件和处理状态，JPEG 快照带完整性校验；Console/Web/TTS 告警失败与事件主流程隔离。告警数统计的是通道投递次数，可能大于事件数。 |
+| 本地监控与管理 | Streamlit 提供安全总览、事件中心、实时监控、证据中心、统计分析、AI 报告和安全助手；MP4 与 USB 摄像头有实际运行证据，RTSP 有受控本地流验证。[P9-D 记录](docs/reports/phase-09/P9D_UI_UX_POLISH_REPORT.md) |
+| 可选 DeepSeek 分析 | 报告基于已持久化数据并经结构和依据校验；失败时标记本地模板降级。安全助手只调用受控只读工具，可选用模型规划及选择已验证陈述。[V1 报告](docs/reports/phase-09/V1_COMPLETION_REPORT.md) |
+
+## 系统架构
+
+```mermaid
+flowchart LR
+  subgraph Training["训练与评估（独立阶段）"]
+    DATA["CSS v27 / 质量检查"] --> TRAIN["YOLO11n 训练"]
+    TRAIN --> EVAL["原始评估 + R2 补充测试"]
+  end
+  subgraph Runtime["本地运行"]
+    INPUT["MP4 / USB 摄像头 / RTSP 适配器"] --> DET["YOLO11 推理 / CPU OpenVINO"]
+    DET --> TRACK["ByteTrack 人员跟踪"]
+    TRACK --> ASSOC["Person-PPE 关联"]
+    ASSOC --> RULE["Helmet / Vest 合规与多帧确认"]
+    RULE --> EVENT["事件去重与持久化"]
+    EVENT --> DB["SQLite"]
+    EVENT --> SNAP["证据快照"]
+    EVENT --> ALERT["Console / Web / TTS 告警"]
+    DB --> UI["Streamlit 查询与可视化"]
+    SNAP --> UI
+    DB --> ANALYTICS["只读统计分析"]
+    ANALYTICS --> AI["可选 LLM 报告 / 安全助手"]
+  end
+  TRAIN -. "经授权恢复的 checkpoint / 本地导出" .-> DET
 ```
 
-最终能力包括 YOLO11 模型训练与评估、图片/视频/实时流推理、ByteTrack
-人员跟踪、Person-PPE 关联、Helmet/Vest 合规分析、多帧违规确认、SQLite
-事件持久化、截图留证、TTS 告警、Streamlit Web 平台、历史查询、数据大屏、
-LLM 安全分析报告和基础 Agent。
+训练和评估不在网页监控进程中执行。LLM/Agent 位于已确认事件的只读下游，不能决定或修改检测、关联及 PPE 合规结果。
 
-## 当前开发状态
+## 技术栈
 
-当前为 Phase 9 的 V1 交付补齐：完整检测/事件/查询链路已有运行证据，正在进行最终验收整理。RTSP 与长稳定测试按用户本轮指示不纳入交付判定，相关历史风险继续保留。
+本地演示基线是 Windows、Python **3.12.1**、CPU。完整依赖以 [FINAL-DEMO-RUNTIME-001 锁文件](locks/FINAL-DEMO-RUNTIME-001/requirements.txt)为准；其中 PyTorch **2.5.1+cpu**、Ultralytics **8.4.157**、OpenCV **5.0.0.93**、Streamlit **1.64.0**、NumPy **2.2.6**、`lap` **0.5.13**。实时 CPU 配置额外使用 OpenVINO **2025.2.0**；ByteTrack 通过 Ultralytics 集成，SQLite 用于事件存储，DeepSeek 是可选的服务端提供方。
 
-- 本地启动：`.venv-final-demo\Scripts\python.exe -m streamlit run web/Home.py --server.port 8502 --server.address 127.0.0.1`
-- 预检：`.venv-final-demo\Scripts\python.exe scripts/preflight.py`
-- 回归：`.venv-final-demo\Scripts\python.exe -m pytest -q`
-- 实时 CPU：授权 OpenVINO 416 配置；原离线 640 配置保留。
-- DeepSeek：安全助手和报告共用 Git 忽略的 `configs/llm.local.json`，无配置或调用失败使用标记降级结果。
-- 原数据集两组 valid/test 邻近帧泄漏已确认；新独立划分版本及补充评估见最终报告，旧指标保留历史解释。
-- Phase 4 — Offline Inference：历史离线阶段完成；实时流 deferred MUST 已由后续阶段实现。
-- Camera / RTSP: Deferred MUST implemented; M-008 CHARTER ACCEPTED through Camera; remote RTSP excluded from this review.
-- 中文 TTS 已有 Windows SAPI 实测证据；Camera 验收 PASS 满足章程 Camera 或 RTSP 条件。
-- [部署、备份与故障恢复](docs/V1_DEPLOYMENT_GUIDE.md)
-- [演示流程与答辩材料索引](docs/V1_DEMO_AND_DEFENSE.md)
-- [当前 V1 补齐结果与限制](docs/reports/phase-09/V1_COMPLETION_REPORT.md)
+历史训练环境与本地演示环境不同；训练用 CUDA 配置不是运行网页所需条件。项目包的 `pyproject.toml` 不自动安装完整演示依赖。
 
-历史阶段记录保存在 `docs/reports/`，不得把历史未授权/未测记录当成当前功能状态，也不得据功能实现推断全部验收完成。
+## 快速开始（Windows PowerShell）
 
-## Completed Capabilities
-
-- YOLO11 training
-- Evaluation and model selection
-- Frozen release checkpoint
-- Single-image inference
-- Sequential MP4 inference
-- Real image validation
-- Real MP4 validation
-- Person-only ByteTrack adapter implementation with a fail-closed boundary
-- Conservative Person-PPE association implementation with explicit unknown
-  outcomes
-- Conservative Helmet/Vest/Unknown compliance rules
-- Five-frame and one-second temporal confirmation
-- Active-cycle event deduplication with recovery and cooldown
-- Append-only JSONL compliance event storage
-- Versioned SQLite event storage with migration checksums, restart-persistent
-  history queries, event status updates and idempotent event ingestion
-- Atomic JPEG evidence storage with UTC date partitions, relative POSIX paths,
-  SHA256/dimension verification and idempotent event snapshot association
-- Read-only Streamlit dashboard source for Overview, Event Explorer, Evidence
-  Viewer and Statistics
-- Dashboard event filtering, source filters, pagination and statistics from
-  the SQLite-backed event query service
-- Console and in-process Web alert adapters behind one idempotent
-  `AlertAdapter` contract
-- TTS alert adapter with lazy optional backend, event-id idempotency,
-  per-track/type cooldown and structured failure isolation
-- Unified `VideoSource` lifecycle for MP4, USB Camera and RTSP
-- MP4, USB Camera and RTSP adapters with source metadata, observable status,
-  credential-redacted RTSP identity, connection failure handling and release
-  cleanup
-- End-to-end MP4 smoke validation through inference, tracking, association,
-  compliance, JSONL, SQLite, snapshot evidence, dashboard queries and
-  Console/Web alert delivery
-- Real USB Camera open/read/close validation and Streamlit runtime page
-  validation for Overview, Event Explorer, Evidence Viewer and Statistics
-- Service-owned MP4/USB/RTSP monitoring loop with start, status, stop,
-  background-worker lifecycle and persisted-event alert ordering
-- Streamlit realtime monitoring page for source control, live counters,
-  frame preview, recent events and structured alert results
-
-## Phase 8 Implementation Status（历史阶段记录）
-
-- P8-0 is human-reviewed PASS and does not add an LLM provider, external API
-  call, Agent framework, dependency or secrets.
-- The agent is strictly downstream and read-only over `EventQueryService`; it
-  cannot inspect raw images to decide compliance, override
-  detection/tracking/association or mutate historical events.
-- P8-1 implements deterministic `SafetyAnalyticsService` and canonical
-  `phase8-context-v1` construction over the existing event-query boundary.
-  Context separates observed facts, calculated metrics, metadata and
-  unavailable fields.
-- Analytics supports exact counts, event/status/track/day distributions,
-  first/last occurrence, evidence availability and opaque source grouping.
-  Unsupported duration, identity and alert-delivery metrics remain explicit.
-- The context fingerprint is a method-level SHA256 of canonical content; no
-  `context_sha256` field was added to the frozen schema.
-- P8-2 implements the provider-independent `phase8-report-v1` schema and a
-  deterministic grounding validator bound to the P8-1 context fingerprint.
-- P8-3 implements the deterministic local `TemplateFallback` and
-  `ReportService` orchestration. The fallback accepts only
-  `phase8-context-v1`, reuses the frozen context fingerprint, emits
-  `TEMPLATE_FALLBACK` with `degraded=true`, and fails closed if required
-  metrics are absent or inconsistent.
-- P8-4 implements the provider-independent `SafetyLLMClient` boundary,
-  deterministic request builder, injectable transport protocol and strict
-  untrusted-output parser. Provider output must be exact `phase8-report-v1`
-  JSON and is returned only as an `unvalidated` candidate.
-- Provider candidates are passed to the unchanged P8-2 grounding validator
-  through `ReportService.generate_provider_report()`.
-- P8-5 adds one configuration-driven OpenAI-compatible chat-completions
-  transport behind the P8-4 boundary and implements provider-first
-  orchestration. Provider output can only escape after strict parsing and the
-  unchanged P8-2 grounding validator accept it.
-- Semantic and operational provider failures route deterministically to the
-  unchanged deterministic `TemplateFallback`. Fallback output remains
-  `TEMPLATE_FALLBACK` with `degraded=true`; fallback failure returns
-  `REPORT_UNAVAILABLE` without an invalid report.
-- P8-5 originally used environment-only credential resolution; the current server also supports an ignored project-local configuration. It uses, a finite timeout, no
-  retries and a `262144`-byte response limit. Historical attempts include a
-  configuration non-execution and a `REPORT_SCHEMA_INVALID` rejection followed
-  by fallback PASS. A final separately authorized manual request against
-  `deepseek-flash` passed strict JSON, `phase8-report-v1` construction and the
-  unchanged grounding validator, returning `PROVIDER_VALIDATED` with
-  `PROVIDER`, `degraded=false` and fallback not used. The earlier failures
-  remain in the audit trail.
-- P8-5D adds bounded, deterministic diagnostics to
-  `REPORT_SCHEMA_INVALID`: safe JSON path, project-owned error category,
-  expected type or constraint and actual JSON type. The parser still returns
-  only the public `REPORT_SCHEMA_INVALID` failure code and never repairs or
-  partially accepts invalid provider output.
-- Diagnostics are capped at 20 entries with an explicit `truncated` flag.
-  Raw field values, unknown provider field names, raw provider content,
-  prompts, context payloads, authorization headers and API keys are excluded.
-  `ReportService` and the smoke CLI may surface only this sanitized metadata;
-  provider failure still routes to the unchanged `TemplateFallback`.
-- P8-5P replaces the loose prompt prose with a compact schema description
-  derived from the authoritative `phase8-report-v1` dataclasses and enums.
-  Prompt `phase8-provider-prompt-v2` now states every top-level and nested
-  required field, exact enum values, nullable-but-required fields, closed
-  objects and empty-array policy. Provider success constants and the exact
-  `source_context_sha256` instruction are included.
-- P8-5P does not change `phase8-report-v1`, the strict parser, grounding
-  validation or fallback semantics. The final separately authorized provider
-  attempt followed prompt v2 and returned `PROVIDER_VALIDATED`; P8-5P itself
-  did not issue that request.
-- Claims carry explicit fact, metric, event, tracker-scoped track, source,
-  evidence and structured numeric references; unknown or unavailable
-  references fail closed.
-- Recommendations retain separate finding/fact/metric bases, and report
-  limitations must match the deterministic context unavailable fields.
-- `ReportService` runs the generated fallback through the unchanged P8-2
-  grounding validator and returns a report only after validation succeeds.
-- The future Basic Agent must use only read-only allowlisted tools. Arbitrary
-  SQL, shell, filesystem, network side effects and autonomous external actions
-  remain out of scope.
-- P8-6 architecture freeze defines exactly four read-only tools:
-  `get_safety_summary`, `get_event_statistics`, `get_event_details` and
-  `generate_safety_report`. Tool registration is static, permissions are
-  deny-by-default, the planner is deterministic, and no LLM tool calling is
-  added. P8-6.1 implements the immutable registry and permission checks, with
-  all four handlers delegating to existing services. P8-6.2 adds deterministic
-  intent classification and validated plans without executing tools. P8-6.3
-  adds the append-only in-memory audit model and service, including bounded
-  privacy filtering and deterministic plan/tool event records. P8-6.4 freezes
-  an optional untrusted LLM candidate boundary, strict candidate validation
-  and deterministic fallback. P8-6.4.1 implements the bounded strict JSON
-  parser, request-binding/intent/tool/argument validation and deterministic
-  conversion to `phase8-agent-plan-v1`; it never executes a tool and has
-  passed human review. P8-6.4.2 adds the provider-independent planner request
-  builder, injected candidate-client boundary, strict validator integration,
-  bounded audit metadata and deterministic fallback. Forbidden candidate
-  capabilities are refused without reinterpretation. P8-6.4.2 has passed
-  human review. P8-6.4.3 adds the typed Agent request/result boundary and
-  `AgentService` orchestration: only a validated `phase8-agent-plan-v1` can
-  reach `ToolRegistry.execute`, every executable path writes append-only
-  audit events, planner fallback and tool failures are returned structurally,
-  and an unconfirmed audit write fails closed. P8-6.4.3 has passed human
-  review, and the P8-6 Agent implementation checkpoint is released as an
-  interim checkpoint. Durable audit storage,
-  memory, autonomous loops, real provider planning calls and reasoning remain
-  not implemented.
-- P8-FI final integration freezes a typed in-process
-  `phase8-agent-api-v1` boundary, trusted identity resolution, one
-  `AgentService.execute()` call and a bounded UI-safe response projection. The
-  API boundary has passed human review. `web/agent_support.py` composes the
-  existing service graph with `provider_client=None`; the AI report and Safety
-  Assistant pages render only `answer`, `summary`, `evidence_references`,
-  `recommendations` and `safe_status`. Page imports are restricted to the
-  approved facade, and focused API/Web/integration validation passed
-  (`27 passed`); full repository validation passed (`660 passed, 1 skipped`).
-  The Web / Streamlit implementation has passed human review. A deterministic
-  fixture-driven E2E demo now validates the complete Web facade, API, Agent,
-  registry, audit and UI projection path without a provider or model and has
-  passed human review. Phase 8 is `FINAL RELEASED` under
-  `phase-8-final-integration-complete`; Phase 9 P9-A is `PASS`, and
-  P9-B is now PARTIAL after authorized P9-B.1 validation.
-- M-021, M-022 and M-023 remain `待实现` in the locked Charter; P8-0 through P8-5 are
-  human-reviewed PASS and checkpointed. P8-6 architecture and P8-6.1 through
-  P8-6.3 are human-reviewed PASS. P8-6.4 is `ARCHITECTURE FREEZE COMPLETE /
-  HUMAN REVIEW PASS`. P8-6.4.1 and P8-6.4.2 are `HUMAN REVIEW PASS`.
-  P8-6.4.3 is `HUMAN REVIEW PASS` and is included in the interim tag
-  `phase-8-controlled-agent-complete`. P8-FI architecture is
-  `HUMAN REVIEW PASS`, its API boundary is `HUMAN REVIEW PASS`, and its Web
-  implementation is `HUMAN REVIEW PASS`. The deterministic E2E demo has
-  passed human review. Phase 8 final integration is released under
-  `phase-8-final-integration-complete`; durable audit storage, memory,
-  autonomous loops and real provider planning calls remain not implemented,
-  and Phase 9 P9-A is PASS; P9-B is PARTIAL after authorized P9-B.1.
-
-## Current Runtime
-
-- Phase 9 final demo：`FINAL-DEMO-RUNTIME-001`，Windows 11 AMD64，Python
-  3.12.1，CPU only；完整安装入口为
-  `locks/FINAL-DEMO-RUNTIME-001/requirements.txt`。在该环境运行
-  `python scripts/preflight.py` 或 `python scripts/run_demo.py --check`。
-  `pip install .` 只安装项目包，不安装完整运行依赖。P9-B.1 修订 lock
-  固定 `lap==0.5.13`，第二个干净环境已验证 ByteTrack 运行前后包集合一致；
-  P9-B 全链路验收仍为 PARTIAL。
-- 下列 `INF-RUNTIME-001` 是不可变的历史推理运行时：
-
-- Runtime ID：`INF-RUNTIME-001`
-- Python：3.10.4
-- PyTorch：2.5.1+cpu
-- torchvision：0.20.1
-- Ultralytics：8.4.157
-- Device policy：CPU only
-- Frozen checkpoint：`models/checkpoints/EXP-001/best.pt`
-- Frozen inference configuration：`configs/inference.yaml`
-
-## Validation Evidence
-
-- Image：PASS
-- Video：PASS
-- Phase 7-5 integrated MP4 pipeline：PASS
-- Phase 7-5 dashboard runtime：PASS
-- Phase 7-5 USB Camera lifecycle：PASS
-- Phase 7-5 RTSP runtime：NOT RUN
-- Phase 7-5 Console/Web alerts：PASS
-- Phase 7-6 TTS adapter：PASS / NATIVE WINDOWS SAPI EXECUTED
-- Phase 7-6 monitoring service：UNIT + SQLite/SNAPSHOT INTEGRATION PASS
-- Phase 7-6 Streamlit realtime page：REAL BROWSER RUNTIME PASS
-- Phase 7-6 local RTSP validation：PASS / REAL LOCAL MEDIAMTX STREAM
-- Phase 7-6 remote RTSP / reconnect / long-running recovery：NOT RUN / PENDING
-- M-007 annotated demo video tool：IMPLEMENTED / REAL MP4 RUNTIME PASS / HUMAN REVIEW PASS / CHARTER PENDING
-
-The Phase 7-5 validation runtime used Python `3.12.1`, PyTorch `2.5.1+cpu`,
-Ultralytics `8.4.157` and Streamlit `1.64.0` in an isolated CPU-only
-environment. Python 3.12.1 differs from the frozen `INF-RUNTIME-001` Python
-3.10.4 baseline; this is recorded as a release limitation, not a runtime
-re-freeze.
-
-Phase 4 的完成声明仅覆盖 structured offline inference。Camera/RTSP、
-real-time source behavior、M-008、tracking、association、compliance、
-events、alerts、Web、LLM 和 annotated video rendering 不在本次 release
-scope 内。
-
-P5-0 已人工审核 PASS，并冻结 `DetectionResult -> TrackResult ->
-AssociationResult` 接口、person-only ByteTrack 边界和
-containment/IoU/confidence association policy。P5-1 已实现 person-only
-`ByteTrackPersonTrackingAdapter`：真实 Ultralytics backend 保持 lazy/private，
-只接收 class `0` / `person`，输出项目自有 `TrackResult`。当前环境未安装
-Ultralytics/Torch 是 P5-1 review 时的历史限制；Phase 7-5 后续已在隔离
-环境中执行一次真实 ByteTrack/MP4 runtime path，但没有单独证明长期 track
-ID 连续性，Charter 验收仍未完成。
-P5-2 已实现 `PPEPersonAssociationAdapter`：仅关联已有 person track，使用
-containment `0.50`、IoU `0.10`、confidence `0.25` 和 ambiguity margin
-`0.10`，无法确定时输出 `unknown`，不存在 nearest-distance 强制归属。
-P5-3 已用 synthetic pipeline 验证完整的
-`DetectionResult -> TrackResult -> AssociationResult` adapter 组合；真实
-checkpoint/MP4 validation 在 P5-3 review 时因缺少 Torch 和 Ultralytics
-返回 `BLOCKED_RUNTIME_DEPENDENCIES`。Phase 7-5 后续用隔离 runtime 完成
-一次真实 detector、tracker、association 和视频端到端运行。因此 M-009
-和 M-010 当前记录为 `IMPLEMENTED / Phase 7-5 Runtime Evidence Recorded /
-Charter Acceptance Pending`；Charter 锁定状态仍保持 `待实现`，完整验收
-通过前不得改写为 `已经实现`。
-
-EXP-001 已完成一轮授权 YOLO11n baseline 训练：95/100 epochs，
-best epoch 75，validation precision `0.899`、recall `0.649`、mAP50
-`0.767`、mAP50-95 `0.480`。`best.pt` 和 `last.pt` 为 `5,479,891`
-bytes；最佳 checkpoint SHA256 为
-`1c144eef0dfa06b984dde760ea5501a11746b99c1f8a9ae581790241c3871f61`。
-完整训练证据见 `docs/reports/EXP-001_TRAINING_EXECUTION_REPORT.md`。
-
-Phase 6 已实现离线
-`AssociationResult -> ComplianceInput -> ComplianceResult ->
-ComplianceEvent -> events.jsonl` 链路，包含保守的 Helmet/Vest/Unknown
-规则、多帧确认、事件去重、恢复和冷却。该链路使用确定性 JSON fixture 验证，
-不需要 Torch、YOLO、GPU、Camera 或 RTSP。
-
-Phase 7-0、Phase 7-1、Phase 7-2、Phase 7-3、Phase 7-4 和 Phase 7-5 已通过
-人工审核。
-Phase 7-2 实现了
-证据截图文件保存与事件关联：atomic JPEG write、UTC 日期分区、relative
-POSIX path、SHA256/尺寸验证、重复证据幂等和 conflict rejection。
-`PersistedEvent.snapshot` 现在可以指向真实、已验证的 evidence file。
-Phase 7-3 增加了只读 dashboard query service、四个 Streamlit 页面、SQLite
-统计查询、证据完整性查看，以及 Console/Web alert adapter 和事件身份幂等
-分发。Phase 7-3 review 时触发主机未安装 Streamlit，因此当时只完成页面
-源码、服务边界和 schema 测试；Phase 7-5 后续已在隔离环境中执行 AppTest
-和真实 Streamlit health/root HTTP check。Phase 6 的四字段 JSONL wire
-contract 保持不变。Phase 7-4 新增统一 `VideoSource` interface 和 MP4、USB
-Camera、RTSP adapters，具备 `idle/opening/live/degraded/ended/failed/closed`
-状态、连接失败处理和 release cleanup；RTSP URI 在日志和 status 中去除
-credentials/query。Phase 7-4 review 时未打开真实 device/stream；Phase 7-5
-后续验证了真实 USB Camera 的 open/read/close，Phase 7-6 又完成了 monitoring
-service integration、TTS adapter 以及真实本地 RTSP open/read/close 验证。
-Remote RTSP、reconnect/backoff、stale-frame recovery、automatic
-reconciliation 和 retention 仍未验证。M-007 annotated demo video 工具已实现，
-并已完成 47/47 帧真实 MP4 输出验证和人工审核；M-007 的 Phase 9 Charter
-acceptance 仍未完成。Phase 7 锁定目标仍为
-`SQLite + Snapshot + TTS + Streamlit`；Email、WeChat 和 SMS 继续属于未来
-Extension。
-
-Phase 7-5 已用 frozen checkpoint 和已验证 MP4 完成一次 CPU end-to-end
-runtime smoke path：47/47 帧处理，生成 1 个 `PPE_UNKNOWN` 事件，事件经
-Phase 6 JSONL、SQLite、snapshot evidence、dashboard query 和 Console/Web
-alerts 全部保持原 `event_id`。真实 USB Camera open/read/close PASS；RTSP
-未测。Phase 7-5 已通过人工审核，基础 Phase 7 release commit 与 tag 已存在。
-Phase 7-6 已实现 TTS、service-owned monitoring loop 和 Streamlit realtime
-页面，并完成 MP4、真实 USB Camera、native Windows SAPI TTS、真实浏览器
-Streamlit 和受控本地 MediaMTX RTSP 验证。该最终整理变更集已按授权完成
-release commit、tag 和 push；
-remote RTSP、reconnect/backoff 和 M-008 最终验收仍未完成；M-007 annotated
-demo video 已实现、完成真实 MP4 验证并通过人工审核；Charter acceptance
-仍未完成，Charter 状态仍为 `待实现`。
-Phase 5 的历史
-P5-3-G5 `BLOCKED / NOT RUN` 与 M-009/M-010 runtime evidence pending 继续
-保留；Phase 7-5 没有改写其历史结论。未来阶段占位接口会明确抛出
-`NotImplementedError`，不会返回伪造业务结果。Phase 4A 完成推理架构设计、输入/检测器边界和
-`DetectionResult` 数据结构；Phase 4B-0 完成 CPU runtime、checkpoint、
-device、threshold、input/output 和错误处理边界冻结；Phase 4B-1 已实现单图
-`Image -> YOLO11 -> DetectionResult` 链路和 CLI。默认冻结配置仍为
-`execution_enabled: false`；真实推理只通过独立 validation-only 配置显式
-启用。
-Phase 4B-2a 已完成本地 MP4 视频推理架构设计，新增 model-independent
-`FrameData`、`VideoMetadata`、`FrameInferenceResult` 和
-`VideoInferenceResult` 契约。Phase 4B-2b 已实现顺序 MP4 reader、
-`VideoInferenceService` 和结构化 JSON CLI，并复用单图 `InferenceService`
-的冻结 detector 策略。默认 `execution_enabled: false`，未加载 `best.pt`
-或执行真实大规模视频推理；Camera/RTSP、tracking、association、event 和
-alert 仍不属于当前范围。
-
-Phase 4C-0 已完成真实推理验证设计，定义 external image、短 MP4、
-checkpoint/runtime 身份、detection statistics、latency、processing FPS、
-Git-ignored `artifacts/validation/` 证据政策和 fail-closed 失败处理。新增
-model-independent validation schemas。Phase 4C-1 随后按单独授权执行一次
-真实图片验证：使用 `INF-RUNTIME-001` 加载冻结 `best.pt`，外部 public-domain
-construction image 的 hot inference 返回 5 个 `DetectionResult`，cold
-start 为 14.237 s，warm inference 为 176.386 ms。原始 detection JSON 和
-schema report 保存在 Git-ignored `artifacts/validation/P4C-1/`。视频推理、
-tracking、association、compliance、events 和 alerts 未执行。
-
-Phase 4C-2 随后按单独授权完成真实 MP4 验证：使用同一冻结 `best.pt` 和
-`INF-RUNTIME-001`，顺序处理 external public-domain MP4 的全部 47/47 帧，
-未跳帧、未批处理、未异步、未迁移 CUDA。该次 CPU end-to-end 运行共返回
-77 个检测（person 76、no_vest 1），处理耗时 15.192 s，处理速率
-3.094 FPS。原始 video result、frame summary 和 schema report 保存在
-Git-ignored `artifacts/validation/P4C-2/`。RTSP、Camera、tracking、
-association、compliance、events、alerts、Web 和 LLM 未执行。
-
-Phase 4 scope 已由 ADR-018 正式调整为 `Offline Inference COMPLETE`。
-Camera/RTSP、M-008 和 annotated video rendering 保持 `Deferred MUST`；
-本 release 不使用 `phase-4-inference-complete`，而使用准确的
-`phase-4-offline-inference-complete`。
-
-EXP-001 的一次性 authorization 已 `CONSUMED`。P2-4、P2-5.1 至 P2-5.4
-的 preparation/freeze/verification 步骤不能用于授权第二次训练。
-
-## 最终目标
-
-构建面向智慧工地场景的企业级 PPE 违规检测与智能告警平台。项目重视可复现
-数据与训练流程、可审计的模型评估、端到端事件闭环，以及真实可演示的交付
-证据，而不只追求单一 mAP 指标。
-
-V1 MUST 目标、Extension 范围和明确非目标已锁定在
-`docs/00_PROJECT_CHARTER.md`。阶段边界与顺序锁定在
-`docs/01_MASTER_PLAN.md`。
-
-## 架构概览
-
-```text
-configs/          YAML configuration
-scripts/          Future phase entry points
-core/             Domain schemas and future detection pipelines
-services/         Application service boundaries
-infra/            Database, storage, TTS, and LLM adapters
-web/              Future Streamlit application
-utils/            Phase 0 paths, config, logging, timing, system helpers
-data/             Dataset staging and future data artifacts
-models/           Local weights and checkpoints, ignored by Git
-artifacts/        Runs, reports, event evidence, and logs
-tests/            Unit, integration, E2E, regression, and fixtures
-docs/             Locked governance and phase documentation
-```
-
-依赖方向应保持为 `web/scripts -> services -> core/infra -> utils`。Phase 0
-只提供边界与基础工具，不建立真实业务流水线。
-
-## 目录结构
-
-完整目录由 `configs/`、`core/`、`services/`、`infra/`、`web/`、`utils/`、
-`data/`、`models/`、`artifacts/`、`tests/` 和 `docs/` 组成。受 Git 忽略的
-数据、模型和运行产物目录通过 `.gitkeep` 保留。
-
-## 环境要求与当前 Runtime
-
-### 本地开发与治理
-
-- Python 3.10 或更高版本
-- Git
-- Phase 0 基础测试仅需要 `pytest` 和 `PyYAML`
-
-### P2-4 Training Preparation
-
-- AutoDL cloud GPU：NVIDIA GeForce RTX 4090 24GB
-- Ubuntu 20.04.5 LTS
-- Isolated Conda environment：`ppe-exp001`
-- Python 3.10.21
-- PyTorch 2.5.1+cu124 / torchvision 0.20.1+cu124
-- NVIDIA driver 560.35.03 / CUDA driver API 12.6
-- PyTorch CUDA runtime 12.4，`torch.cuda.is_available() == True`
-- Ultralytics 8.4.157
-- Remote dataset：`CSS-PPE-10-V1`
-- Verification：5,604 files、2,799 images、2,799 labels、7-class mapping
-  和 full manifest PASS
-- Initialization weight：`models/pretrained/yolo11n.pt`，5,613,764 bytes，
-  SHA256 `0ebbc80d...7644ee1`
-- Remote initialization weight：
-  `/root/autodl-tmp/models/pretrained/yolo11n.pt`，size 和 SHA256 与本地
-  一致
-- Dependency locks：`locks/EXP-001/conda-environment.yml`、
-  `conda-explicit.lock`、`pip-freeze-all.txt`
-- Runtime fingerprint：`locks/EXP-001/runtime-fingerprint.yaml`
-
-Environment READY、Dataset READY、Configuration FROZEN、Dependency FROZEN
-和 Weight REGISTERED / REMOTE VERIFIED 只证明 EXP-001 的输入边界；第二次
-训练仍需新的 authorization。
-
-### Phase 4B-0 Inference Runtime
-
-- Runtime ID：`INF-RUNTIME-001`
-- Python：3.10.4
-- PyTorch：2.5.1+cpu
-- torchvision：0.20.1
-- Ultralytics：8.4.157
-- NumPy：2.2.6
-- Device policy：CPU only
-- Dependency source：`locks/EVAL-001/requirements.txt`
-- Release checkpoint：`models/checkpoints/EXP-001/best.pt`
-- `configs/inference.yaml`：FROZEN / `execution_enabled: false`
-
-这是后续 Phase 4B 实现的冻结边界，不是安装、推理、GPU 或性能验证授权。
-
-## Phase 0 历史基线：安装方式
-
-`requirements.txt` 记录后续完整运行计划依赖，并不表示当前都必须安装。
-Phase 0 只需要：
+在项目根目录运行。最终演示预检要求 **Python 3.12.1**；`py -3.12` 只选择 3.12 系列，不保证一定是 3.12.1。先确认版本输出，再创建虚拟环境。其余命令始终使用该虚拟环境的 Python：
 
 ```powershell
-python -m pip install pytest PyYAML
+py -3.12 --version
+py -3.12 -m venv .venv-final-demo
+& '.\.venv-final-demo\Scripts\python.exe' -m pip install -r locks/FINAL-DEMO-RUNTIME-001/requirements.txt
+& '.\.venv-final-demo\Scripts\python.exe' -m pip install openvino==2025.2.0
+& '.\.venv-final-demo\Scripts\python.exe' -m pip install --no-deps .
+& '.\.venv-final-demo\Scripts\python.exe' scripts/preflight.py
+& '.\.venv-final-demo\Scripts\python.exe' -m streamlit run web/Home.py --server.port 8502 --server.address 127.0.0.1 --server.headless true
 ```
 
-这项安装不会下载数据集或模型权重。`pyproject.toml` 只保存项目元数据和
-测试配置，不声明第二套运行时依赖来源。
+浏览器访问 `http://localhost:8502/`。以 `--server.headless true` 启动时，无需在终端处理首次使用的邮箱提示；手动打开地址即可。先在监控页停止检测，再用 Ctrl+C 关闭服务。
 
-## Phase 0 历史基线：测试方法
+**克隆仓库后不能直接完整演示。** 模型 checkpoint、416 像素 OpenVINO 导出、数据集和演示视频等大文件未随 Git 分发。请从经授权的项目资产备份恢复 `models/checkpoints/EXP-001/best.pt` 和 `models/exports/best_cpu_416_openvino_model/`，以及所需演示素材；缺失或哈希不符时以预检结果为准，不下载替代权重。持有已核验 checkpoint 的维护者可按 [CPU 性能报告](docs/reports/phase-09/P9_CPU_24FPS_REPORT.md)中的流程重新导出，但导出脚本会写入配置哈希，不能用未审核导出结果冒充冻结资产。
 
-在项目根目录执行：
+DeepSeek API Key **可选**；未配置时仍可使用经标记的本地报告降级和受控查询。仅按[本地部署指南](docs/V1_DEPLOYMENT_GUIDE.md#private-deepseek-configuration)配置 Git 忽略的服务端文件，不要把凭据写入 README、提交记录或截图。安装、备份、故障恢复及端口问题也见该指南。
 
-```powershell
-python --version
-python -m pytest
-python -m compileall .
-git diff --check
-git status --short
+## 数据集与训练
+
+数据来自 [Roboflow Construction Site Safety v27](https://universe.roboflow.com/roboflow-universe-projects/construction-site-safety/dataset/27)，直接导出的冻结快照共 **2,799** 张图（train/valid/test：**2603/114/82**）。项目将源数据映射为七个训练类别，其中前五类为 person、hardhat、no_hardhat、vest、no_vest；原始数据与生成数据均不提交 Git。[Dataset Card](docs/06_DATASET_CARD.md)记录了导出元数据与实际文件的差异。
+
+对两组已复核的 valid/test 同场景邻近帧，独立 **R2 划分**将两个 test 样本移入 valid，得到 **2603/116/80**。训练集每个文件与原版相同，EXP-001 checkpoint 未重训；R2 仅用于补充测试。R2 的精确哈希及 dHash 距离 ≤5 的跨划分候选为零，这不证明不存在其他语义或场景相似性。[R2 质量记录](docs/reports/phase-09/V1_SPLIT_R2_QUALITY.md)。
+
+该数据集标注为 **CC BY 4.0**；署名、许可链接及再分发前复核事项见[Dataset Card](docs/06_DATASET_CARD.md)。
+
+## 模型与处理速度
+
+以下指标属于不同数据划分，不能直接当作同一测试集上的前后提升：
+
+| 评估 | Precision | Recall | mAP50 | mAP50-95 |
+| --- | ---: | ---: | ---: | ---: |
+| EXP-001 原始训练验证，历史指标 | 0.899 | 0.649 | 0.767 | 0.480 |
+| 未重训 checkpoint 的 R2 测试集，80 张图 / 七类 | 0.795859 | 0.709828 | 0.729892 | 0.462068 |
+
+原始指标来源见[训练记录](docs/reports/EXP-001_TRAINING_EXECUTION_REPORT.md)，R2 原始数值与逐类 AP 见[补充评估 JSON](docs/reports/phase-09/V1_SPLIT_R2_EVALUATION.json)。
+
+在 **Intel Core i5-1340P、Windows、CPU-only、OpenVINO 2025.2.0、416 像素配置**下，指定 **570 帧 / 1280×720 / 30 FPS MP4** 的两次热态完整处理实验为 **28.836**、**29.414 processed FPS**；实际 Console/Web/TTS 告警适配器开启的另一轮为 **26.000 processed FPS**。指标是处理帧数除以墙钟时间，包含解码、推理、跟踪、关联、事件与快照等，不是视频源帧率或浏览器显示帧率。[方法和原始结果](docs/reports/phase-09/P9_CPU_24FPS_REPORT.md)。这些实验不保证所有 USB/RTSP 来源达到 24 FPS，也不证明广泛场景识别准确率。
+
+## 项目结构
+
+```text
+core/       检测、输入源、跟踪、关联、规则、事件与 Agent 的核心契约和逻辑
+services/   数据处理、训练评估、监控、事件、报告与 Agent 的服务编排
+infra/      SQLite、证据存储、告警/TTS 与 LLM 通信适配
+web/        Streamlit 页面及受控 Web 边界
+configs/    推理、训练、评估等配置；本地密钥文件被 Git 忽略
+scripts/    预检、数据准备、训练评估、推理和交付命令
+tests/      单元、集成与端到端测试
+docs/       治理、设计、验证报告及交接
+data/       外部快照、中间数据、处理数据与样例；数据载荷不入 Git
+models/     预训练权重、项目 checkpoint 与导出模型；二进制资产不入 Git
+locks/      训练、评估与最终演示环境的冻结依赖
+artifacts/  本地事件、快照、日志、推理及验证产物；运行数据不入 Git
 ```
 
-测试覆盖核心包导入、六份 YAML、治理文件、五个 V1 类别、路径、日志、无 GPU
-系统信息，以及未来业务占位接口必须抛出 `NotImplementedError`。
+诊断运行器位于 `diagnostics/`；最小用法示例位于 `examples/`。仓库目录说明与历史文档地图见[文档索引](docs/README.md)。
 
-## 开发文档索引
+## 运行状态与限制
 
-- `docs/00_PROJECT_CHARTER.md`：锁定目标与 MUST/Extension 验收标准
-- `docs/01_MASTER_PLAN.md`：锁定的 P0-P9 阶段计划
-- `docs/02_CURRENT_STATUS.md`：当前状态和下一步
-- `docs/03_TECHNICAL_DECISIONS.md`：追加式 ADR
-- `docs/04_CHANGELOG.md`：变更记录
-- `docs/05_TEST_GATES.md`：阶段 Gate
-- `docs/06_DATASET_CARD.md`：冻结数据集、mapping 与质量证据
-- `docs/07_OPEN_SOURCE_USAGE.md`：开源依赖、参考和许可证记录
-- `docs/08_RISK_REGISTER.md`：风险登记册
-- `docs/designs/phase-08/PHASE_8_AGENT_ARCHITECTURE.md`：Phase 8 Safety Agent 架构
-- `docs/reports/phase-08/PHASE_8_P8_0_ARCHITECTURE_FREEZE_REPORT.md`：P8-0 架构与契约冻结报告
-- `docs/reports/phase-08/PHASE_8_P8_1_DETERMINISTIC_ANALYTICS_REPORT.md`：P8-1 确定性分析与 context 实现报告
-- `docs/reports/phase-08/PHASE_8_P8_2_REPORT_GROUNDING_VALIDATION_REPORT.md`：P8-2 报告契约与 grounding validator 报告
-- `docs/reports/phase-08/PHASE_8_P8_3_TEMPLATE_FALLBACK_REPORT.md`：P8-3 确定性模板降级实现报告
-- `docs/reports/phase-08/PHASE_8_P8_4_PROVIDER_ADAPTER_REPORT.md`：P8-4 provider 边界与 untrusted output 解析报告
-- `docs/reports/phase-08/PHASE_8_P8_5_PROVIDER_E2E_REPORT.md`：P8-5 real provider E2E、grounding enforcement 与 safe fallback 报告
-- `docs/reports/phase-08/PHASE_8_P8_5_FINAL_VALIDATION_REPORT.md`：P8-5 final real provider validation audit 报告
-- `docs/reports/phase-08/PHASE_8_P8_5_CHECKPOINT_RELEASE_REPORT.md`：P8-0 至 P8-5 interim release checkpoint 报告
-- `docs/designs/phase-08/PHASE_8_P8_6_AGENT_ARCHITECTURE.md`：P8-6 Basic Safety Agent 架构冻结
-- `docs/reports/phase-08/PHASE_8_P8_6_ARCHITECTURE_FREEZE_REPORT.md`：P8-6 architecture freeze 报告
-- `docs/reports/phase-08/PHASE_8_P8_6_1_TOOL_REGISTRY_REPORT.md`：P8-6.1 static tool registry 与 permission layer 报告
-- `docs/reports/phase-08/PHASE_8_P8_6_2_DETERMINISTIC_PLANNER_REPORT.md`：P8-6.2 deterministic planner 报告
-- `docs/reports/phase-08/PHASE_8_P8_6_3_AGENT_AUDIT_REPORT.md`：P8-6.3 append-only Agent audit 报告
-- `docs/designs/phase-08/PHASE_8_P8_6_4_AGENT_PLANNING_ARCHITECTURE.md`：P8-6.4 LLM-assisted planning architecture
-- `docs/reports/phase-08/PHASE_8_P8_6_4_ARCHITECTURE_FREEZE_REPORT.md`：P8-6.4 architecture freeze 报告
-- `docs/reports/phase-08/PHASE_8_P8_6_4_1_PLAN_VALIDATOR_REPORT.md`：P8-6.4.1 candidate parser/validator 报告
-- `docs/reports/phase-08/PHASE_8_P8_6_4_2_LLM_PLANNER_ADAPTER_REPORT.md`：P8-6.4.2 LLM planner adapter 报告
-- `docs/reports/phase-08/PHASE_8_P8_6_4_3_AGENT_SERVICE_REPORT.md`：P8-6.4.3 AgentService orchestration 报告
-- `docs/reports/phase-08/PHASE_8_AGENT_CHECKPOINT_RELEASE_REPORT.md`：P8-6 controlled Agent implementation checkpoint release 报告
-- `docs/designs/phase-08/PHASE_8_FINAL_INTEGRATION_ARCHITECTURE.md`：Phase 8 final integration architecture
-- `docs/reports/phase-08/PHASE_8_FINAL_INTEGRATION_FREEZE_REPORT.md`：Phase 8 final integration architecture freeze report
-- `docs/reports/phase-08/PHASE_8_FINAL_INTEGRATION_API_REPORT.md`：Phase 8 final integration API boundary report
-- `docs/reports/phase-08/PHASE_8_FINAL_INTEGRATION_WEB_REPORT.md`：Phase 8 final integration Web / Streamlit report
-- `docs/reports/phase-08/PHASE_8_FINAL_INTEGRATION_E2E_REPORT.md`：Phase 8 deterministic E2E demo validation report
-- `docs/reports/phase-08/PHASE_8_P8_5D_SCHEMA_DIAGNOSTICS_REPORT.md`：P8-5D sanitized provider schema diagnostics 报告
-- `docs/reports/phase-08/PHASE_8_P8_5P_PROMPT_SCHEMA_CONFORMANCE_REPORT.md`：P8-5P provider prompt schema conformance 报告
-- `docs/designs/phase-07/PHASE_7_TARGET_ARCHITECTURE.md`：Phase 7 目标架构
-- `docs/designs/phase-07/PHASE_7_DATA_CONTRACTS.md`：Phase 7 数据契约
-- `docs/reports/phase-07/PHASE_7_ARCHITECTURE_FREEZE_REPORT.md`：Phase 7-0 冻结报告
-- `docs/reports/phase-07/PHASE_7_1_EVENT_STORAGE_REPORT.md`：Phase 7-1 事件存储报告
-- `docs/reports/phase-07/PHASE_7_2_EVIDENCE_SNAPSHOT_REPORT.md`：Phase 7-2 证据截图报告
-- `docs/reports/phase-07/PHASE_7_3_DASHBOARD_ALERT_REPORT.md`：Phase 7-3 Dashboard 与 Alert 报告
-- `docs/reports/phase-07/PHASE_7_4_CAMERA_RTSP_REPORT.md`：Phase 7-4 Camera / RTSP 输入报告
-- `docs/reports/phase-07/PHASE_7_5_RUNTIME_VALIDATION_REPORT.md`：Phase 7-5 Runtime Validation 报告
-- `docs/reports/phase-07/PHASE_7_RELEASE_AUDIT_REPORT.md`：Phase 7 Release Preparation Audit 报告
-- `docs/reports/phase-07/PHASE_7_6_RUNTIME_VALIDATION_REPORT.md`：Phase 7-6 Release Finalization 与真实输入验证设计
-- `docs/reports/phase-07/PHASE_7_6_RUNTIME_VALIDATION_RESULT.md`：Phase 7-6 实际 Runtime Validation 结果
-- `docs/reports/phase-07/PHASE_07_FINAL_RELEASE_REPORT.md`：Phase 7 Release Freeze Candidate 报告
-- `docs/designs/phase-07/PHASE_7_M007_ANNOTATED_DEMO_VIDEO_DESIGN.md`：M-007 annotated demo video 工具设计
-- `docs/reports/phase-07/PHASE_7_M007_IMPLEMENTATION_REPORT.md`：M-007 实现、真实 MP4 验证和 gate 证据
-- `docs/reports/phase-07/PHASE_07_RELEASE_COMPLETE_REPORT.md`：Phase 7 最终 release、tag 与远端验证报告
-- `docs/reports/phase-02/P2-4_FINAL_PROVISIONING_REPORT.md`：P2-4 runtime、依赖和数据集验证
-- `docs/reports/EXP-001_TRAINING_EXECUTION_REPORT.md`：EXP-001 训练结果、
-  指标、产物和披露
-- `docs/reports/P2-5.1_CONFIGURATION_FREEZE.md`：EXP-001 配置冻结记录
-- `P2-5.1_CONFIGURATION_FREEZE_REPORT.md`：P2-5.1 最终配置冻结报告
-- `docs/reports/P2-5.3_DEPENDENCY_FREEZE.md`：EXP-001 依赖与 runtime 冻结记录
-- `P2-5.3_DEPENDENCY_FREEZE_REPORT.md`：P2-5.3 最终报告
-- `docs/reports/EXP-001_REMOTE_WEIGHT_VERIFY.md`：远端初始化权重完整性验证
-- `locks/EXP-001/`：conda、pip 和 runtime fingerprint
-- `docs/phases/`：每个阶段的独立文档
+- 本地 V1 演示在 **远端 RTSP 和长期稳定性明确排除的范围内**准备就绪；这不代表项目章程的完整验收，也不代表云端或生产部署已验收。P9-D 页面优化仍需人工检查响应式布局并完成演示复核。
+- **第四阶段的离线推理已完成**（Phase 4 — Offline Inference）。摄像头和 RTSP 是延期至后续阶段实现的 V1 必需项（Camera / RTSP: Deferred MUST；M-008 CHARTER ACCEPTED，经真实 USB Camera 验收）。章程 M-008 的“摄像头或 RTSP”条件已满足；远端 RTSP 的长期恢复能力本轮未验证。
+- **P9-C：部分完成、维持冻结**（PARTIAL / FROZEN）。有限实验强烈支持“真实推理与每周期新建工作线程的组合”与观测到的资源增长相关；具体保留对象和是否无限增长仍未确认。[诊断报告](docs/reports/phase-09/P9C3I_INFERENCE_WORKER_LIFECYCLE_REPORT.md)。
+- 模型对遮挡、小目标及复杂交叉场景的广泛准确率没有完成证明；416 像素 CPU 配置也未证明与原 640 像素离线配置在所有场景等效。
+- 安全助手采用受控只读工具与进程内审计；持久化 Agent 审计、生产级身份认证、云端部署与全量人工答辩演示均不在当前已验证结论中。
 
-## 开源使用原则
+## 文档导航
 
-依赖优先通过包管理器使用；算法性项目以阅读设计和自主实现为主。禁止复制
-未知许可证代码或整份业务架构。所有计划依赖、参考与潜在选择性复用都记录
-在 `docs/07_OPEN_SOURCE_USAGE.md`。
+- [项目 Charter 与 MUST 验收](docs/00_PROJECT_CHARTER.md)
+- [当前状态](docs/02_CURRENT_STATUS.md) · [测试门禁](docs/05_TEST_GATES.md)
+- [Dataset Card](docs/06_DATASET_CARD.md) · [开源使用与许可记录](docs/07_OPEN_SOURCE_USAGE.md)
+- [V1 部署与故障恢复](docs/V1_DEPLOYMENT_GUIDE.md) · [演示与答辩索引](docs/V1_DEMO_AND_DEFENSE.md)
+- [V1 补齐与当前限制](docs/reports/phase-09/V1_COMPLETION_REPORT.md) · [CPU 性能报告](docs/reports/phase-09/P9_CPU_24FPS_REPORT.md)
 
-## 下一阶段
+## 许可证及致谢
 
-按 [V1 补齐报告](docs/reports/phase-09/V1_COMPLETION_REPORT.md) 完成最终人工演示复核。历史冻结、授权和故障证据保留在相应日期报告中；最新判断以报告、当前状态和验收门为准。
+**本仓库尚未声明独立的源代码许可证；项目自有代码的使用和再分发权限以实际授权为准。** 数据集的 **CC BY 4.0** 许可不能自动用于项目代码；通过依赖使用的 [Ultralytics](https://github.com/ultralytics/ultralytics) 另有 **AGPL-3.0** 义务，公开分发前应分别复核。[完整来源与许可证据](docs/07_OPEN_SOURCE_USAGE.md)。
+
+感谢 [Roboflow Universe Projects / Construction Site Safety](https://universe.roboflow.com/roboflow-universe-projects/construction-site-safety) 数据来源，以及 [PyTorch](https://pytorch.org/)、[OpenVINO](https://docs.openvino.ai/)、[OpenCV](https://opencv.org/)、[Streamlit](https://streamlit.io/) 与 [ByteTrack](https://github.com/FoundationVision/ByteTrack) 等开源项目。DeepSeek 仅为可选外部 API；其输出须通过本项目校验，服务不可用时使用本地降级。
