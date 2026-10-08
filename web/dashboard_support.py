@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+import os
 from pathlib import Path
 from typing import Any
 
@@ -16,14 +17,22 @@ from infra.storage.snapshot_storage import SnapshotStorage
 from infra.tts.tts_service import TTSService
 from services.alert_service import AlertService
 from services.event_query_service import EventQueryService
+from services.event_status_service import EventStatusService
 from utils.config_loader import load_config
 
 __all__ = ["DashboardRuntime", "build_runtime", "get_runtime", "event_rows"]
 
 
+def _validation_path(relative: str) -> Path | None:
+    """Keep a manually launched P9-B browser check out of release evidence."""
+    root = os.environ.get("ODPLATFORM_P9B_VALIDATION_ROOT")
+    return Path(root).resolve() / relative if root else None
+
+
 @dataclass(frozen=True, slots=True)
 class DashboardRuntime:
     query_service: EventQueryService
+    status_service: EventStatusService
     alert_service: AlertService
     web_alerts: WebAlertAdapter
     tts_alerts: TTSAlertAdapter
@@ -36,10 +45,10 @@ def build_runtime(
 ) -> DashboardRuntime:
     """Create the service graph without opening SQLite at import time."""
 
-    database = Database(database_path)
+    database = Database(database_path or _validation_path("database/events.sqlite3"))
     event_repository = EventRepository(database)
     snapshot_repository = SnapshotRepository(database)
-    storage = SnapshotStorage(snapshot_root)
+    storage = SnapshotStorage(snapshot_root or _validation_path("snapshots"))
     web_alerts = WebAlertAdapter()
     monitoring_config = load_config("monitoring").get("monitoring", {})
     tts_config = (
@@ -63,6 +72,7 @@ def build_runtime(
             snapshot_repository,
             storage,
         ),
+        status_service=EventStatusService(event_repository),
         alert_service=AlertService(
             (
                 ConsoleAlertAdapter(),

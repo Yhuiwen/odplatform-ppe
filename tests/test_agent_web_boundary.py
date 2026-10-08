@@ -256,11 +256,74 @@ def test_renderer_writes_only_projection_fields() -> None:
 
     rendered = " ".join(value for _, value in st.calls)
     assert "Safety summary is available." in rendered
-    assert "success / TEMPLATE_FALLBACK" in rendered
+    assert "当前使用确定性安全分析模式" in rendered
     assert "Reinforce helmet checks." in rendered
     assert "20260924/EVT-WEB-1.jpg" in rendered
     assert "ToolRegistry" not in rendered
     assert "provider_output" not in rendered
+
+
+def test_renderer_translates_known_statistics_without_changing_projection() -> None:
+    from web.agent_support import AgentUiProjection
+
+    projection = AgentUiProjection(
+        answer="Event statistics returned total_count=6.",
+        summary=(
+            "event_statistics.total_count=6",
+            "event_statistics.by_type=NO_HELMET=4, NO_VEST=1, PPE_UNKNOWN=1",
+            "event_statistics.by_status=open=6",
+        ),
+        evidence_references=(),
+        recommendations=(),
+        safe_status="success",
+    )
+    st = _RecordingStreamlit()
+    render_agent_projection(st, projection)
+    rendered = " ".join(value for _, value in st.calls)
+    assert "在所选范围内查询到 6 条已确认事件" in rendered
+    assert "未佩戴安全帽 4 条" in rendered
+    assert "未穿反光衣 1 条" in rendered
+    assert "待处理 6 条" in rendered
+    assert projection.summary[1].startswith("event_statistics.by_type=")
+
+
+def test_renderer_localizes_complete_fallback_report_text() -> None:
+    from web.agent_support import AgentUiProjection
+
+    projection = AgentUiProjection(
+        answer="Safety report generated via TEMPLATE_FALLBACK.",
+        summary=(
+            "The reporting period contains 6 persisted events in the inclusive interval from 2026-09-23T00:00:00Z to 2026-10-07T23:59:59Z.",
+            "The filtered event set contains 6 persisted compliance events.",
+            "Recorded events of type NO_HELMET: 4.",
+            "Recorded events of type NO_VEST: 1.",
+            "Recorded events of type PPE_UNKNOWN: 1.",
+            "The earliest persisted event timestamp in the reporting period is 2026-09-23T13:58:26Z.",
+            "The latest persisted event timestamp in the reporting period is 2026-10-07T07:30:42Z.",
+            "Persisted evidence references are available for 6 events and missing for 0 events.",
+            "Confirmed events were grouped across 3 tracker-scoped track_id values. These track_id values are tracker-scoped and are not stable person identity.",
+            "The most frequent recorded event type is NO_HELMET with 4 events. This statement is limited to observed frequency and does not establish severity, legal causation or employee identity.",
+        ),
+        evidence_references=("EVID:EVT-WEB-1",),
+        recommendations=(
+            "[HIGH] Review helmet-use procedures and the relevant recorded evidence for NO_HELMET events.",
+            "[MEDIUM] Review high-visibility vest procedures and the relevant recorded evidence for NO_VEST events.",
+            "[MEDIUM] Review uncertain PPE detections and their evidence before taking operational action.",
+        ),
+        safe_status="success / TEMPLATE_FALLBACK / degraded",
+    )
+    st = _RecordingStreamlit()
+    render_agent_projection(st, projection)
+    rendered = " ".join(value for _, value in st.calls)
+    assert "安全报告已生成" in rendered
+    assert "未佩戴安全帽：4 条" in rendered
+    assert "未穿反光衣：1 条" in rendered
+    assert "已留证" in rendered
+    assert "高优先级" in rendered
+    assert "轨迹 ID" in rendered
+    assert "EVID:EVT-WEB-1" in rendered
+    assert "The filtered event set" not in rendered
+    assert "Review helmet-use" not in rendered
 
 
 def test_phase8_pages_import_only_the_agent_support_facade() -> None:

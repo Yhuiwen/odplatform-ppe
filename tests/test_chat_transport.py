@@ -153,7 +153,8 @@ def test_config_rejects_unsafe_endpoint_shapes(endpoint: str) -> None:
         _config(endpoint=endpoint)
 
 
-def test_transport_sends_one_request_and_extracts_report_content() -> None:
+@pytest.mark.parametrize("thinking_enabled", [None, False])
+def test_transport_sends_one_request_and_extracts_report_content(thinking_enabled) -> None:
     report = e2e._provider_report(e2e._context())
     opener = FakeOpener(
         response=FakeResponse(
@@ -164,6 +165,7 @@ def test_transport_sends_one_request_and_extracts_report_content() -> None:
     transport = OpenAICompatibleChatTransport(
         config=_config(),
         opener=opener,
+        thinking_enabled=thinking_enabled,
     )
 
     response = transport.send(_request())
@@ -176,7 +178,12 @@ def test_transport_sends_one_request_and_extracts_report_content() -> None:
     assert sent["model"] == "fake-model"
     assert sent["temperature"] == 0
     assert sent["stream"] is False
+    assert sent["max_tokens"] == 16384
     assert sent["response_format"] == {"type": "json_object"}
+    if thinking_enabled is False:
+        assert sent["thinking"] == {"type": "disabled"}
+    else:
+        assert "thinking" not in sent
     assert "Authorization" not in repr(transport)
     assert "test-secret" not in repr(transport)
 

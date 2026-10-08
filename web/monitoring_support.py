@@ -7,6 +7,7 @@ from typing import Any
 
 from core.association.ppe_person_association import PPEPersonAssociationAdapter
 from core.events.event_engine import EventEngine
+from core.rendering.annotated_frame import AnnotatedFrameRenderer
 from core.tracking.bytetrack_adapter import ByteTrackPersonTrackingAdapter
 from infra.database.database import Database
 from infra.database.repository import EventRepository
@@ -20,7 +21,8 @@ from services.inference_service import InferenceService
 from services.monitoring_service import MonitoringService
 from services.snapshot_service import SnapshotService
 from utils.config_loader import load_config
-from web.dashboard_support import get_runtime
+from web.dashboard_support import _validation_path, get_runtime
+from web.monitoring_preview import PreviewChannel, get_preview_hub
 
 __all__ = ["MonitoringRuntime", "get_monitoring_runtime"]
 
@@ -28,6 +30,7 @@ __all__ = ["MonitoringRuntime", "get_monitoring_runtime"]
 @dataclass(frozen=True, slots=True)
 class MonitoringRuntime:
     service: MonitoringService
+    preview_url: str
 
 
 def _settings() -> dict[str, Any]:
@@ -42,14 +45,18 @@ def build_monitoring_runtime(st: Any) -> MonitoringRuntime:
     """Build one service-owned session around the existing pipeline boundaries."""
 
     monitoring = _settings()
-    database = Database()
+    database = Database(_validation_path("database/events.sqlite3"))
     event_repository = EventRepository(database)
     snapshot_repository = SnapshotRepository(database)
-    snapshot_storage = SnapshotStorage()
+    snapshot_storage = SnapshotStorage(_validation_path("snapshots"))
     dashboard_runtime = get_runtime(st)
+    inference_config = str(monitoring.get("inference_config", "configs/inference.yaml"))
+    detection_config = load_config(inference_config)["inference"]["detection"]
+    preview_channel = PreviewChannel()
+    preview_url = get_preview_hub().register(preview_channel)
     service = MonitoringService(
         inference_service=InferenceService(
-            config_path="configs/inference.yaml",
+            config_path=inference_config,
             execution_enabled=bool(monitoring.get("execution_enabled", False)),
         ),
         tracker=ByteTrackPersonTrackingAdapter(),
@@ -57,7 +64,7 @@ def build_monitoring_runtime(st: Any) -> MonitoringRuntime:
         compliance_service=ComplianceService(),
         event_service=EventService(
             engine=EventEngine(),
-            store=JSONEventStore(),
+            store=JSONEventStore(_validation_path("logs/events.jsonl")),
         ),
         ingest_service=EventIngestService(event_repository),
         snapshot_service=SnapshotService(
@@ -72,8 +79,10 @@ def build_monitoring_runtime(st: Any) -> MonitoringRuntime:
             monitoring.get("stop_timeout_seconds", 5.0)
         ),
         max_recent_events=int(monitoring.get("max_recent_events", 20)),
+        preview_renderer=AnnotatedFrameRenderer(detection_config["class_names"]),
+        preview_sink=preview_channel.publish,
     )
-    return MonitoringRuntime(service=service)
+    return MonitoringRuntime(service=service, preview_url=preview_url)
 
 
 def get_monitoring_runtime(st: Any) -> MonitoringRuntime:

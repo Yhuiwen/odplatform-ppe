@@ -29,6 +29,7 @@ __all__ = [
 ]
 
 PROVIDER_TRANSPORT_VERSION = "phase8-openai-compatible-transport-v1"
+CHAT_BUDGET_VERSION = 2
 
 _OpenCall = Callable[..., Any]
 
@@ -42,12 +43,15 @@ class OpenAICompatibleChatTransport(ProviderTransport):
         default=urllib.request.urlopen,
         repr=False,
     )
+    thinking_enabled: bool | None = None
 
     def __post_init__(self) -> None:
         if not isinstance(self.config, LLMProviderConfig):
             raise TypeError("config must be an LLMProviderConfig")
         if not callable(self.opener):
             raise TypeError("opener must be callable")
+        if self.thinking_enabled is not None and not isinstance(self.thinking_enabled, bool):
+            raise TypeError("thinking_enabled must be a bool or None")
 
     def send(self, request: ProviderRequest) -> TransportResponse:
         if not isinstance(request, ProviderRequest):
@@ -71,14 +75,42 @@ class OpenAICompatibleChatTransport(ProviderTransport):
                 provider_ref=self.config.provider_ref,
             )
 
+        return self.complete(
+            [item.to_dict() for item in request.messages],
+            timeout_seconds=request.timeout_seconds,
+            maximum_response_bytes=request.maximum_response_bytes,
+            maximum_output_tokens=16384,
+        )
+
+    def complete(
+        self,
+        messages: list[dict[str, str]],
+        *,
+        timeout_seconds: float | None = None,
+        maximum_response_bytes: int | None = None,
+        maximum_output_tokens: int | None = None,
+    ) -> TransportResponse:
+        """Shared bounded chat request for reports and validated assistant clients."""
+        timeout = self.config.timeout_seconds if timeout_seconds is None else timeout_seconds
+        maximum = self.config.maximum_response_bytes if maximum_response_bytes is None else maximum_response_bytes
+        if timeout <= 0 or maximum <= 0 or maximum > self.config.maximum_response_bytes:
+            raise ValueError("chat request limits exceed configured bounds")
         payload: dict[str, Any] = {
-            "model": request.model_ref,
-            "messages": [item.to_dict() for item in request.messages],
+            "model": self.config.model_ref,
+            "messages": messages,
             "temperature": 0,
             "stream": False,
         }
         if self.config.response_format_json_object:
             payload["response_format"] = {"type": "json_object"}
+        if maximum_output_tokens is not None:
+            if type(maximum_output_tokens) is not int or not 1 <= maximum_output_tokens <= 16384:
+                raise ValueError("invalid output token budget")
+            payload["max_tokens"] = maximum_output_tokens
+        if self.thinking_enabled is not None:
+            payload["thinking"] = {
+                "type": "enabled" if self.thinking_enabled else "disabled"
+            }
         body = json.dumps(
             payload,
             ensure_ascii=False,
@@ -101,17 +133,17 @@ class OpenAICompatibleChatTransport(ProviderTransport):
         try:
             with self.opener(
                 http_request,
-                timeout=request.timeout_seconds,
+                timeout=timeout,
             ) as response:
                 status_code = int(getattr(response, "status", 200))
                 response_bytes = response.read(
-                    request.maximum_response_bytes + 1
+                    maximum + 1
                 )
         except urllib.error.HTTPError as exc:
             raise ProviderTransportError(
                 _http_error_code(exc.code),
                 "provider returned an HTTP error",
-                provider_ref=request.provider_ref,
+                provider_ref=self.config.provider_ref,
             ) from None
         except (
             TimeoutError,
@@ -120,7 +152,7 @@ class OpenAICompatibleChatTransport(ProviderTransport):
             raise ProviderTransportError(
                 ProviderErrorCode.PROVIDER_TIMEOUT,
                 "provider request timed out",
-                provider_ref=request.provider_ref,
+                provider_ref=self.config.provider_ref,
             ) from None
         except urllib.error.URLError as exc:
             if isinstance(exc.reason, (TimeoutError, socket.timeout)):
@@ -132,26 +164,26 @@ class OpenAICompatibleChatTransport(ProviderTransport):
             raise ProviderTransportError(
                 code,
                 message,
-                provider_ref=request.provider_ref,
+                provider_ref=self.config.provider_ref,
             ) from None
         except OSError:
             raise ProviderTransportError(
                 ProviderErrorCode.PROVIDER_UNAVAILABLE,
                 "provider transport is unavailable",
-                provider_ref=request.provider_ref,
+                provider_ref=self.config.provider_ref,
             ) from None
 
-        if len(response_bytes) > request.maximum_response_bytes:
+        if len(response_bytes) > maximum:
             raise ProviderTransportError(
                 ProviderErrorCode.PROVIDER_RESPONSE_TOO_LARGE,
                 "provider response exceeded the configured size limit",
-                provider_ref=request.provider_ref,
+                provider_ref=self.config.provider_ref,
             )
         if status_code < 200 or status_code >= 300:
             raise ProviderTransportError(
                 _http_error_code(status_code),
                 "provider returned an HTTP error",
-                provider_ref=request.provider_ref,
+                provider_ref=self.config.provider_ref,
             )
 
         content = _extract_message_content(response_bytes)
