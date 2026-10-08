@@ -326,3 +326,8 @@ def test_quality_report_schema_and_markdown_are_valid(tmp_path: Path) -> None:
         "report_schema_version"
     ] == "p1d-quality-report-v1"
     assert markdown_path.read_text(encoding="utf-8") == markdown
+    import xml.etree.ElementTree as ET
+    classes_svg = ET.parse(markdown_path.parent / "quality_classes.svg")
+    assert any(item.text == "person" for item in classes_svg.iter())
+    assert len(list(classes_svg.iter("{http://www.w3.org/2000/svg}rect"))) == 1 + len(report["class_counts"])
+    ET.parse(markdown_path.parent / "quality_splits.svg")

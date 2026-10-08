@@ -104,14 +104,16 @@ def _manifest_entries(
     root: Path,
     paths: Sequence[Path],
 ) -> tuple[ManifestEntry, ...]:
-    return tuple(
-        ManifestEntry(
+    from concurrent.futures import ThreadPoolExecutor
+
+    def entry(path):
+        return ManifestEntry(
             relative_path=_relative(path, root),
             file_size_bytes=path.stat().st_size,
             sha256=sha256_file(path),
         )
-        for path in paths
-    )
+    with ThreadPoolExecutor(max_workers=8) as pool:
+        return tuple(pool.map(entry, paths))
 
 
 def _class_counts(
@@ -1047,6 +1049,7 @@ class DatasetQualityService:
                 "",
             ]
         )
+        lines.extend(["", "## 12 Distribution Charts", "", "![Class boxes](quality_classes.svg)", "", "![Split boxes](quality_splits.svg)", ""])
         return "\n".join(lines)
 
     def write_markdown_report(
@@ -1063,7 +1066,32 @@ class DatasetQualityService:
             encoding="utf-8",
             newline="\n",
         )
+        self.write_distribution_charts(report, output.parent)
         return output
+
+    def write_distribution_charts(self, report, output_dir):
+        """Export class/split distributions beside the immutable quality report."""
+        from html import escape
+        output_dir = Path(output_dir)
+        charts = {
+            "quality_classes.svg": [(item["class_name"], item["total_boxes"])
+                                    for item in report["class_counts"].values()],
+            "quality_splits.svg": [(split, sum(item[split + "_boxes"]
+                                    for item in report["class_counts"].values()))
+                                   for split in ("train", "valid", "test")],
+        }
+        for filename, rows in charts.items():
+            maximum = max((value for _, value in rows), default=1) or 1
+            svg = ['<svg xmlns="http://www.w3.org/2000/svg" width="800" height="' + str(80 + 44 * len(rows)) + '" role="img">',
+                   '<rect width="100%" height="100%" fill="white"/>',
+                   '<text x="20" y="30" font-size="20">Bounding box distribution</text>']
+            for index, (label, value) in enumerate(rows):
+                y = 60 + index * 44
+                svg.extend([f'<text x="20" y="{y + 20}" font-size="15">{escape(label)}</text>',
+                            f'<rect x="145" y="{y}" width="{value / maximum * 500:.2f}" height="28" fill="#326da8"/>',
+                            f'<text x="{155 + value / maximum * 500:.2f}" y="{y + 20}" font-size="15">{value}</text>'])
+            svg.append('</svg>')
+            (output_dir / filename).write_text('\n'.join(svg), encoding="utf-8")
 
     def write_reports(
         self,
