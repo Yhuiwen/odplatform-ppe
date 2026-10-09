@@ -1,5 +1,23 @@
 # 智慧工地 PPE 安全运营平台
 
+## V1.1 Vue 本地界面
+
+七个正式页面现已由 Vue 3、Element Plus、ECharts 和 FastAPI 适配现有 Python 服务实现。V1.1 发布门禁结果见[发布检查](docs/reports/frontend-v1.1/V1_1_RELEASE_CHECK.md)；旧 Streamlit 入口完整保留。安装、PowerShell 开发/部署启动命令、API 契约、验证证据与回退方式见 [V1.1 前端架构](docs/reports/frontend-v1.1/FRONTEND_ARCHITECTURE.md)、[API 契约](docs/reports/frontend-v1.1/API_CONTRACT.md)和[迁移报告](docs/reports/frontend-v1.1/V1_1_FRONTEND_MIGRATION_REPORT.md)。新 API 默认只监听 `127.0.0.1:8765`；本机 Windows 保留了 8000 端口，因此选用 8765。
+
+```powershell
+py -3.12 -m venv .venv-frontend-api
+& .\.venv-frontend-api\Scripts\python.exe -m pip install -r locks/frontend-v1.1-api/requirements.txt
+cd front
+npm ci
+npm run build
+cd ..
+& .\scripts\start_frontend_local.ps1
+```
+
+访问 `http://127.0.0.1:8765/`。开发模式执行 `& .\scripts\start_frontend_dev.ps1` 并访问 `http://127.0.0.1:5173/`。API 环境使用原冻结 V1 环境的业务依赖，但 FastAPI/Starlette 在独立环境中隔离；先按下方 V1 步骤核验模型和演示资产。USB/RTSP 实源及真实外部 AI Provider 仍需人工复核。
+
+AI 报告的数据依据现在直接显示已校验的事件证据缩略图，点击可放大。七个模块在同一浏览器标签页内切换时保留当前表单、筛选和报告状态；完整重新加载页面会重建界面状态。详见 [报告证据与导航状态记录](docs/reports/frontend-v1.1/REPORT_EVIDENCE_NAV_STATE.md)。
+
 **ODPlatform-PPE — Construction PPE Safety Operations Platform**
 
 平台面向工地人员的安全帽、反光衣穿戴监测，结合目标检测、人员跟踪、规则判断、事件持久化、证据留存和智能分析，实现从视频监控到安全事件处理的闭环。当前交付范围是 **Windows 本地 V1 演示**；[当前状态](docs/02_CURRENT_STATUS.md)与[限制](#运行状态与限制)按各自证据单独披露。

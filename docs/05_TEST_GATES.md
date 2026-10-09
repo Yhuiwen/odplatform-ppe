@@ -1,5 +1,11 @@
 # Test Gates
 
+## 2026-10-08 V1.1 frontend implementation gate — HUMAN REVIEW PENDING
+
+- FE-1–FE-6 code and targeted validation: seven routes, actual API bindings, service-owned monitor, restricted evidence, persisted event handling, statistics, grounded report and read-only Agent. Frontend `npm run build` PASS; Vitest 3 PASS; API integration 2 PASS.
+- FE-7: real isolated MP4 API smoke PASS (47 frames, 74 detections, one PPE_UNKNOWN, two channel deliveries, processed preview, completed); V1 frozen preflight PASS; full frozen regression **810 passed, 1 intentionally skipped** (API test runs in independent environment). Browser 7 pages × 2 viewports PASS for navigation, no page overflow and no new JS errors.
+- Physical USB/RTSP, live Provider, long-run monitoring stability: NOT EXECUTED/NOT VERIFIED. P9-C remains PARTIAL. Human visual and release review pending. [Test report](reports/frontend-v1.1/FRONTEND_TEST_REPORT.md).
+
 ## 2026-10-07 P9-D Overview/source/time gate
 
 - **Targeted PASS:** database query orders by event time before pagination; grouped source filters cover MP4, USB and RTSP. Source labels omit filenames/addresses; visible recent-event rows omit event ID.
@@ -1672,3 +1678,37 @@ PASS: 37 targeted configuration, assistant/report, Web boundary and page tests. 
 Data R2 quality/integrity and 80-image evaluation: PASS; real report success/fallback: PASS; deployment preflight/pip check/compileall/delivery checker: PASS. Full repair regression: 810 PASS. Subsequent bounded transport/chart/hash changes: 61 targeted PASS. Two README/link failures in final rerun were repaired and separately rerun: 2 PASS. Final full-rerun totals are recorded in the [completion report](reports/phase-09/V1_COMPLETION_REPORT.md). Local credentials ignored/untracked; no schema relaxation. RTSP and long stability are explicitly outside this increment's acceptance.
 
 Final rerun closure: 808 passed / 2 documentation failures; both repaired and rerun PASS. Follow-up 5-test documentation/configuration set PASS. All 810 collected cases have passing evidence across the full run and repair reruns; no single post-documentation full-suite PASS is claimed. Delivery checker and credential scan PASS.
+
+
+## FE-8 响应式布局优化（2026-10-09）
+
+固定导航/顶栏、主内容与数据区域滚动、七页响应式及图表容器监听已实现。49次真实浏览器尺寸测量无主内容横向溢出；前端4测试、API2测试、真实MP4验证通过。实际125%浏览器缩放未执行，现场助手Provider请求超时；不提升V1/P9-C完成状态。详见 [FE8报告](reports/frontend-v1.1/FE8_RESPONSIVE_LAYOUT_REPORT.md)。HUMAN REVIEW PENDING；未commit/push/tag。
+
+
+## 2026-10-09 鼠标演示与交互修复
+
+用户指定MP4真实鼠标启动/停止/完成验证：完整570帧、1777检测观测、2事件、4通道告警；事件处理与恢复持久化、证据校验/放大/复制、跨页详情和统计筛选通过。修复跨页选择、AI等待与日期范围、四个受控快捷问题及中文展示。真实Provider报告Grounding valid、助手统计与本地今日5条查询通过；前端8测试与API2测试通过。未知英文句型保留原文，P9-C风险保留。详见 [演示修复报告](reports/frontend-v1.1/FUNCTION_DEMO_FIX_REPORT.md)。HUMAN REVIEW PENDING；未commit/push/tag。
+
+
+## 2026-10-09 相对时间查询与报告中文展示优化
+
+- API 仅对完整匹配的安全事件问题适配最近分钟/小时/天查询（最长 7 天）；继续经过原只读 Agent。手动日期优先，追加删除指令不会被改写。
+- 前端展示本地时间范围与无事件状态；补齐截图中的报告中文句式，未适配原文保留在明确标记的展开区域。
+- 验证：前端 9 项通过；独立 API 环境 2 项通过（包括空范围、超限、危险追加指令）；生产构建通过；diff --check 通过。
+- 运行实例重启被自动审批拒绝，因此当前 8765 后端尚未加载适配；实时端到端查询待手动重启验证。P9-C 原有风险保留。没有 commit/push/tag。
+
+## 2026-10-09 V1.1 报告证据/导航专项验证
+
+前端 Vitest 10 PASS、Vite build PASS；独立 API 集成 2 PASS（含引用路径精确匹配、跨范围排除、损坏证据排除）；compileall 与 `git diff --check` PASS。真实 Provider 报告 `grounding=valid`，24 条报告引用匹配 24 张已校验图片；浏览器验证缩略图、放大、报告与助手输入的导航状态保留。此增量不改变 Phase 9 最终 Gate、P9-C PARTIAL 或 V1.1 人工审核状态。
+
+## 2026-10-09 监控事件列表专项验证
+
+前端 Vitest 11 PASS、Vite build PASS；真实浏览器最新事件排序与列表独立滚动 PASS，卡片 400px、列表 324px 可视区、442px 内容；主内容滚动位置保持 0。`git diff --check` PASS。P9-C PARTIAL 和 V1.1 HUMAN REVIEW PENDING 不变。
+
+## 2026-10-09 监控预览指标与镜像专项验证
+
+真实 MP4 浏览器测试：570 帧完成，运行时真实发布帧率及最新帧年龄非空，结束后为“—”，镜像翻转正常。前端 Vitest 11 PASS、Vite build PASS、API 4 PASS、compileall 与 diff --check PASS。启动阶段一次请求超时，后续恢复。完整端到端视频延迟未测量；P9-C PARTIAL 保留。[证据](reports/frontend-v1.1/MONITOR_PREVIEW_TELEMETRY_REPORT.md)。
+
+## 2026-10-09 V1.1 发布门禁
+
+PASS（V1.1 前端发布范围）：`.venv-final-demo` 全量回归 812 PASS / 1 SKIP；独立 `.venv-frontend-api` 4 PASS；Vitest 11 PASS；Vite build、compileall、冻结环境 preflight 与暂存差异检查 PASS。跳过的 FastAPI 集成测试已在独立 API 环境执行。USB/远端 RTSP、长时稳定性与 P9-C overall PARTIAL 不转为 PASS。详见 [发布检查](reports/frontend-v1.1/V1_1_RELEASE_CHECK.md)。

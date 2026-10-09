@@ -5,7 +5,11 @@ __pycache__/
 .venv/
 .venv-final-demo/
 .venv-final-demo-verify/
+.venv-frontend-api/
 build/
+front/node_modules/
+front/dist/
+front/source/statices/picture/
 *.egg-info/
 venv/
 .env

@@ -73,3 +73,6 @@ The installed Ultralytics matching/AP source was inspected and used as a runtime
 reference check; no third-party business source was copied. The repository's
 metric and error-analysis implementation is original and tested against that API.
 Existing dependency-license and distribution boundaries remain in force.
+## V1.1 frontend/API dependencies (2026-10-08)
+
+The new local interface uses npm packages Vue 3, Vite, Vue Router, Pinia, Element Plus and Icons Vue, Axios, Sass, Vitest (MIT per installed package metadata), and Apache ECharts (Apache-2.0 per installed package metadata). Python API packages are FastAPI, Starlette, Uvicorn and HTTPX. The project imports these packages through normal package managers; it does not copy their source or bundle design screenshots. Exact resolved JavaScript versions are in `front/package-lock.json`; independently pinned API packages are in `locks/frontend-v1.1-api/requirements.txt`. Retain upstream notices and review licenses before redistribution of bundled binaries.

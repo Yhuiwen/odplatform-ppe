@@ -8,6 +8,8 @@ reviews; the statuses below reflect the current accepted records.
 
 ## Current Phase
 
+- **V1.1 Vue/FastAPI frontend migration (2026-10-08): HUMAN REVIEW PENDING.** Seven real API-connected Vue pages, service-owned single monitoring instance, event/evidence/AI adapters, isolated API dependency environment and Streamlit fallback are implemented. Real isolated MP4: 47/47 frames, 74 detection observations, one PPE_UNKNOWN event, two channel deliveries and processed preview. Frontend build and three Vitest checks pass; API integration 2 pass; V1 frozen suite 810 pass, one expected API skip. Browser checks cover seven pages at 1366×768 and 1920×1080 without page overflow or new JS errors. USB/RTSP physical/remote input, live Provider and P9-C long stability remain open. [Migration report](reports/frontend-v1.1/V1_1_FRONTEND_MIGRATION_REPORT.md), [test report](reports/frontend-v1.1/FRONTEND_TEST_REPORT.md), [handover](worklogs/2026/10/2026-10-08-10-v1.1-frontend-migration.md).
+
 - **P9-D Overview/source/time refinement (2026-10-07): targeted gate PASS.**
   Visible event tables hide IDs; time sorting is available in event, overview
   and monitoring views; source labels and grouped filters use `mp4`,
@@ -1073,3 +1075,37 @@ Resolved provider configuration changes rebuild the assistant session. Real Deep
 ## Latest V1 completion increment (2026-10-08)
 
 Implemented the audit closure items at the user's request, excluding RTSP and long stability. New split R2 resolves the reviewed valid/test near duplicates; train bytes and original frozen assets unchanged. Quality charts and supplemental 80-image evaluation PASS. Real report on 52 persisted events returned LLM / non-degraded / grounded-valid; same-scope fallback verified. Deployment/recovery and demo/defense index are provided. [Completion report](reports/phase-09/V1_COMPLETION_REPORT.md), [deployment guide](V1_DEPLOYMENT_GUIDE.md), [demo index](V1_DEMO_AND_DEFENSE.md). No unrestricted final Charter acceptance or long-stability closure is asserted.
+
+
+## FE-8 响应式布局优化（2026-10-09）
+
+固定导航/顶栏、主内容与数据区域滚动、七页响应式及图表容器监听已实现。49次真实浏览器尺寸测量无主内容横向溢出；前端4测试、API2测试、真实MP4验证通过。实际125%浏览器缩放未执行，现场助手Provider请求超时；不提升V1/P9-C完成状态。详见 [FE8报告](reports/frontend-v1.1/FE8_RESPONSIVE_LAYOUT_REPORT.md)。HUMAN REVIEW PENDING；未commit/push/tag。
+
+
+## 2026-10-09 鼠标演示与交互修复
+
+用户指定MP4真实鼠标启动/停止/完成验证：完整570帧、1777检测观测、2事件、4通道告警；事件处理与恢复持久化、证据校验/放大/复制、跨页详情和统计筛选通过。修复跨页选择、AI等待与日期范围、四个受控快捷问题及中文展示。真实Provider报告Grounding valid、助手统计与本地今日5条查询通过；前端8测试与API2测试通过。未知英文句型保留原文，P9-C风险保留。详见 [演示修复报告](reports/frontend-v1.1/FUNCTION_DEMO_FIX_REPORT.md)。HUMAN REVIEW PENDING；未commit/push/tag。
+
+
+## 2026-10-09 相对时间查询与报告中文展示优化
+
+- API 仅对完整匹配的安全事件问题适配最近分钟/小时/天查询（最长 7 天）；继续经过原只读 Agent。手动日期优先，追加删除指令不会被改写。
+- 前端展示本地时间范围与无事件状态；补齐截图中的报告中文句式，未适配原文保留在明确标记的展开区域。
+- 验证：前端 9 项通过；独立 API 环境 2 项通过（包括空范围、超限、危险追加指令）；生产构建通过；diff --check 通过。
+- 运行实例重启被自动审批拒绝，因此当前 8765 后端尚未加载适配；实时端到端查询待手动重启验证。P9-C 原有风险保留。没有 commit/push/tag。
+
+## 2026-10-09 报告证据与导航状态优化
+
+报告数据依据可显示已校验的真实图片并点击放大；七个模块的界面状态在导航切换中保留。真实 Provider 报告和浏览器往返已验证；前端 10 测试、API 2 测试、构建通过。新版本在本机 8767 端口供审核；原 8765 实例仍在运行。详见 [专项记录](reports/frontend-v1.1/REPORT_EVIDENCE_NAV_STATE.md)与[交接记录](worklogs/2026/10/2026-10-09-04-report-evidence-navigation.md)。P9-C 原有风险和人工审核状态不变。
+
+## 2026-10-09 监控最新事件窗口
+
+近期事件以时间倒序展示在独立滚动的右侧卡片中，不再随数量增加撑高页面。真实浏览器测量与前端测试通过，详见 [专项记录](reports/frontend-v1.1/MONITOR_EVENTS_SCROLL_REPORT.md)与[交接记录](worklogs/2026/10/2026-10-09-05-monitor-event-scroll.md)。保持 V1.1 人工审核及 P9-C 原状态。
+
+## 2026-10-09 监控预览指标与镜像
+
+视频右上角显示实际 MJPEG 发布帧率和最新帧更新延迟，并可镜像预览；已移除画面下方说明。用户指定 MP4 实跑 570 帧，浏览器验证运行态数值及完成态空值。新版在本机 `127.0.0.1:8768` 供审核。详见 [专项记录](reports/frontend-v1.1/MONITOR_PREVIEW_TELEMETRY_REPORT.md)。V1.1 人工审核与 P9-C PARTIAL 不变。
+
+## 2026-10-09 V1.1 前端发布门禁
+
+用户已授权提交和远端发布 V1.1 前端版本。发布前检查：旧冻结环境全量回归 812 PASS / 1 SKIP，独立 API 环境 4 PASS，前端 11 PASS 且构建通过；冻结环境预检 PASS，设计图、运行资源、密钥与构建产物不在提交范围。发布检查见 [记录](reports/frontend-v1.1/V1_1_RELEASE_CHECK.md)，交接见[工作日志](worklogs/2026/10/2026-10-09-07-v1.1-release.md)。P9-C PARTIAL 与其他未验收项不因 V1.1 发布改变。

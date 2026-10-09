@@ -114,7 +114,8 @@ def test_local_markdown_links_do_not_point_to_missing_files() -> None:
     markdown_files = [
         path for path in PROJECT_ROOT.rglob("*.md")
         if path.relative_to(PROJECT_ROOT).parts[0]
-        not in {".venv", ".venv-final-demo", ".venv-final-demo-verify", "venv"}
+            not in {".venv", ".venv-final-demo", ".venv-final-demo-verify", "venv"}
+            and "node_modules" not in path.relative_to(PROJECT_ROOT).parts
     ]
     for markdown_file in markdown_files:
         content = markdown_file.read_text(encoding="utf-8")
