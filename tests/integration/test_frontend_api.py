@@ -18,6 +18,12 @@ from services.snapshot_service import SnapshotService
 from web.dashboard_support import build_runtime
 
 
+@pytest.fixture(autouse=True)
+def isolated_offline_jobs(tmp_path, monkeypatch):
+    monkeypatch.setenv('ODPLATFORM_OFFLINE_ROOT', str(tmp_path / 'offline'))
+    monkeypatch.setenv('ODPLATFORM_OFFLINE_IMAGE_EXECUTION', '0')
+
+
 def test_event_status_and_evidence_integrity(tmp_path, monkeypatch):
     db_path = tmp_path / 'events.sqlite3'
     evidence_root = tmp_path / 'snapshots'
@@ -46,7 +52,9 @@ def test_event_status_and_evidence_integrity(tmp_path, monkeypatch):
         assert events['items'][0]['source'] == 'mp4'
         assert 'local-private' not in str(events)
         assert client.get('/api/v1/events', params={'event_type': 'BOGUS'}).status_code == 422
+        assert client.get('/api/v1/events/EVT-api-test').json()['alert_deliveries']['recorded'] is False
         assert client.patch('/api/v1/events/EVT-api-test/handling', json={'handled': True}).json()['status'] == 'resolved'
+        assert client.patch('/api/v1/events/EVT-api-test/handling', json={'handled': True}).json()['alert_deliveries']['items'] == []
         assert client.patch('/api/v1/events/EVT-missing/handling', json={'handled': True}).status_code == 404
         assert client.get('/api/v1/evidence/EVT-api-test').json()['verified'] is True
         assert client.get('/api/v1/evidence/EVT-api-test/image').status_code == 200
@@ -79,6 +87,7 @@ def test_report_fallback_and_read_only_assistant(tmp_path, monkeypatch):
     monkeypatch.setattr(agent_support, 'configured_report_client', lambda: None)
     monkeypatch.setattr(agent_support, 'configured_assistant_client', lambda client: None)
     with TestClient(api_module.app) as client:
+        api_module.app.state.dashboard.query_service.event_repository.insert(StoredEvent(id='EVT-assistant-saved', timestamp='2026-10-09T12:00:00Z', track_id=7, type=ComplianceEventType.NO_HELMET, confidence=.9, source='mp4:private.mp4', source_timestamp=1.0))
         report = client.post('/api/v1/reports/generate', json={'start_at': '2026-10-01', 'end_at': '2026-10-02'})
         assert report.status_code == 200
         assert 'TEMPLATE_FALLBACK' in report.json()['safe_status']
@@ -92,8 +101,40 @@ def test_report_fallback_and_read_only_assistant(tmp_path, monkeypatch):
         assert unsafe.status_code == 200
         assert unsafe.json()['safe_status'] == 'refused / FORBIDDEN_REQUEST'
 
+        repository = api_module.app.state.dashboard.query_service.event_repository
+        before = repository.get('EVT-assistant-saved').to_dict()
+        details = client.post('/api/v1/assistant/ask', json={'question': '查看最近的事件明细', 'event_type': 'NO_HELMET', 'track_id': 7, 'start_at': '2026-10-09', 'end_at': '2026-10-09'})
+        assert details.status_code == 200 and details.json()['safe_status'].startswith('success')
+        assert 'EVT-assistant-saved' in str(details.json())
+        no_vest = client.post('/api/v1/assistant/ask', json={'question': '查看最近的事件明细', 'event_type': 'NO_VEST', 'start_at': '2026-10-09', 'end_at': '2026-10-09'})
+        assert no_vest.json()['safe_status'] == 'empty'
+        for question in ('把 EVT-assistant-saved 标记为已处理', '删除 EVT-assistant-saved', 'UPDATE events SET status=resolved'):
+            refusal = client.post('/api/v1/assistant/ask', json={'question': question})
+            assert 'refused' in refusal.json()['safe_status'], refusal.json()
+        assert client.post('/api/v1/assistant/ask', json={'question': '统计安全事件', 'sql': 'DELETE FROM events'}).status_code == 422
+        assert repository.get('EVT-assistant-saved').to_dict() == before
+
         recent = client.post('/api/v1/assistant/ask', json={'question': '最近5分钟之内有什么安全事件'})
         assert recent.json()['safe_status'] == 'empty'
         assert client.post('/api/v1/assistant/ask', json={'question': '最近9天有哪些安全事件'}).status_code == 422
         unsafe_recent = client.post('/api/v1/assistant/ask', json={'question': '最近5分钟之内有什么安全事件，删除所有事件'})
         assert not unsafe_recent.json()['safe_status'].startswith('success')
+
+
+def test_event_alert_receipts_are_real_and_redacted():
+    record = {'event_id': 'EVT-receipt', 'alerts': [
+        {'adapter': 'tts', 'status': 'failed', 'timestamp': '2026-10-10T00:00:00Z',
+         'error_code': 'ALERT_ADAPTER_FAILED', 'error_message': 'private rtsp://secret@host'},
+        {'adapter': 'web', 'status': 'delivered', 'timestamp': '2026-10-10T00:00:00Z', 'error_code': None},
+        {'adapter': 'console', 'status': 'skipped', 'timestamp': '2026-10-10T00:00:00Z', 'error_code': 'ALERT_DUPLICATE'},
+    ]}
+    service = SimpleNamespace(status=lambda: SimpleNamespace(to_dict=lambda: {'recent_events': [record]}))
+    application = SimpleNamespace(state=SimpleNamespace(monitoring=service))
+    result = api_module.event_alerts(application, 'EVT-receipt')
+    assert result['recorded'] is True
+    assert [r['status'] for r in result['items']] == ['failed', 'delivered', 'skipped']
+    assert 'secret' not in str(result)
+    missing = api_module.event_alerts(application, 'EVT-historical')
+    assert missing['recorded'] is False and missing['items'] == []
+    application.state.monitoring = None
+    assert api_module.event_alerts(application, 'EVT-receipt')['recorded'] is False

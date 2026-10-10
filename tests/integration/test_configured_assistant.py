@@ -115,6 +115,26 @@ def test_composition_failure_keeps_verified_local_result(tmp_path):
     assert "total_count=1" in result.answer
 
 
+def test_detail_interpretation_is_contextual_and_read_only(tmp_path):
+    from types import SimpleNamespace
+    from core.schemas.agent import AgentOutcome
+    from web.agent_support import AgentUiProjection
+
+    client = FakeAssistant()
+    app = adapter(tmp_path, client)
+    projection = AgentUiProjection(
+        answer="Retrieved 1 event detail record(s).",
+        summary=("id=EVT-assistant-test; timestamp=2026-10-02T12:00:00Z; track_id=7; type=NO_HELMET; status=open; confidence=0.91",),
+        evidence_references=(), recommendations=(), safe_status="success",
+    )
+    app._compose_assistant_answer(request(), SimpleNamespace(status=AgentOutcome.ANSWERED), projection)
+    statements = client.selections[-1]
+    assert any("安全帽佩戴提醒" in line for line in statements)
+    assert any("不等于现场风险仍在持续" in line for line in statements)
+    assert any("不代表事故概率" in line for line in statements)
+    assert not any("反光衣佩戴提醒" in line for line in statements)
+
+
 @pytest.mark.parametrize("body", [
     '{"statement_ids":[99]}', '{"statement_ids":[true]}',
     '{"statement_ids":[0,0]}', '{"statement_ids":[0],"answer":"invented 999 events"}',

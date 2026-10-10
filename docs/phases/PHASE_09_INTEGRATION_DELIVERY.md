@@ -1,5 +1,13 @@
 # Phase 09 — Integration & Delivery
 
+## V1.2-G 集成验收（2026-10-10）
+
+G授权确认F已审核。本轮显示优化、八种真实图片输入、47/570真模型链、混合FIFO/排队取消、同Worker三视频、API安全与四尺寸浏览器检查已执行。最终Vue34 PASS/build PASS、独立API109 PASS、真实8用例分轮有通过证据、冻结819 PASS/12独立API文件跳过。首轮570帧在推理前仍出现CFR间隔拒绝，后续十次严格探测和三任务通过未解释失败：G-CFR-01/RISK-030为发布阻塞。G结论BLOCKED / HUMAN REVIEW PENDING；P9-C PARTIAL/FROZEN、Global Phase9不关闭，未提交/推送/Tag。[G报告](../reports/v1.2/V12_G_FINAL_ACCEPTANCE_REPORT.md)。
+
+## V1.2-F 离线工作台（2026-10-09）
+
+F授权确认E审核通过。Vue离线三个Tab、上传/进度/取消/历史、图片对比、H.264/时间轴/只读证据与真实manifest下载已实现；受限原图/HEAD与Range验证缓存补充通过。前端31 PASS/build PASS，独立API106非模型+5真实资源PASS，冻结819 PASS/11独立API文件跳过。四种桌面尺寸和原七页无横向溢出，真实图片/47/570链路和下载/取消通过。F门禁PASS / HUMAN REVIEW PENDING；Global Phase9、P9-C不变，不进入G或发布。[F报告](../reports/v1.2/V12_F_FRONTEND_REPORT.md)。
+
 ## 1. 阶段目标
 
 【LOCKED】全链路测试、性能分析、文档、Demo、答辩交付。
@@ -367,3 +375,64 @@ User-authorized V1 audit items are implemented, excluding RTSP and long stabilit
 ## 2026-10-09 V1.1 发布门禁
 
 用户授权发布 V1.1 前端版本；工作区范围、远端同步、敏感信息与忽略规则检查通过。冻结环境全量回归 812 PASS / 1 SKIP（API 环境单独 4 PASS），前端 11 PASS 且构建通过；预检、编译与暂存差异检查通过。此版本发布不关闭 Phase 9 或 P9-C；USB/远端 RTSP 及长时资源风险仍按既有记录。详见 [发布检查](../reports/frontend-v1.1/V1_1_RELEASE_CHECK.md)。
+
+## 2026-10-09 V1.2-D 离线原分辨率视频导出
+
+用户授权的 V1.2-D 已实现逐帧冻结 YOLO11 推理、原尺寸标注和受监督 libx264 编码。真实 47/570 帧 MP4 输入、推理、标注、提交及实际输出帧数一致，均为 1280×720，分别保留 24000/1001 与 30 FPS；浏览器完整播放通过。单 Worker 顺序复用模型、取消/重启及受控产物校验有测试。联合 API 测试 67 PASS，补充恢复与非模型集合 65 PASS（合计 68 个不同测试）；冻结环境全量复验 819 PASS / 7 独立 API 文件跳过，前端 11 PASS/build PASS。初轮验证 ZIP 触发旧资产门禁，已仅隔离本阶段生成的 ZIP 后复验；旧门禁未放宽。视频事件分析 NOT_IMPLEMENTED，真实 FullHD YOLO 和长期稳定性未执行；P9-C PARTIAL/FROZEN 与 Phase 9 验收不变。没有进入 E，没有 commit/push/tag。[D 报告](../reports/v1.2/V12_D_VIDEO_RENDERING_REPORT.md)。HUMAN REVIEW PENDING。
+
+
+### V1.2-C supplemental verification (2026-10-09)
+
+Added inference-call timing, detection context rejection and pre-publication input hash recheck. Separate C/B/API suite 39 PASS; real original-size image chain and three-job model reuse PASS. Existing D preserved, video dispatch disabled only in isolated C test. P9-C unchanged; HUMAN REVIEW PENDING. See [C report](../reports/v1.2/V12_C_IMAGE_INFERENCE_REPORT.md).
+
+
+### V1.2-E offline events/evidence (2026-10-09)
+
+User authorization confirms D review passed and authorizes E only. Per-job Collector reuses frozen ByteTrack/association/ComplianceService/EventEngine, SQLite repositories and original-resolution dual PNG evidence, with single-pass detections and verified exports/read-only APIs. Final combined API/image/video suite107 PASS, frozen819 PASS/10 separate-API file skips, Vue11 PASS/build PASS. Real47/570 frames retained, events1/2 and evidence2/4; realtime events/alerts/state isolated. Historical intermittent pre-inference CFR failure recorded despite final passing rerun; P9-C remains PARTIAL/FROZEN. E gate PASS / HUMAN REVIEW PENDING, no F or publication. [E report](../reports/v1.2/V12_E_EVENTS_EVIDENCE_REPORT.md).
+
+
+## 2026-10-10 监控输入源与事件告警详情优化
+
+输入源切换清空地址，USB 输入限制非负整数。USB 实际通过服务端 `cv2.VideoCapture(index)` 读取摄像头，并非固定 HP；自动后端编号与 Windows 名称缺少可靠映射，暂不显示猜测的设备名称。事件详情与处理响应附带当前会话近期事件的真实通道投递回执（控制台/网页/语音、成功/失败/跳过、时间、原因代码），不返回可能含敏感信息的异常文本。历史 SQLite 未存回执，明确显示未知，不修改数据库 Schema。
+
+验证：前端 35 PASS；独立 API 3 PASS；生产构建 PASS（既有包体警告）；compileall 与 diff --check PASS。浏览器输入源清空及详情区域可见。自动审批拒绝停止/重启 8775 进程，运行后端尚未加载新增回执字段，前端明确提示需更新后端；真实通道详情浏览器联调 NOT_EXECUTED。P9-C 与 G-CFR-01/RISK-030 及 V1.2 发布 BLOCKED 状态保持。无 commit/push/tag。见 [交接](../worklogs/2026/10/2026-10-10-02-monitor-input-alerts.md)。
+
+
+## 2026-10-10 语音运行环境与告警详情卡片
+
+API 挂载冻结运行环境时显式追加已安装 PyWin32 模块路径及 DLL 搜索目录，修复 `pywintypes` 无法加载；不安装依赖、不修改冻结环境。详情回执改为可换行卡片，展示中文原因与完整代码。前端 35 PASS，API 3 PASS，构建/compileall/diff 检查 PASS。独立 API 解释器真实语音引擎初始化和工作线程 speak 返回 PASS，实际可听性待人工确认。浏览器真实三通道回执卡片宽度/contentWidth 均 386px，无横向溢出；历史语音失败回执保留。运行 8775 尚需人工重启加载本次语音修复，因前次自动审批拒绝重启，本次不绕过。P9-C/G-CFR 及发布状态不变，无 commit/push/tag。
+
+
+## 2026-10-10 MP4 语音非阻塞与会话隔离
+
+API 语音改为有界队列（32）及固定 COM 工作线程；Windows 原生 SAPI 同步播音只在该线程执行，避免 pyttsx3 循环复用异常与检测线程等待。入队不计投递成功，详情显示等待播报并轮询真实完成结果；指标只统计完成投递。冷却/去重记录按监控会话隔离，保留会话内原30秒规则，避免复用 Track ID 被上一段视频抑制。检测/跟踪/合规/SQLite Schema 与冻结配置不变。
+
+验证：后端语音/告警/API20 PASS，前端35 PASS（详情补充复验1 PASS，非新增独立数量），build/compileall/diff PASS。指定真实MP4两次均completed/570帧/2事件/6通道投递，4条语音最终均delivered，SAPI调用各持续约5–6秒；独立验证目录不写正式数据库。诊断轮确认跨会话TTS_COOLDOWN，保留诊断证据。证据：docs/reports/v1.2/TTS_TWO_MP4_VALIDATION.json；TTS_TWO_MP4_COOLDOWN_DIAGNOSIS.json。实际声音可听性及浏览器主观流畅度仍待人工确认；不能将570帧完整处理宣称为浏览器30FPS。正式8775实例尚需重启加载；此前自动审批阻止重启，本次未绕过。既有P9-C/G-CFR风险保持，未commit/push/tag。
+
+
+## 2026-10-10 固定事件类型短音频播报
+
+语音只播报事件类型中文短句，去除Track ID/置信度。选择启动时SAPI预生成三种固定WAV、运行时winsound直接播放，保留独立工作线程/有界队列/会话内冷却/真实完成回执。不引入外部音频或依赖；缓存由TemporaryDirectory管理，关闭线程时清理。真实准备0.555秒；三条音频时长2.537/2.611/2.620秒，播放进程CPU时间0.015625/0.015625/0秒（单次观察，非视频帧率/长期保证）。20项语音/告警/API测试PASS，compileall/diff PASS。运行8775自动重启被审批策略阻止，代码待人工重启加载，现有数据保持。P9-C/G-CFR风险及发布门禁不变。
+
+
+## 2026-10-10 安全助手持久事件只读增强
+
+API Agent 会话显式复用当前dashboard查询实例，避免另建默认数据库运行时；增加事件类型/处理状态/非负Track ID过滤与事件明细快捷问题，沿原AgentApplicationService/四个冻结只读工具/候选参数及引用校验执行。已保存事件、统计、处理状态和证据引用可作为回答依据；不开放写入、删除、任意SQL/文件访问。额外请求字段拒绝，显式修改命令在API拒绝；模型仍只能规划白名单查询和选择已验证事实，不自由生成不受校验的业务结论。前端增加只读筛选及说明，旧后端不支持时明确错误。
+
+验证：API/配置助手/Agent Web边界/工具注册/API契约/LLM候选联合61 PASS；前端35 PASS/build PASS；compileall/diff PASS。补充保存事件读取、类型/日期/轨迹筛选、空结果、修改/删除/SQL拒绝及数据库状态不变测试。此前release检查的空状态失败源于测试中助手未共享隔离数据库；修复绑定，并用明确已保存fixture验证非空/空范围，原空结果断言保留。真实Provider新增查询与浏览器联调未执行；自动审批拒绝8775停止/重启，运行实例未加载本次API。现有CFR/P9-C及V1.2发布门禁不因本次测试关闭；未commit/push/tag。
+
+
+## 2026-10-10 安全助手输出与受控解读优化
+
+事件明细改为中文字段卡片，展示时间/类型/状态/轨迹/置信度及事件和证据入口，去除重复原始总数字段；明确本条回答的明细展示数量并提示完整记录前往事件中心。证据引用折叠为可放大缩略图，经现有受限图片 API 读取，不将引用存在视为完整性校验通过。新增模型可选择的上下文复核建议、待处理/Track ID/置信度解释；仍使用既有 statement ID 校验、只读白名单及失败降级，不开放自由事实编造或任何修改权限。
+
+验证：相关后端25 PASS、前端37 PASS、生产构建PASS；最初Python测试收集因先导入业务模块缺少冻结运行库失败，按已有API环境引导顺序重新执行通过。真实Provider新解读、浏览器新布局联调及本次后端重启未执行，需人工在启动终端重启并刷新验证。P9-C/CFR及V1.2发布门禁保持，未commit/push/tag。
+
+
+## 2026-10-10 V1.2 发布授权与补充验收
+
+用户明确授权暂时接受 G-CFR-01/RISK-030 与 P9-C 未决风险，完成版本及真实联调后提交、推送并发布 V1.2；ADR-029记录例外，不改原风险状态与验收标准。前端package/lock、Python包metadata与API统一1.2.0。实时/离线并行未实现。
+
+前端37 PASS/build PASS；独立API/业务联合134 PASS；真实缓存音频两次指定MP4均570帧、2事件、语音全部成功，播报期间帧数继续推进。真实Provider筛选返回与SQLite事件/图片对应，助手保持只读；浏览器1366/1920无横向溢出，事件卡片及证据放大通过，error日志为空。冻结全量回归最终结果见发布检查报告。仍不宣称长期稳定、全分辨率覆盖或人耳可听性已验收。详细证据与发布说明：docs/reports/v1.2/V12_RELEASE_CHECK.md、V12_RELEASE_NOTES.md。
+
+最终冻结业务回归：820 PASS/13独立API文件SKIP（422.17秒，exit0，无deselect），跳过不计为通过；独立API/业务134 PASS。按ADR-029准予已授权V1.2发布，CFR/P9-C状态及原验收标准不变。

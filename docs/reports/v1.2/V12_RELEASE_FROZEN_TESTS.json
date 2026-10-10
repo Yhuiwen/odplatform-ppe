@@ -1,0 +1,11 @@
+{
+  "command": "frozen Python: import torch, pytest; pytest.main([-vv,-x,--tb=short])",
+  "passed": 820,
+  "skipped_file_count": 13,
+  "failed": 0,
+  "exit_code": 0,
+  "seconds": 422.17,
+  "no_deselection": true,
+  "initial_runs": "Two interrupted runs (first showed1 failure without final diagnosis); not counted as PASS",
+  "final_summary": "820 passed, 13 skipped in 422.17s"
+}

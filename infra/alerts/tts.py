@@ -85,11 +85,7 @@ class TTSAlertAdapter(BaseAlertAdapter):
                 )
 
         try:
-            spoken = (
-                f"track {message.track_id}: "
-                f"{_SPOKEN_ALERT_TEXT[message.alert_type]} "
-                f"({message.confidence:.2f})"
-            )
+            spoken = _SPOKEN_ALERT_TEXT[message.alert_type]
             self.service.speak(spoken)
         except TTSServiceError as exc:
             return AlertResult(

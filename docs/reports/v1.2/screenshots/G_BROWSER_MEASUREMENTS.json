@@ -1,0 +1,535 @@
+[
+  {
+    "label": "video",
+    "active": [
+      "离线检测"
+    ],
+    "asideY": 0,
+    "documentWidth": 1366,
+    "headerY": 0,
+    "height": 768,
+    "mainScrollWidth": 1101,
+    "mainWidth": 1101,
+    "width": 1366
+  },
+  {
+    "label": "overview",
+    "active": [
+      "安全总览"
+    ],
+    "asideY": 0,
+    "documentWidth": 1920,
+    "headerY": 0,
+    "height": 1080,
+    "mainScrollWidth": 1655,
+    "mainWidth": 1655,
+    "width": 1920
+  },
+  {
+    "label": "monitoring",
+    "active": [
+      "实时监控"
+    ],
+    "asideY": 0,
+    "documentWidth": 1920,
+    "headerY": 0,
+    "height": 1080,
+    "mainScrollWidth": 1655,
+    "mainWidth": 1655,
+    "width": 1920
+  },
+  {
+    "label": "events-page",
+    "active": [
+      "事件中心"
+    ],
+    "asideY": 0,
+    "documentWidth": 1920,
+    "headerY": 0,
+    "height": 1080,
+    "mainScrollWidth": 1655,
+    "mainWidth": 1655,
+    "width": 1920
+  },
+  {
+    "label": "evidence-page",
+    "active": [
+      "证据中心"
+    ],
+    "asideY": 0,
+    "documentWidth": 1920,
+    "headerY": 0,
+    "height": 1080,
+    "mainScrollWidth": 1655,
+    "mainWidth": 1655,
+    "width": 1920
+  },
+  {
+    "label": "statistics",
+    "active": [
+      "统计分析"
+    ],
+    "asideY": 0,
+    "documentWidth": 1920,
+    "headerY": 0,
+    "height": 1080,
+    "mainScrollWidth": 1655,
+    "mainWidth": 1655,
+    "width": 1920
+  },
+  {
+    "label": "report",
+    "active": [
+      "AI 安全报告"
+    ],
+    "asideY": 0,
+    "documentWidth": 1920,
+    "headerY": 0,
+    "height": 1080,
+    "mainScrollWidth": 1655,
+    "mainWidth": 1655,
+    "width": 1920
+  },
+  {
+    "label": "assistant",
+    "active": [
+      "安全助手"
+    ],
+    "asideY": 0,
+    "documentWidth": 1920,
+    "headerY": 0,
+    "height": 1080,
+    "mainScrollWidth": 1655,
+    "mainWidth": 1655,
+    "width": 1920
+  },
+  {
+    "label": "history",
+    "active": [
+      "离线检测"
+    ],
+    "asideY": 0,
+    "documentWidth": 1920,
+    "headerY": 0,
+    "height": 1080,
+    "mainScrollWidth": 1655,
+    "mainWidth": 1655,
+    "width": 1920
+  },
+  {
+    "label": "image",
+    "active": [
+      "离线检测"
+    ],
+    "asideY": 0,
+    "documentWidth": 1920,
+    "headerY": 0,
+    "height": 1080,
+    "mainScrollWidth": 1655,
+    "mainWidth": 1655,
+    "width": 1920
+  },
+  {
+    "label": "video",
+    "active": [
+      "离线检测"
+    ],
+    "asideY": 0,
+    "documentWidth": 1920,
+    "headerY": 0,
+    "height": 1080,
+    "mainScrollWidth": 1655,
+    "mainWidth": 1655,
+    "width": 1920
+  },
+  {
+    "label": "overview",
+    "active": [
+      "安全总览"
+    ],
+    "asideY": 0,
+    "documentWidth": 1600,
+    "headerY": 0,
+    "height": 900,
+    "mainScrollWidth": 1335,
+    "mainWidth": 1335,
+    "width": 1600
+  },
+  {
+    "label": "monitoring",
+    "active": [
+      "实时监控"
+    ],
+    "asideY": 0,
+    "documentWidth": 1600,
+    "headerY": 0,
+    "height": 900,
+    "mainScrollWidth": 1335,
+    "mainWidth": 1335,
+    "width": 1600
+  },
+  {
+    "label": "events-page",
+    "active": [
+      "事件中心"
+    ],
+    "asideY": 0,
+    "documentWidth": 1600,
+    "headerY": 0,
+    "height": 900,
+    "mainScrollWidth": 1335,
+    "mainWidth": 1335,
+    "width": 1600
+  },
+  {
+    "label": "evidence-page",
+    "active": [
+      "证据中心"
+    ],
+    "asideY": 0,
+    "documentWidth": 1600,
+    "headerY": 0,
+    "height": 900,
+    "mainScrollWidth": 1335,
+    "mainWidth": 1335,
+    "width": 1600
+  },
+  {
+    "label": "statistics",
+    "active": [
+      "统计分析"
+    ],
+    "asideY": 0,
+    "documentWidth": 1600,
+    "headerY": 0,
+    "height": 900,
+    "mainScrollWidth": 1335,
+    "mainWidth": 1335,
+    "width": 1600
+  },
+  {
+    "label": "report",
+    "active": [
+      "AI 安全报告"
+    ],
+    "asideY": 0,
+    "documentWidth": 1600,
+    "headerY": 0,
+    "height": 900,
+    "mainScrollWidth": 1335,
+    "mainWidth": 1335,
+    "width": 1600
+  },
+  {
+    "label": "assistant",
+    "active": [
+      "安全助手"
+    ],
+    "asideY": 0,
+    "documentWidth": 1600,
+    "headerY": 0,
+    "height": 900,
+    "mainScrollWidth": 1335,
+    "mainWidth": 1335,
+    "width": 1600
+  },
+  {
+    "label": "history",
+    "active": [
+      "离线检测"
+    ],
+    "asideY": 0,
+    "documentWidth": 1600,
+    "headerY": 0,
+    "height": 900,
+    "mainScrollWidth": 1335,
+    "mainWidth": 1335,
+    "width": 1600
+  },
+  {
+    "label": "image",
+    "active": [
+      "离线检测"
+    ],
+    "asideY": 0,
+    "documentWidth": 1600,
+    "headerY": 0,
+    "height": 900,
+    "mainScrollWidth": 1335,
+    "mainWidth": 1335,
+    "width": 1600
+  },
+  {
+    "label": "video",
+    "active": [
+      "离线检测"
+    ],
+    "asideY": 0,
+    "documentWidth": 1600,
+    "headerY": 0,
+    "height": 900,
+    "mainScrollWidth": 1335,
+    "mainWidth": 1335,
+    "width": 1600
+  },
+  {
+    "label": "overview",
+    "active": [
+      "安全总览"
+    ],
+    "asideY": 0,
+    "documentWidth": 1366,
+    "headerY": 0,
+    "height": 768,
+    "mainScrollWidth": 1101,
+    "mainWidth": 1101,
+    "width": 1366
+  },
+  {
+    "label": "monitoring",
+    "active": [
+      "实时监控"
+    ],
+    "asideY": 0,
+    "documentWidth": 1366,
+    "headerY": 0,
+    "height": 768,
+    "mainScrollWidth": 1101,
+    "mainWidth": 1101,
+    "width": 1366
+  },
+  {
+    "label": "events-page",
+    "active": [
+      "事件中心"
+    ],
+    "asideY": 0,
+    "documentWidth": 1366,
+    "headerY": 0,
+    "height": 768,
+    "mainScrollWidth": 1101,
+    "mainWidth": 1101,
+    "width": 1366
+  },
+  {
+    "label": "evidence-page",
+    "active": [
+      "证据中心"
+    ],
+    "asideY": 0,
+    "documentWidth": 1366,
+    "headerY": 0,
+    "height": 768,
+    "mainScrollWidth": 1101,
+    "mainWidth": 1101,
+    "width": 1366
+  },
+  {
+    "label": "statistics",
+    "active": [
+      "统计分析"
+    ],
+    "asideY": 0,
+    "documentWidth": 1366,
+    "headerY": 0,
+    "height": 768,
+    "mainScrollWidth": 1101,
+    "mainWidth": 1101,
+    "width": 1366
+  },
+  {
+    "label": "report",
+    "active": [
+      "AI 安全报告"
+    ],
+    "asideY": 0,
+    "documentWidth": 1366,
+    "headerY": 0,
+    "height": 768,
+    "mainScrollWidth": 1101,
+    "mainWidth": 1101,
+    "width": 1366
+  },
+  {
+    "label": "assistant",
+    "active": [
+      "安全助手"
+    ],
+    "asideY": 0,
+    "documentWidth": 1366,
+    "headerY": 0,
+    "height": 768,
+    "mainScrollWidth": 1101,
+    "mainWidth": 1101,
+    "width": 1366
+  },
+  {
+    "label": "history",
+    "active": [
+      "离线检测"
+    ],
+    "asideY": 0,
+    "documentWidth": 1366,
+    "headerY": 0,
+    "height": 768,
+    "mainScrollWidth": 1101,
+    "mainWidth": 1101,
+    "width": 1366
+  },
+  {
+    "label": "image",
+    "active": [
+      "离线检测"
+    ],
+    "asideY": 0,
+    "documentWidth": 1366,
+    "headerY": 0,
+    "height": 768,
+    "mainScrollWidth": 1101,
+    "mainWidth": 1101,
+    "width": 1366
+  },
+  {
+    "label": "video",
+    "active": [
+      "离线检测"
+    ],
+    "asideY": 0,
+    "documentWidth": 1366,
+    "headerY": 0,
+    "height": 768,
+    "mainScrollWidth": 1101,
+    "mainWidth": 1101,
+    "width": 1366
+  },
+  {
+    "label": "overview",
+    "active": [
+      "安全总览"
+    ],
+    "asideY": 0,
+    "documentWidth": 1280,
+    "headerY": 0,
+    "height": 720,
+    "mainScrollWidth": 1015,
+    "mainWidth": 1015,
+    "width": 1280
+  },
+  {
+    "label": "monitoring",
+    "active": [
+      "实时监控"
+    ],
+    "asideY": 0,
+    "documentWidth": 1280,
+    "headerY": 0,
+    "height": 720,
+    "mainScrollWidth": 1015,
+    "mainWidth": 1015,
+    "width": 1280
+  },
+  {
+    "label": "events-page",
+    "active": [
+      "事件中心"
+    ],
+    "asideY": 0,
+    "documentWidth": 1280,
+    "headerY": 0,
+    "height": 720,
+    "mainScrollWidth": 1015,
+    "mainWidth": 1015,
+    "width": 1280
+  },
+  {
+    "label": "evidence-page",
+    "active": [
+      "证据中心"
+    ],
+    "asideY": 0,
+    "documentWidth": 1280,
+    "headerY": 0,
+    "height": 720,
+    "mainScrollWidth": 1015,
+    "mainWidth": 1015,
+    "width": 1280
+  },
+  {
+    "label": "statistics",
+    "active": [
+      "统计分析"
+    ],
+    "asideY": 0,
+    "documentWidth": 1280,
+    "headerY": 0,
+    "height": 720,
+    "mainScrollWidth": 1015,
+    "mainWidth": 1015,
+    "width": 1280
+  },
+  {
+    "label": "report",
+    "active": [
+      "AI 安全报告"
+    ],
+    "asideY": 0,
+    "documentWidth": 1280,
+    "headerY": 0,
+    "height": 720,
+    "mainScrollWidth": 1015,
+    "mainWidth": 1015,
+    "width": 1280
+  },
+  {
+    "label": "assistant",
+    "active": [
+      "安全助手"
+    ],
+    "asideY": 0,
+    "documentWidth": 1280,
+    "headerY": 0,
+    "height": 720,
+    "mainScrollWidth": 1015,
+    "mainWidth": 1015,
+    "width": 1280
+  },
+  {
+    "label": "history",
+    "active": [
+      "离线检测"
+    ],
+    "asideY": 0,
+    "documentWidth": 1280,
+    "headerY": 0,
+    "height": 720,
+    "mainScrollWidth": 1015,
+    "mainWidth": 1015,
+    "width": 1280
+  },
+  {
+    "label": "image",
+    "active": [
+      "离线检测"
+    ],
+    "asideY": 0,
+    "documentWidth": 1280,
+    "headerY": 0,
+    "height": 720,
+    "mainScrollWidth": 1015,
+    "mainWidth": 1015,
+    "width": 1280
+  },
+  {
+    "label": "video",
+    "active": [
+      "离线检测"
+    ],
+    "asideY": 0,
+    "documentWidth": 1280,
+    "headerY": 0,
+    "height": 720,
+    "mainScrollWidth": 1015,
+    "mainWidth": 1015,
+    "width": 1280
+  }
+]

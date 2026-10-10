@@ -1,0 +1,98 @@
+[
+  {
+    "run": 1,
+    "state": "completed",
+    "frames": 570,
+    "delivered": 6,
+    "receipts": [
+      [
+        {
+          "adapter": "console",
+          "status": "delivered",
+          "timestamp": "2026-10-10T06:58:03Z",
+          "error_code": null
+        },
+        {
+          "adapter": "web",
+          "status": "delivered",
+          "timestamp": "2026-10-10T06:58:03Z",
+          "error_code": null
+        },
+        {
+          "adapter": "tts",
+          "status": "delivered",
+          "timestamp": "2026-10-10T06:58:09Z",
+          "error_code": null
+        }
+      ],
+      [
+        {
+          "adapter": "console",
+          "status": "delivered",
+          "timestamp": "2026-10-10T06:57:53Z",
+          "error_code": null
+        },
+        {
+          "adapter": "web",
+          "status": "delivered",
+          "timestamp": "2026-10-10T06:57:53Z",
+          "error_code": null
+        },
+        {
+          "adapter": "tts",
+          "status": "delivered",
+          "timestamp": "2026-10-10T06:57:59Z",
+          "error_code": null
+        }
+      ]
+    ]
+  },
+  {
+    "run": 2,
+    "state": "completed",
+    "frames": 570,
+    "delivered": 6,
+    "receipts": [
+      [
+        {
+          "adapter": "console",
+          "status": "delivered",
+          "timestamp": "2026-10-10T06:58:20Z",
+          "error_code": null
+        },
+        {
+          "adapter": "web",
+          "status": "delivered",
+          "timestamp": "2026-10-10T06:58:20Z",
+          "error_code": null
+        },
+        {
+          "adapter": "tts",
+          "status": "delivered",
+          "timestamp": "2026-10-10T06:58:25Z",
+          "error_code": null
+        }
+      ],
+      [
+        {
+          "adapter": "console",
+          "status": "delivered",
+          "timestamp": "2026-10-10T06:58:12Z",
+          "error_code": null
+        },
+        {
+          "adapter": "web",
+          "status": "delivered",
+          "timestamp": "2026-10-10T06:58:12Z",
+          "error_code": null
+        },
+        {
+          "adapter": "tts",
+          "status": "delivered",
+          "timestamp": "2026-10-10T06:58:18Z",
+          "error_code": null
+        }
+      ]
+    ]
+  }
+]

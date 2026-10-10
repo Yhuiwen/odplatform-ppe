@@ -35,3 +35,18 @@ describe('monitoring latest events',()=>{
     app.unmount();root.remove();HTMLElement.prototype.scrollTo=originalScrollTo
   })
 })
+
+
+it('clears the address on every input source switch',async()=>{
+  const router=createRouter({history:createMemoryHistory(),routes:[{path:'/',component:{template:'<div />'}}]})
+  await router.push('/');await router.isReady()
+  const root=document.createElement('div');document.body.append(root)
+  const app=createApp(MonitoringView);app.config.warnHandler=()=>{}
+  app.use(createPinia());app.use(router);app.use(ElementPlus)
+  const vm=app.mount(root),form=vm.$.setupState.form
+  for(const source of ['usb_camera','rtsp','mp4']){
+    form.location='previous-source-address';form.source_type=source
+    await nextTick();expect(form.location).toBe('')
+  }
+  app.unmount();root.remove()
+})

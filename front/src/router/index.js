@@ -5,6 +5,7 @@ const routes=[
   {path:'/',component:MainLayout,children:[
     {path:'overview',name:'安全总览',component:()=>import('../views/OverviewView.vue')},
     {path:'monitoring',name:'实时监控',component:()=>import('../views/MonitoringView.vue')},
+    {path:'offline',name:'离线智能检测',component:()=>import('../views/OfflineDetectionView.vue')},
     {path:'events',name:'事件中心',component:()=>import('../views/EventsView.vue')},
     {path:'evidence',name:'证据中心',component:()=>import('../views/EvidenceView.vue')},
     {path:'statistics',name:'统计分析',component:()=>import('../views/StatisticsView.vue')},

@@ -1,0 +1,584 @@
+[
+  {
+    "page": "offline-video",
+    "width": 1920,
+    "height": 1080,
+    "before": {
+      "doc": 1920,
+      "headerY": 0,
+      "height": 1080,
+      "main": 1655,
+      "mainScroll": 1655,
+      "sidebarY": 0,
+      "width": 1920
+    },
+    "after": {
+      "documentScrollTop": 0,
+      "headerY": 0,
+      "mainScrollTop": 88.66666412353516,
+      "sidebarY": 0
+    }
+  },
+  {
+    "page": "offline-video",
+    "width": 1600,
+    "height": 900,
+    "before": {
+      "doc": 1600,
+      "headerY": 0,
+      "height": 900,
+      "main": 1335,
+      "mainScroll": 1335,
+      "sidebarY": 0,
+      "width": 1600
+    },
+    "after": {
+      "documentScrollTop": 0,
+      "headerY": 0,
+      "mainScrollTop": 282.6666564941406,
+      "sidebarY": 0
+    }
+  },
+  {
+    "page": "offline-video",
+    "width": 1366,
+    "height": 768,
+    "before": {
+      "doc": 1366,
+      "headerY": 0,
+      "height": 768,
+      "main": 1101,
+      "mainScroll": 1101,
+      "sidebarY": 0,
+      "width": 1366
+    },
+    "after": {
+      "documentScrollTop": 0,
+      "headerY": 0,
+      "mainScrollTop": 401.3333435058594,
+      "sidebarY": 0
+    }
+  },
+  {
+    "page": "offline-video",
+    "width": 1280,
+    "height": 720,
+    "before": {
+      "doc": 1280,
+      "headerY": 0,
+      "height": 720,
+      "main": 1015,
+      "mainScroll": 1015,
+      "sidebarY": 0,
+      "width": 1280
+    },
+    "after": {
+      "documentScrollTop": 0,
+      "headerY": 0,
+      "mainScrollTop": 163.3333282470703,
+      "sidebarY": 0
+    }
+  },
+  {
+    "page": "安全总览",
+    "width": 1920,
+    "height": 1080,
+    "measure": {
+      "doc": 1920,
+      "headerY": 0,
+      "height": 1080,
+      "main": 1655,
+      "mainScroll": 1655,
+      "sidebarY": 0,
+      "width": 1920
+    }
+  },
+  {
+    "page": "安全总览",
+    "width": 1920,
+    "height": 1080,
+    "measure": {
+      "doc": 1920,
+      "headerY": 0,
+      "height": 1080,
+      "main": 1655,
+      "mainScroll": 1655,
+      "sidebarY": 0,
+      "width": 1920
+    }
+  },
+  {
+    "page": "实时监控",
+    "width": 1920,
+    "height": 1080,
+    "measure": {
+      "doc": 1920,
+      "headerY": 0,
+      "height": 1080,
+      "main": 1655,
+      "mainScroll": 1655,
+      "sidebarY": 0,
+      "width": 1920
+    }
+  },
+  {
+    "page": "事件中心",
+    "width": 1920,
+    "height": 1080,
+    "measure": {
+      "doc": 1920,
+      "headerY": 0,
+      "height": 1080,
+      "main": 1655,
+      "mainScroll": 1655,
+      "sidebarY": 0,
+      "width": 1920
+    }
+  },
+  {
+    "page": "证据中心",
+    "width": 1920,
+    "height": 1080,
+    "measure": {
+      "doc": 1920,
+      "headerY": 0,
+      "height": 1080,
+      "main": 1655,
+      "mainScroll": 1655,
+      "sidebarY": 0,
+      "width": 1920
+    }
+  },
+  {
+    "page": "统计分析",
+    "width": 1920,
+    "height": 1080,
+    "measure": {
+      "doc": 1920,
+      "headerY": 0,
+      "height": 1080,
+      "main": 1655,
+      "mainScroll": 1655,
+      "sidebarY": 0,
+      "width": 1920
+    }
+  },
+  {
+    "page": "AI 安全报告",
+    "width": 1920,
+    "height": 1080,
+    "measure": {
+      "doc": 1920,
+      "headerY": 0,
+      "height": 1080,
+      "main": 1655,
+      "mainScroll": 1655,
+      "sidebarY": 0,
+      "width": 1920
+    }
+  },
+  {
+    "page": "安全助手",
+    "width": 1920,
+    "height": 1080,
+    "measure": {
+      "doc": 1920,
+      "headerY": 0,
+      "height": 1080,
+      "main": 1655,
+      "mainScroll": 1655,
+      "sidebarY": 0,
+      "width": 1920
+    }
+  },
+  {
+    "page": "安全总览",
+    "width": 1600,
+    "height": 900,
+    "measure": {
+      "doc": 1600,
+      "headerY": 0,
+      "height": 900,
+      "main": 1335,
+      "mainScroll": 1335,
+      "sidebarY": 0,
+      "width": 1600
+    }
+  },
+  {
+    "page": "实时监控",
+    "width": 1600,
+    "height": 900,
+    "measure": {
+      "doc": 1600,
+      "headerY": 0,
+      "height": 900,
+      "main": 1335,
+      "mainScroll": 1335,
+      "sidebarY": 0,
+      "width": 1600
+    }
+  },
+  {
+    "page": "事件中心",
+    "width": 1600,
+    "height": 900,
+    "measure": {
+      "doc": 1600,
+      "headerY": 0,
+      "height": 900,
+      "main": 1335,
+      "mainScroll": 1335,
+      "sidebarY": 0,
+      "width": 1600
+    }
+  },
+  {
+    "page": "证据中心",
+    "width": 1600,
+    "height": 900,
+    "measure": {
+      "doc": 1600,
+      "headerY": 0,
+      "height": 900,
+      "main": 1335,
+      "mainScroll": 1335,
+      "sidebarY": 0,
+      "width": 1600
+    }
+  },
+  {
+    "page": "统计分析",
+    "width": 1600,
+    "height": 900,
+    "measure": {
+      "doc": 1600,
+      "headerY": 0,
+      "height": 900,
+      "main": 1335,
+      "mainScroll": 1335,
+      "sidebarY": 0,
+      "width": 1600
+    }
+  },
+  {
+    "page": "AI 安全报告",
+    "width": 1600,
+    "height": 900,
+    "measure": {
+      "doc": 1600,
+      "headerY": 0,
+      "height": 900,
+      "main": 1335,
+      "mainScroll": 1335,
+      "sidebarY": 0,
+      "width": 1600
+    }
+  },
+  {
+    "page": "安全助手",
+    "width": 1600,
+    "height": 900,
+    "measure": {
+      "doc": 1600,
+      "headerY": 0,
+      "height": 900,
+      "main": 1335,
+      "mainScroll": 1335,
+      "sidebarY": 0,
+      "width": 1600
+    }
+  },
+  {
+    "page": "安全总览",
+    "width": 1366,
+    "height": 768,
+    "measure": {
+      "doc": 1366,
+      "headerY": 0,
+      "height": 768,
+      "main": 1101,
+      "mainScroll": 1101,
+      "sidebarY": 0,
+      "width": 1366
+    }
+  },
+  {
+    "page": "实时监控",
+    "width": 1366,
+    "height": 768,
+    "measure": {
+      "doc": 1366,
+      "headerY": 0,
+      "height": 768,
+      "main": 1101,
+      "mainScroll": 1101,
+      "sidebarY": 0,
+      "width": 1366
+    }
+  },
+  {
+    "page": "事件中心",
+    "width": 1366,
+    "height": 768,
+    "measure": {
+      "doc": 1366,
+      "headerY": 0,
+      "height": 768,
+      "main": 1101,
+      "mainScroll": 1101,
+      "sidebarY": 0,
+      "width": 1366
+    }
+  },
+  {
+    "page": "证据中心",
+    "width": 1366,
+    "height": 768,
+    "measure": {
+      "doc": 1366,
+      "headerY": 0,
+      "height": 768,
+      "main": 1101,
+      "mainScroll": 1101,
+      "sidebarY": 0,
+      "width": 1366
+    }
+  },
+  {
+    "page": "统计分析",
+    "width": 1366,
+    "height": 768,
+    "measure": {
+      "doc": 1366,
+      "headerY": 0,
+      "height": 768,
+      "main": 1101,
+      "mainScroll": 1101,
+      "sidebarY": 0,
+      "width": 1366
+    }
+  },
+  {
+    "page": "AI 安全报告",
+    "width": 1366,
+    "height": 768,
+    "measure": {
+      "doc": 1366,
+      "headerY": 0,
+      "height": 768,
+      "main": 1101,
+      "mainScroll": 1101,
+      "sidebarY": 0,
+      "width": 1366
+    }
+  },
+  {
+    "page": "安全助手",
+    "width": 1366,
+    "height": 768,
+    "measure": {
+      "doc": 1366,
+      "headerY": 0,
+      "height": 768,
+      "main": 1101,
+      "mainScroll": 1101,
+      "sidebarY": 0,
+      "width": 1366
+    }
+  },
+  {
+    "page": "安全总览",
+    "width": 1280,
+    "height": 720,
+    "measure": {
+      "doc": 1280,
+      "headerY": 0,
+      "height": 720,
+      "main": 1015,
+      "mainScroll": 1015,
+      "sidebarY": 0,
+      "width": 1280
+    }
+  },
+  {
+    "page": "实时监控",
+    "width": 1280,
+    "height": 720,
+    "measure": {
+      "doc": 1280,
+      "headerY": 0,
+      "height": 720,
+      "main": 1015,
+      "mainScroll": 1015,
+      "sidebarY": 0,
+      "width": 1280
+    }
+  },
+  {
+    "page": "事件中心",
+    "width": 1280,
+    "height": 720,
+    "measure": {
+      "doc": 1280,
+      "headerY": 0,
+      "height": 720,
+      "main": 1015,
+      "mainScroll": 1015,
+      "sidebarY": 0,
+      "width": 1280
+    }
+  },
+  {
+    "page": "证据中心",
+    "width": 1280,
+    "height": 720,
+    "measure": {
+      "doc": 1280,
+      "headerY": 0,
+      "height": 720,
+      "main": 1015,
+      "mainScroll": 1015,
+      "sidebarY": 0,
+      "width": 1280
+    }
+  },
+  {
+    "page": "统计分析",
+    "width": 1280,
+    "height": 720,
+    "measure": {
+      "doc": 1280,
+      "headerY": 0,
+      "height": 720,
+      "main": 1015,
+      "mainScroll": 1015,
+      "sidebarY": 0,
+      "width": 1280
+    }
+  },
+  {
+    "page": "AI 安全报告",
+    "width": 1280,
+    "height": 720,
+    "measure": {
+      "doc": 1280,
+      "headerY": 0,
+      "height": 720,
+      "main": 1015,
+      "mainScroll": 1015,
+      "sidebarY": 0,
+      "width": 1280
+    }
+  },
+  {
+    "page": "安全助手",
+    "width": 1280,
+    "height": 720,
+    "measure": {
+      "doc": 1280,
+      "headerY": 0,
+      "height": 720,
+      "main": 1015,
+      "mainScroll": 1015,
+      "sidebarY": 0,
+      "width": 1280
+    }
+  },
+  {
+    "page": "offline-image",
+    "width": 1920,
+    "height": 1080,
+    "measure": {
+      "doc": 1920,
+      "height": 1080,
+      "main": 1655,
+      "mainScroll": 1655,
+      "width": 1920
+    }
+  },
+  {
+    "page": "offline-image",
+    "width": 1600,
+    "height": 900,
+    "measure": {
+      "doc": 1600,
+      "height": 900,
+      "main": 1335,
+      "mainScroll": 1335,
+      "width": 1600
+    }
+  },
+  {
+    "page": "offline-image",
+    "width": 1366,
+    "height": 768,
+    "measure": {
+      "doc": 1366,
+      "height": 768,
+      "main": 1101,
+      "mainScroll": 1101,
+      "width": 1366
+    }
+  },
+  {
+    "page": "offline-image",
+    "width": 1280,
+    "height": 720,
+    "measure": {
+      "doc": 1280,
+      "height": 720,
+      "main": 1015,
+      "mainScroll": 1015,
+      "width": 1280
+    }
+  },
+  {
+    "page": "offline-history",
+    "width": 1920,
+    "height": 1080,
+    "measure": {
+      "doc": 1920,
+      "height": 1080,
+      "main": 1655,
+      "mainScroll": 1655,
+      "width": 1920
+    }
+  },
+  {
+    "page": "offline-history",
+    "width": 1600,
+    "height": 900,
+    "measure": {
+      "doc": 1600,
+      "height": 900,
+      "main": 1335,
+      "mainScroll": 1335,
+      "width": 1600
+    }
+  },
+  {
+    "page": "offline-history",
+    "width": 1366,
+    "height": 768,
+    "measure": {
+      "doc": 1366,
+      "height": 768,
+      "main": 1101,
+      "mainScroll": 1101,
+      "width": 1366
+    }
+  },
+  {
+    "page": "offline-history",
+    "width": 1280,
+    "height": 720,
+    "measure": {
+      "doc": 1280,
+      "height": 720,
+      "main": 1015,
+      "mainScroll": 1015,
+      "width": 1280
+    }
+  }
+]

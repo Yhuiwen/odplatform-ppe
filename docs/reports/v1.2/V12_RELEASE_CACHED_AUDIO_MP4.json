@@ -1,0 +1,147 @@
+{
+  "input_sha256": "a734a43322442737da15979709f83d06819b9a94f9112cdf3ee0c7a1592d0695",
+  "scheme": "fixed WAV cache / independent speech worker",
+  "runs": [
+    {
+      "run": 1,
+      "state": "completed",
+      "frames": 570,
+      "events": 2,
+      "seconds": 47.90599999995902,
+      "receipts": [
+        {
+          "scope": "current_session_recent_events",
+          "recorded": true,
+          "items": [
+            {
+              "adapter": "console",
+              "status": "delivered",
+              "timestamp": "2026-10-10T08:09:59Z",
+              "error_code": null
+            },
+            {
+              "adapter": "web",
+              "status": "delivered",
+              "timestamp": "2026-10-10T08:09:59Z",
+              "error_code": null
+            },
+            {
+              "adapter": "tts",
+              "status": "delivered",
+              "timestamp": "2026-10-10T08:10:01Z",
+              "error_code": null
+            }
+          ]
+        },
+        {
+          "scope": "current_session_recent_events",
+          "recorded": true,
+          "items": [
+            {
+              "adapter": "console",
+              "status": "delivered",
+              "timestamp": "2026-10-10T08:09:48Z",
+              "error_code": null
+            },
+            {
+              "adapter": "web",
+              "status": "delivered",
+              "timestamp": "2026-10-10T08:09:48Z",
+              "error_code": null
+            },
+            {
+              "adapter": "tts",
+              "status": "delivered",
+              "timestamp": "2026-10-10T08:09:51Z",
+              "error_code": null
+            }
+          ]
+        }
+      ],
+      "speech_progress": [
+        {
+          "text": "未穿反光背心",
+          "duration": 3.5,
+          "frame_progress": 71
+        },
+        {
+          "text": "未佩戴安全帽",
+          "duration": 2.906999999890104,
+          "frame_progress": 110
+        }
+      ]
+    },
+    {
+      "run": 2,
+      "state": "completed",
+      "frames": 570,
+      "events": 2,
+      "seconds": 14.405999999959022,
+      "receipts": [
+        {
+          "scope": "current_session_recent_events",
+          "recorded": true,
+          "items": [
+            {
+              "adapter": "console",
+              "status": "delivered",
+              "timestamp": "2026-10-10T08:10:13Z",
+              "error_code": null
+            },
+            {
+              "adapter": "web",
+              "status": "delivered",
+              "timestamp": "2026-10-10T08:10:13Z",
+              "error_code": null
+            },
+            {
+              "adapter": "tts",
+              "status": "delivered",
+              "timestamp": "2026-10-10T08:10:16Z",
+              "error_code": null
+            }
+          ]
+        },
+        {
+          "scope": "current_session_recent_events",
+          "recorded": true,
+          "items": [
+            {
+              "adapter": "console",
+              "status": "delivered",
+              "timestamp": "2026-10-10T08:10:05Z",
+              "error_code": null
+            },
+            {
+              "adapter": "web",
+              "status": "delivered",
+              "timestamp": "2026-10-10T08:10:05Z",
+              "error_code": null
+            },
+            {
+              "adapter": "tts",
+              "status": "delivered",
+              "timestamp": "2026-10-10T08:10:08Z",
+              "error_code": null
+            }
+          ]
+        }
+      ],
+      "speech_progress": [
+        {
+          "text": "未穿反光背心",
+          "duration": 3.0619999999180436,
+          "frame_progress": 127
+        },
+        {
+          "text": "未佩戴安全帽",
+          "duration": 3.0149999998975545,
+          "frame_progress": 117
+        }
+      ]
+    }
+  ],
+  "audibility": "human confirmation required",
+  "browser_30fps_claim": false,
+  "initial_validation_script_error": "First attempt used wrong receipt key alerts instead of alert_deliveries; corrected instrumentation, not business code."
+}

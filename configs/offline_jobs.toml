@@ -1,0 +1,11 @@
+[offline]
+image_max_bytes = 20971520
+video_max_bytes = 536870912
+video_max_seconds = 600
+max_pixels = 8294400
+max_queued_jobs = 20
+min_free_bytes = 1073741824
+max_staging_bytes = 1073741824
+ffprobe_timeout_seconds = 15
+image_execution_enabled = true
+image_config_sha256 = "0195c5f703474d888f2a59729989fb760408657db850922031af7166d383f76c"

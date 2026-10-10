@@ -4,7 +4,7 @@ import {api,http} from '../api/index.js'
 
 describe('七页路由与 API 调用边界',()=>{
   it('根路径进入总览，七个正式页面均可解析',()=>{
-    const paths=['overview','monitoring','events','evidence','statistics','ai-report','ai-assistant']
+    const paths=['overview','monitoring','offline','events','evidence','statistics','ai-report','ai-assistant']
     expect(router.resolve('/').matched[0].redirect).toBe('/overview')
     for(const path of paths)expect(router.resolve('/'+path).name).toBeTruthy()
   })

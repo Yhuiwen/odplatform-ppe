@@ -1,0 +1,861 @@
+{
+  "images": [
+    {
+      "name": "original.jpg",
+      "size": [
+        1024,
+        766
+      ],
+      "detections": 5,
+      "candidates": 2,
+      "items": [
+        {
+          "key": "annotated",
+          "size_bytes": 1289123,
+          "sha256": "39133231bf250d1180c689e00c19ca2e1f2bf1c641f26fb37be9109eda0adb84"
+        },
+        {
+          "key": "detections",
+          "size_bytes": 2073,
+          "sha256": "5110e4b26ec62933f41aef602112eab93d18d5d6b2938f91956196863bbf33f6"
+        },
+        {
+          "key": "results",
+          "size_bytes": 1286827,
+          "sha256": "60f2827a2c84641800f8f6bd7754b96259a9e9b420efd8bd7289163ff9762354"
+        },
+        {
+          "key": "summary",
+          "size_bytes": 2121,
+          "sha256": "301b6051ad8d2332a6c614e078c3d44bd66eb389f323c8d1d0e7e7907b74054d"
+        }
+      ]
+    },
+    {
+      "name": "original.jpeg",
+      "size": [
+        1024,
+        766
+      ],
+      "detections": 5,
+      "candidates": 2,
+      "items": [
+        {
+          "key": "annotated",
+          "size_bytes": 1289123,
+          "sha256": "39133231bf250d1180c689e00c19ca2e1f2bf1c641f26fb37be9109eda0adb84"
+        },
+        {
+          "key": "detections",
+          "size_bytes": 2073,
+          "sha256": "721cb5afd084c0cb8524c0952fd4aea601f66c470698da98a2a6f08658b09d62"
+        },
+        {
+          "key": "results",
+          "size_bytes": 1286825,
+          "sha256": "276c03934584a22125eba52afe24334cbc014acaa84abd790e54b03d6cee14fa"
+        },
+        {
+          "key": "summary",
+          "size_bytes": 2121,
+          "sha256": "05eba42ea9a9cc6df7c2535ff224c59df2470eb290d90c7bffb8ceb0c424ab25"
+        }
+      ]
+    },
+    {
+      "name": "rgb.png",
+      "size": [
+        1024,
+        766
+      ],
+      "detections": 5,
+      "candidates": 2,
+      "items": [
+        {
+          "key": "annotated",
+          "size_bytes": 1289123,
+          "sha256": "39133231bf250d1180c689e00c19ca2e1f2bf1c641f26fb37be9109eda0adb84"
+        },
+        {
+          "key": "detections",
+          "size_bytes": 2073,
+          "sha256": "ee265d5cd247df8843886bea2a4f0327e6560a3baf39879b73af6087a04a4349"
+        },
+        {
+          "key": "results",
+          "size_bytes": 1286825,
+          "sha256": "f077a08ba2092d9d245f51288dd37824cca8e743954183bb0c14ad4f6fcf7502"
+        },
+        {
+          "key": "summary",
+          "size_bytes": 2120,
+          "sha256": "ead1aecf099c30afaed2ac0c8c034b2b98bd5c73cd64f90d95c5f5ac3e841713"
+        }
+      ]
+    },
+    {
+      "name": "rgba.png",
+      "size": [
+        1024,
+        766
+      ],
+      "detections": 5,
+      "candidates": 2,
+      "items": [
+        {
+          "key": "annotated",
+          "size_bytes": 1289123,
+          "sha256": "39133231bf250d1180c689e00c19ca2e1f2bf1c641f26fb37be9109eda0adb84"
+        },
+        {
+          "key": "detections",
+          "size_bytes": 2073,
+          "sha256": "85765bc6431225e73217d67db3dcbe730fc25063952571c4917fa778fdef92d1"
+        },
+        {
+          "key": "results",
+          "size_bytes": 1286827,
+          "sha256": "85972c61c254c89d679da147615cc72df996d4e5714032486c3a10ffd9ee02d7"
+        },
+        {
+          "key": "summary",
+          "size_bytes": 2122,
+          "sha256": "ad5ae289b5ee429deb51c3ec5282081c51232650db437858f75ec9689b3d2c5f"
+        }
+      ]
+    },
+    {
+      "name": "gray.png",
+      "size": [
+        1024,
+        766
+      ],
+      "detections": 6,
+      "candidates": 3,
+      "items": [
+        {
+          "key": "annotated",
+          "size_bytes": 1168577,
+          "sha256": "8fcef4be624b64eddf9499be8398d9c4b8803e6ddd001e187c7ae8a6a08786df"
+        },
+        {
+          "key": "detections",
+          "size_bytes": 2392,
+          "sha256": "359c3e536349c0f8a1c9580f922ad79fb8bfc1808368dae24413b5d4431b43cc"
+        },
+        {
+          "key": "results",
+          "size_bytes": 964344,
+          "sha256": "d1bc383ad2e8e02a0bdbf02a35f9fac3ca04d9a8e593c682767741afd0ee6618"
+        },
+        {
+          "key": "summary",
+          "size_bytes": 2487,
+          "sha256": "13d2c22426be5d9562d7c7df6cfd6aae59d99b93fbdab962fedafe8ab6aecaf7"
+        }
+      ]
+    },
+    {
+      "name": "wide.png",
+      "size": [
+        1200,
+        300
+      ],
+      "detections": 1,
+      "candidates": 0,
+      "items": [
+        {
+          "key": "annotated",
+          "size_bytes": 543379,
+          "sha256": "312e9a001f68c72c27716136d621f040f747ac6cbb8c4610eb619420c68db915"
+        },
+        {
+          "key": "detections",
+          "size_bytes": 767,
+          "sha256": "91abd6ac277d9500b5c6310ef31ab32201f653c5de127c6cc07931f870315634"
+        },
+        {
+          "key": "results",
+          "size_bytes": 543250,
+          "sha256": "2d06e87e62c7f30a7955b814550dec6e7b3262c3579adcc7d5c9342d5b20d374"
+        },
+        {
+          "key": "summary",
+          "size_bytes": 1370,
+          "sha256": "af57911f2a78d992454200d2a90ad60d1b21794245d6a3de75807c42f36bbab1"
+        }
+      ]
+    },
+    {
+      "name": "exif.jpg",
+      "size": [
+        766,
+        1024
+      ],
+      "detections": 1,
+      "candidates": 1,
+      "items": [
+        {
+          "key": "annotated",
+          "size_bytes": 1242949,
+          "sha256": "bd249282149fc03523df13eeea129bd869353997b52b182333e6f68115697eba"
+        },
+        {
+          "key": "detections",
+          "size_bytes": 771,
+          "sha256": "b5c56b2c929587c4d5b51636953c1807d26e3e9d12a0bece6d1bb3bd29edbc3a"
+        },
+        {
+          "key": "results",
+          "size_bytes": 1223410,
+          "sha256": "ed63bbc243b0f98f23ae938603af9473c3bfb0e9552b619c386a5b5bc7711071"
+        },
+        {
+          "key": "summary",
+          "size_bytes": 1751,
+          "sha256": "a8e55139b47537c0f572016ad458e1bc06323e3d42a8eb2a0b357e8e1da7dc28"
+        }
+      ]
+    },
+    {
+      "name": "empty.png",
+      "size": [
+        320,
+        240
+      ],
+      "detections": 0,
+      "candidates": 0,
+      "items": [
+        {
+          "key": "annotated",
+          "size_bytes": 979,
+          "sha256": "c2668e3ac18a732ce4d97f30e0d1d2c28c6bab3ed28322da1d733491680435f3"
+        },
+        {
+          "key": "detections",
+          "size_bytes": 438,
+          "sha256": "4981e270173646c06dc54add5dc71342baac187532190ae1d00e71d8a92a3ee2"
+        },
+        {
+          "key": "results",
+          "size_bytes": 1389,
+          "sha256": "6943a35a4c0fb9dae622ea196c482bd8760b4ff7a1d4da16c256a21d5a92be1f"
+        },
+        {
+          "key": "summary",
+          "size_bytes": 1368,
+          "sha256": "d67550085d53353556e85c7037adac9a80da87c570aa91cce7e0b6566e1d80d9"
+        }
+      ]
+    }
+  ],
+  "videos": [
+    {
+      "wall_seconds": 11.094000000040978,
+      "peak_rss_bytes": 606609408,
+      "end_rss_bytes": 520531968,
+      "statuses": [
+        "COMPLETED",
+        "ENCODING",
+        "PROCESSING",
+        "QUEUED"
+      ],
+      "encoder_children_remaining": [],
+      "summary": {
+        "audio_policy": "no_source_audio",
+        "class_counts": {
+          "hardhat": 0,
+          "no_hardhat": 0,
+          "no_vest": 1,
+          "person": 76,
+          "vest": 0
+        },
+        "config_sha256": "0195c5f703474d888f2a59729989fb760408657db850922031af7166d383f76c",
+        "confirmed_events": null,
+        "detection_count": 77,
+        "encoder": {
+          "actual_codec": "h264",
+          "codec": "libx264",
+          "crf": 18,
+          "faststart": true,
+          "lossless": false,
+          "pixel_format": "yuv420p",
+          "preset": "medium"
+        },
+        "event_analysis_status": "NOT_IMPLEMENTED",
+        "evidence_count": null,
+        "fps_rational": "24000/1001",
+        "inferred_frames": 47,
+        "input_decoded_frames": 47,
+        "input_height": 720,
+        "input_width": 1280,
+        "job_id": "2405f06f35bd4e49bc44e2d3dbde6135",
+        "model_runtime_id": "INF-RUNTIME-001",
+        "model_sha256": "1c144eef0dfa06b984dde760ea5501a11746b99c1f8a9ae581790241c3871f61",
+        "not_evaluated_classes": [
+          "machinery",
+          "vehicle"
+        ],
+        "not_evaluated_status": "NOT_EVALUATED",
+        "output_decoded_frames": 47,
+        "output_fps": "24000/1001",
+        "output_has_audio": false,
+        "output_height": 720,
+        "output_sha256": "c985a26ab6b7e1f17411ed9f1a33f8bdc6fac4110d84f075d911e3d56cac74f6",
+        "output_width": 1280,
+        "playback_fps": 23.976023976023978,
+        "processed_fps": 4.671039554798531,
+        "processing_scope": "decode_inference_render_encode_output_verification",
+        "processing_seconds": 10.061999999918044,
+        "rendered_frames": 47,
+        "schema_version": "offline-video-summary-v1",
+        "source_fps": "24000/1001",
+        "source_has_audio": false,
+        "source_sha256": "b630d851f9441aaaac23f75d8be3fa9307cc87201d1bb0972f4508356125b852",
+        "written_frames": 47
+      },
+      "verification": {
+        "full_frame_preservation": true,
+        "inferred_frames": 47,
+        "input": {
+          "fps_rational": "24000/1001",
+          "has_audio": false,
+          "input_codec": "h264",
+          "input_duration_seconds": 1.960292,
+          "input_fps": 23.976023976023978,
+          "input_frame_count": 47,
+          "input_height": 720,
+          "input_mime": "video/mp4",
+          "input_width": 1280,
+          "pixel_format": "yuv420p",
+          "time_base": "1/24000",
+          "timestamp_frames": 47,
+          "timestamp_validation": "CFR_VERIFIED"
+        },
+        "input_decoded_frames": 47,
+        "original_resolution_preservation": true,
+        "output": {
+          "fps_rational": "24000/1001",
+          "has_audio": false,
+          "input_codec": "h264",
+          "input_duration_seconds": 1.960292,
+          "input_fps": 23.976023976023978,
+          "input_frame_count": 47,
+          "input_height": 720,
+          "input_mime": "video/mp4",
+          "input_width": 1280,
+          "pixel_format": "yuv420p",
+          "time_base": "1/24000",
+          "timestamp_frames": 47,
+          "timestamp_validation": "CFR_VERIFIED"
+        },
+        "output_decoded_frames": 47,
+        "output_sha256": "c985a26ab6b7e1f17411ed9f1a33f8bdc6fac4110d84f075d911e3d56cac74f6",
+        "output_size_bytes": 451930,
+        "rendered_frames": 47,
+        "schema_version": "offline-video-verification-v1",
+        "source_sha256": "b630d851f9441aaaac23f75d8be3fa9307cc87201d1bb0972f4508356125b852",
+        "status": "VERIFIED",
+        "written_frames": 47
+      },
+      "cpu_user_seconds": 2.84375,
+      "cpu_system_seconds": 0.46875
+    },
+    {
+      "wall_seconds": 109.21900000004098,
+      "peak_rss_bytes": 619106304,
+      "end_rss_bytes": 524468224,
+      "statuses": [
+        "COMPLETED",
+        "ENCODING",
+        "PROCESSING",
+        "QUEUED"
+      ],
+      "encoder_children_remaining": [],
+      "summary": {
+        "audio_policy": "discarded_with_confirmation",
+        "class_counts": {
+          "hardhat": 487,
+          "no_hardhat": 107,
+          "no_vest": 129,
+          "person": 607,
+          "vest": 499
+        },
+        "config_sha256": "0195c5f703474d888f2a59729989fb760408657db850922031af7166d383f76c",
+        "confirmed_events": null,
+        "detection_count": 1829,
+        "encoder": {
+          "actual_codec": "h264",
+          "codec": "libx264",
+          "crf": 18,
+          "faststart": true,
+          "lossless": false,
+          "pixel_format": "yuv420p",
+          "preset": "medium"
+        },
+        "event_analysis_status": "NOT_IMPLEMENTED",
+        "evidence_count": null,
+        "fps_rational": "30",
+        "inferred_frames": 570,
+        "input_decoded_frames": 570,
+        "input_height": 720,
+        "input_width": 1280,
+        "job_id": "bb6dd887496f418f80a3f1fc9bce60e5",
+        "model_runtime_id": "INF-RUNTIME-001",
+        "model_sha256": "1c144eef0dfa06b984dde760ea5501a11746b99c1f8a9ae581790241c3871f61",
+        "not_evaluated_classes": [
+          "machinery",
+          "vehicle"
+        ],
+        "not_evaluated_status": "NOT_EVALUATED",
+        "output_decoded_frames": 570,
+        "output_fps": "30",
+        "output_has_audio": false,
+        "output_height": 720,
+        "output_sha256": "c9a9e52644d122711ada73a4aeee68a24ca5fac4f66f26829b5034f5b5510488",
+        "output_width": 1280,
+        "playback_fps": 30.0,
+        "processed_fps": 5.291545595482535,
+        "processing_scope": "decode_inference_render_encode_output_verification",
+        "processing_seconds": 107.71900000004098,
+        "rendered_frames": 570,
+        "schema_version": "offline-video-summary-v1",
+        "source_fps": "30",
+        "source_has_audio": true,
+        "source_sha256": "a734a43322442737da15979709f83d06819b9a94f9112cdf3ee0c7a1592d0695",
+        "written_frames": 570
+      },
+      "verification": {
+        "full_frame_preservation": true,
+        "inferred_frames": 570,
+        "input": {
+          "fps_rational": "30",
+          "has_audio": true,
+          "input_codec": "hevc",
+          "input_duration_seconds": 19.017211,
+          "input_fps": 30.0,
+          "input_frame_count": 570,
+          "input_height": 720,
+          "input_mime": "video/mp4",
+          "input_width": 1280,
+          "pixel_format": "yuv420p",
+          "time_base": "1/90000",
+          "timestamp_frames": 570,
+          "timestamp_validation": "CFR_VERIFIED"
+        },
+        "input_decoded_frames": 570,
+        "original_resolution_preservation": true,
+        "output": {
+          "fps_rational": "30",
+          "has_audio": false,
+          "input_codec": "h264",
+          "input_duration_seconds": 19.0,
+          "input_fps": 30.0,
+          "input_frame_count": 570,
+          "input_height": 720,
+          "input_mime": "video/mp4",
+          "input_width": 1280,
+          "pixel_format": "yuv420p",
+          "time_base": "1/15360",
+          "timestamp_frames": 570,
+          "timestamp_validation": "CFR_VERIFIED"
+        },
+        "output_decoded_frames": 570,
+        "output_sha256": "c9a9e52644d122711ada73a4aeee68a24ca5fac4f66f26829b5034f5b5510488",
+        "output_size_bytes": 3951681,
+        "rendered_frames": 570,
+        "schema_version": "offline-video-verification-v1",
+        "source_sha256": "a734a43322442737da15979709f83d06819b9a94f9112cdf3ee0c7a1592d0695",
+        "status": "VERIFIED",
+        "written_frames": 570
+      },
+      "sequential_repeat_frames": 47,
+      "rss_after_repeat_bytes": 524898304,
+      "cpu_user_seconds": 35.03125,
+      "cpu_system_seconds": 5.515625
+    },
+    {
+      "wall_seconds": 16.671000000089407,
+      "task_processing_seconds": 15.234000000171363,
+      "ffmpeg_peak_rss_bytes": 316280832,
+      "peak_rss_bytes": 614309888,
+      "end_rss_bytes": 539353088,
+      "statuses": [
+        "COMPLETED",
+        "ENCODING",
+        "PROCESSING",
+        "QUEUED"
+      ],
+      "encoder_children_remaining": [],
+      "summary": {
+        "active_tracks": 1,
+        "active_tracks_scope": "current_frame_returned_observations",
+        "audio_policy": "no_source_audio",
+        "class_counts": {
+          "hardhat": 0,
+          "no_hardhat": 0,
+          "no_vest": 1,
+          "person": 76,
+          "vest": 0
+        },
+        "config_sha256": "0195c5f703474d888f2a59729989fb760408657db850922031af7166d383f76c",
+        "confirmed_events": 1,
+        "detection_count": 77,
+        "encoder": {
+          "actual_codec": "h264",
+          "codec": "libx264",
+          "crf": 18,
+          "faststart": true,
+          "lossless": false,
+          "pixel_format": "yuv420p",
+          "preset": "medium"
+        },
+        "event_analysis_frames": 47,
+        "event_analysis_status": "COMPLETED",
+        "events_by_type": {
+          "PPE_UNKNOWN": 1
+        },
+        "evidence_count": 1,
+        "evidence_events": 1,
+        "evidence_image_files": 2,
+        "fps_rational": "24000/1001",
+        "inferred_frames": 47,
+        "input_decoded_frames": 47,
+        "input_height": 720,
+        "input_width": 1280,
+        "job_id": "e7b45684cd8c4d6387a7dc934a3bc5bc",
+        "model_runtime_id": "INF-RUNTIME-001",
+        "model_sha256": "1c144eef0dfa06b984dde760ea5501a11746b99c1f8a9ae581790241c3871f61",
+        "not_evaluated_classes": [
+          "machinery",
+          "vehicle"
+        ],
+        "not_evaluated_status": "NOT_EVALUATED",
+        "output_decoded_frames": 47,
+        "output_fps": "24000/1001",
+        "output_has_audio": false,
+        "output_height": 720,
+        "output_sha256": "c985a26ab6b7e1f17411ed9f1a33f8bdc6fac4110d84f075d911e3d56cac74f6",
+        "output_width": 1280,
+        "playback_fps": 23.976023976023978,
+        "processed_fps": 3.2945464741201103,
+        "processing_scope": "decode_inference_render_events_evidence_encode_output_verification_exports",
+        "processing_seconds": 14.266000000061467,
+        "rendered_frames": 47,
+        "schema_version": "offline-video-summary-v1",
+        "source_fps": "24000/1001",
+        "source_has_audio": false,
+        "source_sha256": "b630d851f9441aaaac23f75d8be3fa9307cc87201d1bb0972f4508356125b852",
+        "track_observations": 66,
+        "unique_track_ids": 2,
+        "unknown_associations": 1,
+        "written_frames": 47
+      },
+      "verification": {
+        "full_frame_preservation": true,
+        "inferred_frames": 47,
+        "input": {
+          "fps_rational": "24000/1001",
+          "has_audio": false,
+          "input_codec": "h264",
+          "input_duration_seconds": 1.960292,
+          "input_fps": 23.976023976023978,
+          "input_frame_count": 47,
+          "input_height": 720,
+          "input_mime": "video/mp4",
+          "input_width": 1280,
+          "pixel_format": "yuv420p",
+          "time_base": "1/24000",
+          "timestamp_frames": 47,
+          "timestamp_validation": "CFR_VERIFIED"
+        },
+        "input_decoded_frames": 47,
+        "original_resolution_preservation": true,
+        "output": {
+          "fps_rational": "24000/1001",
+          "has_audio": false,
+          "input_codec": "h264",
+          "input_duration_seconds": 1.960292,
+          "input_fps": 23.976023976023978,
+          "input_frame_count": 47,
+          "input_height": 720,
+          "input_mime": "video/mp4",
+          "input_width": 1280,
+          "pixel_format": "yuv420p",
+          "time_base": "1/24000",
+          "timestamp_frames": 47,
+          "timestamp_validation": "CFR_VERIFIED"
+        },
+        "output_decoded_frames": 47,
+        "output_sha256": "c985a26ab6b7e1f17411ed9f1a33f8bdc6fac4110d84f075d911e3d56cac74f6",
+        "output_size_bytes": 451930,
+        "rendered_frames": 47,
+        "schema_version": "offline-video-verification-v1",
+        "source_sha256": "b630d851f9441aaaac23f75d8be3fa9307cc87201d1bb0972f4508356125b852",
+        "status": "VERIFIED",
+        "written_frames": 47
+      },
+      "event_database_bytes": 106496,
+      "evidence_bytes": 1866318,
+      "cpu_user_seconds": 4.328125,
+      "cpu_system_seconds": 1.0625
+    },
+    {
+      "wall_seconds": 98.81199999991804,
+      "task_processing_seconds": 95.78100000019185,
+      "ffmpeg_peak_rss_bytes": 419434496,
+      "peak_rss_bytes": 672649216,
+      "end_rss_bytes": 573235200,
+      "statuses": [
+        "COMPLETED",
+        "ENCODING",
+        "PROCESSING",
+        "QUEUED"
+      ],
+      "encoder_children_remaining": [],
+      "summary": {
+        "active_tracks": 0,
+        "active_tracks_scope": "current_frame_returned_observations",
+        "audio_policy": "discarded_with_confirmation",
+        "class_counts": {
+          "hardhat": 487,
+          "no_hardhat": 107,
+          "no_vest": 129,
+          "person": 607,
+          "vest": 499
+        },
+        "config_sha256": "0195c5f703474d888f2a59729989fb760408657db850922031af7166d383f76c",
+        "confirmed_events": 2,
+        "detection_count": 1829,
+        "encoder": {
+          "actual_codec": "h264",
+          "codec": "libx264",
+          "crf": 18,
+          "faststart": true,
+          "lossless": false,
+          "pixel_format": "yuv420p",
+          "preset": "medium"
+        },
+        "event_analysis_frames": 570,
+        "event_analysis_status": "COMPLETED",
+        "events_by_type": {
+          "NO_HELMET": 1,
+          "NO_VEST": 1
+        },
+        "evidence_count": 2,
+        "evidence_events": 2,
+        "evidence_image_files": 4,
+        "fps_rational": "30",
+        "inferred_frames": 570,
+        "input_decoded_frames": 570,
+        "input_height": 720,
+        "input_width": 1280,
+        "job_id": "abd236d47b5e4a65b38d986340985397",
+        "model_runtime_id": "INF-RUNTIME-001",
+        "model_sha256": "1c144eef0dfa06b984dde760ea5501a11746b99c1f8a9ae581790241c3871f61",
+        "not_evaluated_classes": [
+          "machinery",
+          "vehicle"
+        ],
+        "not_evaluated_status": "NOT_EVALUATED",
+        "output_decoded_frames": 570,
+        "output_fps": "30",
+        "output_has_audio": false,
+        "output_height": 720,
+        "output_sha256": "c9a9e52644d122711ada73a4aeee68a24ca5fac4f66f26829b5034f5b5510488",
+        "output_width": 1280,
+        "playback_fps": 30.0,
+        "processed_fps": 6.035705965813606,
+        "processing_scope": "decode_inference_render_events_evidence_encode_output_verification_exports",
+        "processing_seconds": 94.43800000008196,
+        "rendered_frames": 570,
+        "schema_version": "offline-video-summary-v1",
+        "source_fps": "30",
+        "source_has_audio": true,
+        "source_sha256": "a734a43322442737da15979709f83d06819b9a94f9112cdf3ee0c7a1592d0695",
+        "track_observations": 580,
+        "unique_track_ids": 7,
+        "unknown_associations": 46,
+        "written_frames": 570
+      },
+      "verification": {
+        "full_frame_preservation": true,
+        "inferred_frames": 570,
+        "input": {
+          "fps_rational": "30",
+          "has_audio": true,
+          "input_codec": "hevc",
+          "input_duration_seconds": 19.017211,
+          "input_fps": 30.0,
+          "input_frame_count": 570,
+          "input_height": 720,
+          "input_mime": "video/mp4",
+          "input_width": 1280,
+          "pixel_format": "yuv420p",
+          "time_base": "1/90000",
+          "timestamp_frames": 570,
+          "timestamp_validation": "CFR_VERIFIED"
+        },
+        "input_decoded_frames": 570,
+        "original_resolution_preservation": true,
+        "output": {
+          "fps_rational": "30",
+          "has_audio": false,
+          "input_codec": "h264",
+          "input_duration_seconds": 19.0,
+          "input_fps": 30.0,
+          "input_frame_count": 570,
+          "input_height": 720,
+          "input_mime": "video/mp4",
+          "input_width": 1280,
+          "pixel_format": "yuv420p",
+          "time_base": "1/15360",
+          "timestamp_frames": 570,
+          "timestamp_validation": "CFR_VERIFIED"
+        },
+        "output_decoded_frames": 570,
+        "output_sha256": "c9a9e52644d122711ada73a4aeee68a24ca5fac4f66f26829b5034f5b5510488",
+        "output_size_bytes": 3951681,
+        "rendered_frames": 570,
+        "schema_version": "offline-video-verification-v1",
+        "source_sha256": "a734a43322442737da15979709f83d06819b9a94f9112cdf3ee0c7a1592d0695",
+        "status": "VERIFIED",
+        "written_frames": 570
+      },
+      "event_database_bytes": 106496,
+      "evidence_bytes": 1521723,
+      "sequential_repeat_summary": {
+        "active_tracks": 1,
+        "active_tracks_scope": "current_frame_returned_observations",
+        "audio_policy": "no_source_audio",
+        "class_counts": {
+          "hardhat": 0,
+          "no_hardhat": 0,
+          "no_vest": 1,
+          "person": 76,
+          "vest": 0
+        },
+        "config_sha256": "0195c5f703474d888f2a59729989fb760408657db850922031af7166d383f76c",
+        "confirmed_events": 1,
+        "detection_count": 77,
+        "encoder": {
+          "actual_codec": "h264",
+          "codec": "libx264",
+          "crf": 18,
+          "faststart": true,
+          "lossless": false,
+          "pixel_format": "yuv420p",
+          "preset": "medium"
+        },
+        "event_analysis_frames": 47,
+        "event_analysis_status": "COMPLETED",
+        "events_by_type": {
+          "PPE_UNKNOWN": 1
+        },
+        "evidence_count": 1,
+        "evidence_events": 1,
+        "evidence_image_files": 2,
+        "fps_rational": "24000/1001",
+        "inferred_frames": 47,
+        "input_decoded_frames": 47,
+        "input_height": 720,
+        "input_width": 1280,
+        "job_id": "f6fe4388c6e64594a81b77fb97b5c693",
+        "model_runtime_id": "INF-RUNTIME-001",
+        "model_sha256": "1c144eef0dfa06b984dde760ea5501a11746b99c1f8a9ae581790241c3871f61",
+        "not_evaluated_classes": [
+          "machinery",
+          "vehicle"
+        ],
+        "not_evaluated_status": "NOT_EVALUATED",
+        "output_decoded_frames": 47,
+        "output_fps": "24000/1001",
+        "output_has_audio": false,
+        "output_height": 720,
+        "output_sha256": "c985a26ab6b7e1f17411ed9f1a33f8bdc6fac4110d84f075d911e3d56cac74f6",
+        "output_width": 1280,
+        "playback_fps": 23.976023976023978,
+        "processed_fps": 4.378202142482671,
+        "processing_scope": "decode_inference_render_events_evidence_encode_output_verification_exports",
+        "processing_seconds": 10.735000000102445,
+        "rendered_frames": 47,
+        "schema_version": "offline-video-summary-v1",
+        "source_fps": "24000/1001",
+        "source_has_audio": false,
+        "source_sha256": "b630d851f9441aaaac23f75d8be3fa9307cc87201d1bb0972f4508356125b852",
+        "track_observations": 66,
+        "unique_track_ids": 2,
+        "unknown_associations": 1,
+        "written_frames": 47
+      },
+      "sequential_repeat_frames": 47,
+      "rss_after_repeat_bytes": 577277952,
+      "cpu_user_seconds": 29.828125,
+      "cpu_system_seconds": 4.515625
+    }
+  ],
+  "initial_cfr_failure": {
+    "job_id": "75d264ea365c427786e7da81f274e42b",
+    "status": "FAILED",
+    "error_code": "UNSUPPORTED_TIMING",
+    "processed_frames": 0,
+    "frame": 488,
+    "delta_ticks": 6000,
+    "expected_ticks": 3000,
+    "fps": "30",
+    "time_base": "1/90000",
+    "input_sha256": "a734a43322442737da15979709f83d06819b9a94f9112cdf3ee0c7a1592d0695"
+  },
+  "strict_rechecks": [
+    {
+      "index": 0,
+      "ok": true,
+      "frames": 570
+    },
+    {
+      "index": 1,
+      "ok": true,
+      "frames": 570
+    },
+    {
+      "index": 2,
+      "ok": true,
+      "frames": 570
+    },
+    {
+      "index": 3,
+      "ok": true,
+      "frames": 570
+    },
+    {
+      "index": 4,
+      "ok": true,
+      "frames": 570
+    },
+    {
+      "index": 5,
+      "ok": true,
+      "frames": 570
+    },
+    {
+      "index": 6,
+      "ok": true,
+      "frames": 570
+    },
+    {
+      "index": 7,
+      "ok": true,
+      "frames": 570
+    },
+    {
+      "index": 8,
+      "ok": true,
+      "frames": 570
+    },
+    {
+      "index": 9,
+      "ok": true,
+      "frames": 570
+    }
+  ]
+}

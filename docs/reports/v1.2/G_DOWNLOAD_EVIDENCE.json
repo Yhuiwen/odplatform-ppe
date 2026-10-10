@@ -1,0 +1,18 @@
+{
+  "health": {
+    "status": "ok",
+    "api_version": "1.2.0"
+  },
+  "download_checks": [
+    {
+      "filename": "results (3).zip",
+      "sha256": "831227d73069916e6ded985f60d3d249daa635b58ff2eb5c56f7c7c69ed57d12",
+      "size_bytes": 5425506
+    },
+    {
+      "filename": "annotated (1).mp4",
+      "sha256": "c9a9e52644d122711ada73a4aeee68a24ca5fac4f66f26829b5034f5b5510488",
+      "size_bytes": 3951681
+    }
+  ]
+}

@@ -53,6 +53,7 @@ artifacts/reports/*
 !artifacts/reports/.gitkeep
 artifacts/inference/
 artifacts/validation/
+artifacts/offline/
 artifacts/p9b/
 artifacts/p9c/
 artifacts/p9c2/

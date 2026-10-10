@@ -5,7 +5,7 @@ import {useUiStore} from '../stores/ui'
 import {api} from '../api'
 import {House,VideoCamera,Bell,Picture,DataAnalysis,Document,ChatDotRound,Fold,Expand,Refresh,Sunny,Moon} from '@element-plus/icons-vue'
 const ui=useUiStore(),route=useRoute(),router=useRouter(),online=ref(false),alerts=ref(0)
-const items=[['/overview','安全总览',House],['/monitoring','实时监控',VideoCamera],['/events','事件中心',Bell],['/evidence','证据中心',Picture],['/statistics','统计分析',DataAnalysis],['/ai-report','AI 安全报告',Document],['/ai-assistant','安全助手',ChatDotRound]]
+const items=[['/overview','安全总览',House],['/monitoring','实时监控',VideoCamera],['/offline','离线检测',Picture],['/events','事件中心',Bell],['/evidence','证据中心',Picture],['/statistics','统计分析',DataAnalysis],['/ai-report','AI 安全报告',Document],['/ai-assistant','安全助手',ChatDotRound]]
 const main=ref()
 const scrollPositions=new Map()
 watch(()=>route.path,async(next,previous)=>{

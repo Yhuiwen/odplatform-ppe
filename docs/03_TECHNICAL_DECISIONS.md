@@ -765,3 +765,10 @@ Date: 2026-10-08. Authorized by the user's request to implement the V1 audit clo
 The two reviewed valid/test candidates are confirmed same-scene neighboring video frames. Create CSS-PPE-10-V1-SPLIT-R2 outside Git, leaving frozen V1 payload, training configuration, checkpoint and historical metrics intact. Move the two test neighbors and labels into validation; preserve every train byte. Never promote validation-tuned examples into test. Re-run quality checks and evaluate the unchanged checkpoint on the revised test set as supplemental evidence. This does not retrospectively make old validation/test metrics independent. The original release model remains the trained V1 model; no retraining is claimed.
 
 Complete quality charts, provider output budget for complete strict JSON reports, regression isolation and deployment/demo documentation. No schema/grounding weakening, public deployment, RTSP or long stability acceptance is authorized by this increment.
+
+
+## ADR-029 — V1.2 release with explicitly accepted unresolved risks
+
+Date: 2026-10-10. Authorized directly by the user: temporarily ignore release-check points 1 (G-CFR-01/RISK-030) and 4 (P9-C), complete version alignment and real audio/assistant validation, then commit, push and publish V1.2.
+
+This is a scoped release risk acceptance, not a technical fix or weakened test. RISK-030 remains OPEN and the historical CFR failure remains BLOCKING in its original acceptance record. P9-C remains PARTIAL/FROZEN. V1.2 may be released under this exception after the remaining checks pass; no general production readiness, long stability or full-resolution coverage is claimed. No inference thresholds, PPE mapping, SQLite schema, Agent write permissions or frozen training assets change. Future CFR/root-cause and resource acceptance must use their original criteria. Real-time/offline simultaneous execution is deferred at the user's request.

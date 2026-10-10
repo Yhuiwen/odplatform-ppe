@@ -1,0 +1,26 @@
+{
+  "preparation_seconds": 0.5553117000963539,
+  "prompts": [
+    {
+      "text": "未佩戴安全帽",
+      "duration_seconds": 2.536734693877551,
+      "bytes": 111916,
+      "playback_seconds": 3.5249048001132905,
+      "process_cpu_seconds": 0.015625
+    },
+    {
+      "text": "未穿反光背心",
+      "duration_seconds": 2.6106122448979594,
+      "bytes": 115174,
+      "playback_seconds": 2.8577907998114824,
+      "process_cpu_seconds": 0.015625
+    },
+    {
+      "text": "PPE 状态未知",
+      "duration_seconds": 2.6197278911564625,
+      "bytes": 115576,
+      "playback_seconds": 2.957406200002879,
+      "process_cpu_seconds": 0.0
+    }
+  ]
+}

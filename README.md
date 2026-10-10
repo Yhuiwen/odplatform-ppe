@@ -1,5 +1,87 @@
 # 智慧工地 PPE 安全运营平台
 
+## V1.2 发布（2026-10-10）
+
+Vue 与锁文件、API 版本统一为 **1.2.0**。包含离线图片/视频检测工作台、逐帧视频导出、事件及关键证据、非阻塞缓存语音告警、增强只读安全助手及中文事件卡片/证据放大。实时和离线执行仍互斥，本版未实现并行运行。
+
+用户明确接受本版暂缓 G-CFR-01/RISK-030 与 P9-C 发布阻塞，相关风险保持 OPEN/PARTIAL，不宣称修复或生产级稳定。已补做两次真实570帧MP4缓存音频联调、真实Provider引用核验及1366/1920助手浏览器检查。最终验证、已知限制及发布说明见 [V1.2发布检查](docs/reports/v1.2/V12_RELEASE_CHECK.md)。下文为历史阶段记录，其待审核状态保留原始日期。
+
+本地启动（不依赖PowerShell脚本执行策略）：
+
+```powershell
+cd "E:\大四\创业实训\odplatform-ppe\front"
+npm ci
+npm run build
+cd ..
+.\.venv-frontend-api\Scripts\python.exe -m uvicorn api.main:app --host 127.0.0.1 --port 8775 --workers 1
+```
+
+原Streamlit入口保留，可通过冻结演示环境执行 `web/Home.py` 回退。完整环境安装及任务存储配置见 [用户指南](docs/V1_2_OFFLINE_USER_GUIDE.md)。
+
+## V1.2-G 验收结果（2026-10-10，待人工审核）
+
+图片/视频离线工作台及真实模型链路已完成本轮检查：原尺寸标注、完整逐帧H.264、时序事件/双证据、队列/取消/历史、四种桌面尺寸与下载。Vue34、API109、冻结Python819项通过；真实媒体8个用例分轮有通过证据。首轮核验570帧素材再次出现推理前CFR拒绝，根因未确定，**G BLOCKED / HUMAN REVIEW PENDING**；后续通过未覆盖该失败，P9-C仍PARTIAL/FROZEN，FullHD/4K/长视频/长稳不宣称通过。
+
+完整PowerShell部署、启动/停止、操作及回退见[离线用户指南](docs/V1_2_OFFLINE_USER_GUIDE.md)；证据/限制见[G最终验收报告](docs/reports/v1.2/V12_G_FINAL_ACCEPTANCE_REPORT.md)。API health现有api_version=1.2.0；正式8768未重启，本轮独立审核实例为127.0.0.1:8775。B–G尚未提交，没有push或v1.2 Tag；下方各阶段段落保留实施历史。
+
+## V1.2-F 离线智能检测工作台（待人工审核）
+
+菜单“离线检测”位于实时监控之后，路由 `/offline`。图片/视频/任务历史三个Tab支持真实JPG/JPEG/PNG/MP4上传、明确音轨确认、上传/处理进度、取消/恢复、原图/标注放大、H.264播放、只读事件时间轴、双图证据和JSON/CSV/ZIP下载。历史D任务显示“未执行事件分析”，不把null显示成0。[F实施、测试、截图与限制](docs/reports/v1.2/V12_F_FRONTEND_REPORT.md)。
+
+```powershell
+Set-Location 'E:\大四\创业实训\odplatform-ppe\front'
+npm ci
+npm test
+npm run build
+Set-Location ..
+# 先确认旧实例没有活动监控/离线任务，再退出旧实例
+& .\scripts\start_frontend_local.ps1 -ApiPort 8768
+# 浏览器访问 http://127.0.0.1:8768/offline
+```
+
+正式服务只运行一个Worker，沿用独立API环境及已有锁文件。开发Vite代理可用 `VITE_API_TARGET` 指向实际API。本次联调实例为127.0.0.1:8774，使用仓库外隔离任务root，正式8768未被重启；审核时可查看8774的真实测试结果。测试ZIP保持仓库外，避免触发冻结资产门禁。F完成后停止，不自动进入G；P9-C及长期资源风险仍保留。无新增依赖，无提交/推送/Tag。
+
+## V1.2-E 离线视频事件与关键证据（F授权已确认审核通过）
+
+MP4 现在在同一次逐帧推理上复用冻结 ByteTrack、PPE关联、ComplianceService 和 EventEngine，生成任务专属确认事件及原始/标注双 PNG 证据。结果新增 events.json、UTF-8 BOM events.csv、证据清单和图片，ZIP包含完整结果。离线事件不进入实时总览、不发Web/TTS告警；数据库只供内部查询，不提供下载。[E架构、API、实测与限制](docs/reports/v1.2/V12_E_EVENTS_EVIDENCE_REPORT.md)。
+
+真实47/570帧验证通过，原1280×720与FPS/H.264保持；实际确认事件1/2、证据图片2/4。最终联合107项通过；P9-C长期风险仍未关闭，历史偶发CFR拒绝已记录。未进入F，没有Vue离线页面。更新代码后重启一个本地API实例才加载新功能；当前既有服务未自动重启。
+
+GET `/api/v1/offline/jobs/{job_id}/events`、`/evidence` 支持 `limit`、`offset`、`event_type`；详情为 `/events/{event_id}`、`/evidence/{evidence_id}`；PNG为 `/evidence/{evidence_id}/image?variant=original` 或 `annotated`。只有COMPLETED可查询，损坏证据明确报错。`ODPLATFORM_OFFLINE_EVENT_EXECUTION=0` 后重启可让新视频任务回退到D，仅关闭事件分析，保留既有结果和输入。
+
+## V1.2-D 原分辨率 MP4 检测与导出（已审核；阶段历史）
+
+离线 MP4 现在由 B/C 的同一个单 Worker 顺序处理，逐帧调用冻结 YOLO11，在原尺寸画面上标注，并输出 H.264 MP4、frames.jsonl、summary.json、video_verification.json 和 results.zip。真实 47/570 帧、1280×720 视频保留全部帧和精确播放帧率，浏览器播放与下载校验通过。D阶段自身没有事件分析，当前事件能力以上方E为准；关闭E时 confirmed_events/evidence_count 为 null。只支持可靠 CFR、无旋转、偶数宽高；含音轨必须明确确认输出不保留音轨。CRF18 是有损编码。[实施/验证/限制报告](docs/reports/v1.2/V12_D_VIDEO_RENDERING_REPORT.md)。
+
+保持已有冻结业务环境、V1.2 独立 API 依赖与本机 FFmpeg/libx264，不安装替代权重。更新后重启**一个**本地 API 实例；不要使用多 Worker 或开发 reload 调度实际离线任务：
+
+```powershell
+& .\.venv-frontend-api\Scripts\python.exe -m uvicorn api.main:app --host 127.0.0.1 --port 8765 --workers 1
+# 另一个 PowerShell 窗口：上传有音轨的视频并明确确认移除
+curl.exe -F "file=@artifacts/validation/test/4afa6b121fe5db806c3ff416bafdf571.mp4;type=video/mp4" -F "audio_discard_confirmed=true" http://127.0.0.1:8765/api/v1/offline/jobs
+```
+
+保存返回的 job_id，GET `/api/v1/offline/jobs/{job_id}` 查询状态，POST 同路径 `/cancel` 取消。只有 COMPLETED 后 GET `/artifacts` 和 `/artifacts/{key}` 可下载校验产物；key 为 annotated、frames、summary、video_verification、results。长视频处理时图片按 FIFO 等待；实时监控与离线处理互斥。模型算子只能在安全检查点取消。
+
+`ODPLATFORM_OFFLINE_VIDEO_EXECUTION=0` 后重启可关闭视频调度；共享离线模型执行仍遵循 C 的 `image_execution_enabled` 配置，`ODPLATFORM_OFFLINE_IMAGE_EXECUTION=0` 会关闭共享离线检测。旧 Streamlit 和原 M-007 工具保留。D阶段自身不实现E统计；当前E以上方记录为准。D阶段自身不提供Vue离线页；当前工作台以上方F为准，不关闭P9-C。
+
+测试使用独立临时任务根目录；运行 ZIP 通过任务 manifest 校验。旧 P1 源码资产扫描会将仓库中的未登记 ZIP 报为资产问题，额外验证 ZIP 应保留在仓库外；不因此放宽冻结训练资产门禁。
+
+## V1.2-C 离线图片检测（待人工审核）
+
+在 V1.2-B 任务接口上，JPG/JPEG/PNG 已可由单 Worker 调用冻结 YOLO11 模型并下载原尺寸标注 PNG、检测 JSON、统计 JSON 和结果 ZIP。图片输出只统计单帧疑似检测项，不创建已确认违规事件。C 阶段仅实现图片，当前视频能力以上方 D 阶段为准。启动命令沿用下方 V1.2-B 独立 API 环境；需要已核验的 `models/checkpoints/EXP-001/best.pt`。详见 [V1.2-C 实施报告](docs/reports/v1.2/V12_C_IMAGE_INFERENCE_REPORT.md)。
+
+## V1.2-B 离线任务基础设施（待人工审核）
+
+现有 FastAPI 已新增 `/api/v1/offline`：JPG/PNG/MP4 安全上传、独立 SQLite 任务持久化、状态/取消/历史查询和受控产物边界。**B 阶段自身没有生产推理处理器**；当前处理器已由 C/D 装配。详情、限制和历史测试证据见 [V1.2-B 实施报告](docs/reports/v1.2/V12_B_JOB_INFRA_REPORT.md)。在已有 `.venv-frontend-api` 环境中升级独立依赖，再按现有脚本启动单实例本地 API：
+
+```powershell
+& .\.venv-frontend-api\Scripts\python.exe -m pip install -r locks/frontend-v1.2-api/requirements.txt
+& .\scripts\start_frontend_local.ps1
+```
+
+保留 `127.0.0.1` 监听和单个 Uvicorn Worker；不要用多 Worker 模式运行离线调度器。
+
 ## V1.1 Vue 本地界面
 
 七个正式页面现已由 Vue 3、Element Plus、ECharts 和 FastAPI 适配现有 Python 服务实现。V1.1 发布门禁结果见[发布检查](docs/reports/frontend-v1.1/V1_1_RELEASE_CHECK.md)；旧 Streamlit 入口完整保留。安装、PowerShell 开发/部署启动命令、API 契约、验证证据与回退方式见 [V1.1 前端架构](docs/reports/frontend-v1.1/FRONTEND_ARCHITECTURE.md)、[API 契约](docs/reports/frontend-v1.1/API_CONTRACT.md)和[迁移报告](docs/reports/frontend-v1.1/V1_1_FRONTEND_MIGRATION_REPORT.md)。新 API 默认只监听 `127.0.0.1:8765`；本机 Windows 保留了 8000 端口，因此选用 8765。

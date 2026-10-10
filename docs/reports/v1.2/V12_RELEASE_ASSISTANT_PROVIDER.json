@@ -1,0 +1,31 @@
+{
+  "request": {
+    "question": "查看待处理事件明细",
+    "event_type": "NO_HELMET",
+    "track_id": 6
+  },
+  "answer": {
+    "answer": "根据所选范围的已记录事件，查询结果如下：",
+    "summary": [
+      "Retrieved 1 event detail record(s).",
+      "id=EVT-5bcad445ccaf41a991ec3e452e01d1e1; timestamp=2026-10-10T07:15:50Z; track_id=6; type=NO_HELMET; status=open; confidence=0.675781",
+      "event_details.total_count=1",
+      "解读：返回的明细中包含待处理事件，可优先复核其证据；待处理状态不等于现场风险仍在持续。",
+      "解读：Track ID 是跟踪标识，不能据此推断独立人员数量、身份或同一人员的跨会话行为。",
+      "解读：置信度是模型输出指标，不代表事故概率；证据引用存在也不等于图片完整性已验证。",
+      "复核建议：结合安全帽事件证据核对佩戴情况，并开展安全帽佩戴提醒；建议不代表已执行整改。"
+    ],
+    "evidence_references": [
+      "20261010/event_EVT-5bcad445ccaf41a991ec3e452e01d1e1.jpg"
+    ],
+    "recommendations": [],
+    "safe_status": "success / assistant_llm"
+  },
+  "queried_event_ids": [
+    "EVT-5bcad445ccaf41a991ec3e452e01d1e1"
+  ],
+  "verified_image_event_ids": [
+    "EVT-5bcad445ccaf41a991ec3e452e01d1e1"
+  ],
+  "mutation_permission": false
+}

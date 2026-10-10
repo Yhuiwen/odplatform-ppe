@@ -1,5 +1,9 @@
 # Open Source Usage
 
+## V1.2-B offline upload dependencies (2026-10-09)
+
+The separate V1.2 API environment installs `python-multipart==0.0.32` (Apache-2.0) for FastAPI multipart parsing and `Pillow==12.3.0` (MIT-CMU) for image validation. Both license identifiers were checked from installed package metadata. They are used as package-manager dependencies; no source was copied. Exact direct versions are recorded in `locks/frontend-v1.2-api/requirements.txt`. `ffprobe` is invoked as a local external tool for MP4 inspection; no FFmpeg code was copied into the repository.
+
 ## Phase 9 Overview reference (2026-10-07)
 
 The [Worksite Safety Monitor](https://github.com/worksite-safety/worksite-safety-monitor)
@@ -76,3 +80,7 @@ Existing dependency-license and distribution boundaries remain in force.
 ## V1.1 frontend/API dependencies (2026-10-08)
 
 The new local interface uses npm packages Vue 3, Vite, Vue Router, Pinia, Element Plus and Icons Vue, Axios, Sass, Vitest (MIT per installed package metadata), and Apache ECharts (Apache-2.0 per installed package metadata). Python API packages are FastAPI, Starlette, Uvicorn and HTTPX. The project imports these packages through normal package managers; it does not copy their source or bundle design screenshots. Exact resolved JavaScript versions are in `front/package-lock.json`; independently pinned API packages are in `locks/frontend-v1.1-api/requirements.txt`. Retain upstream notices and review licenses before redistribution of bundled binaries.
+
+## V1.2-D system FFmpeg use (2026-10-09)
+
+Uses the already installed FFmpeg/ffprobe 8.1.2 Gyan full build as a subprocess dependency, including libx264. No upstream business source or binary was copied into the repository, no new package/model was downloaded. Local `ffmpeg -L` reports GNU GPL and the build has `--enable-gpl --enable-version3`; do not treat this binary as an unrestricted bundled redistributable. Runtime requires an independently installed compatible FFmpeg with actual libx264 encoding self-test. Existing Ultralytics/PyTorch/OpenCV license boundaries and frozen Python/npm locks remain unchanged. H.264 CRF18 is lossy; byte-identical image preservation is not claimed.

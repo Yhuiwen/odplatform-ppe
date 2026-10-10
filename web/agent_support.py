@@ -229,6 +229,19 @@ class AgentWebAdapter:
             for line in (projection.answer, *projection.summary)
             if line.strip()
         ))
+        # Broaden interpretation using contextual, reviewed statements only.
+        # These are review suggestions, never new event facts or compliance decisions.
+        detail_text = "\n".join(projection.summary)
+        if "type=NO_HELMET" in detail_text:
+            lines.append("复核建议：结合安全帽事件证据核对佩戴情况，并开展安全帽佩戴提醒；建议不代表已执行整改。")
+        if "type=NO_VEST" in detail_text:
+            lines.append("复核建议：结合反光衣事件证据核对佩戴情况，并开展反光衣佩戴提醒；建议不代表已执行整改。")
+        if "status=open" in detail_text:
+            lines.append("解读：返回的明细中包含待处理事件，可优先复核其证据；待处理状态不等于现场风险仍在持续。")
+        if "track_id=" in detail_text:
+            lines.append("解读：Track ID 是跟踪标识，不能据此推断独立人员数量、身份或同一人员的跨会话行为。")
+        if "confidence=" in detail_text:
+            lines.append("解读：置信度是模型输出指标，不代表事故概率；证据引用存在也不等于图片完整性已验证。")
         try:
             selected = self._assistant_client.select_statements(request.question, lines)
             if not selected:

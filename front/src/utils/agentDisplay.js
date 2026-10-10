@@ -1,6 +1,8 @@
 import {typeName} from './labels'
 // Display-only translations of recognized grounded sentences. Unknown text is retained.
 const rules=[
+  [/^Retrieved (\d+) event detail record\(s\)\.$/,n=>`在所选范围内查询到 ${n} 条已保存事件。`],
+  [/^event_details\.total_count=(\d+)$/,n=>`查询范围内共 ${n} 条事件。`],
   [/^(\d+) events remained open and (\d+) were resolved; no events were acknowledged or dismissed\.$/,(a,b)=>`${a} 条事件待处理，${b} 条已处理；没有已确认或已忽略事件。`],
   [/^(\d+) persisted events were recorded in the reporting period from (.+) to (.+)\.$/,(n,a,b)=>`报告范围 ${a} 至 ${b} 内记录了 ${n} 条持久化事件。`],
   [/^The event mix comprised (\d+) NO_HELMET events, (\d+) NO_VEST events and (\d+) PPE_UNKNOWN events\.$/,(a,b,c)=>`未戴安全帽 ${a} 条、未穿反光衣 ${b} 条、PPE 状态未知 ${c} 条。`],

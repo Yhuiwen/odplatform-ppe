@@ -1,0 +1,98 @@
+[
+  {
+    "run": 1,
+    "state": "completed",
+    "frames": 570,
+    "delivered": 6,
+    "receipts": [
+      [
+        {
+          "adapter": "console",
+          "status": "delivered",
+          "timestamp": "2026-10-10T06:53:27Z",
+          "error_code": null
+        },
+        {
+          "adapter": "web",
+          "status": "delivered",
+          "timestamp": "2026-10-10T06:53:27Z",
+          "error_code": null
+        },
+        {
+          "adapter": "tts",
+          "status": "delivered",
+          "timestamp": "2026-10-10T06:53:27Z",
+          "error_code": null
+        }
+      ],
+      [
+        {
+          "adapter": "console",
+          "status": "delivered",
+          "timestamp": "2026-10-10T06:53:10Z",
+          "error_code": null
+        },
+        {
+          "adapter": "web",
+          "status": "delivered",
+          "timestamp": "2026-10-10T06:53:10Z",
+          "error_code": null
+        },
+        {
+          "adapter": "tts",
+          "status": "delivered",
+          "timestamp": "2026-10-10T06:53:15Z",
+          "error_code": null
+        }
+      ]
+    ]
+  },
+  {
+    "run": 2,
+    "state": "completed",
+    "frames": 570,
+    "delivered": 4,
+    "receipts": [
+      [
+        {
+          "adapter": "console",
+          "status": "delivered",
+          "timestamp": "2026-10-10T06:53:43Z",
+          "error_code": null
+        },
+        {
+          "adapter": "web",
+          "status": "delivered",
+          "timestamp": "2026-10-10T06:53:43Z",
+          "error_code": null
+        },
+        {
+          "adapter": "tts",
+          "status": "skipped",
+          "timestamp": "2026-10-10T06:53:43Z",
+          "error_code": "TTS_COOLDOWN"
+        }
+      ],
+      [
+        {
+          "adapter": "console",
+          "status": "delivered",
+          "timestamp": "2026-10-10T06:53:34Z",
+          "error_code": null
+        },
+        {
+          "adapter": "web",
+          "status": "delivered",
+          "timestamp": "2026-10-10T06:53:34Z",
+          "error_code": null
+        },
+        {
+          "adapter": "tts",
+          "status": "skipped",
+          "timestamp": "2026-10-10T06:53:34Z",
+          "error_code": "TTS_COOLDOWN"
+        }
+      ]
+    ]
+  }
+]

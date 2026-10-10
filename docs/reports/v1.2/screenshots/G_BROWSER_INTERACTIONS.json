@@ -1,0 +1,21 @@
+{
+  "videoJob": "f723c3d654034baa92822f0e77a8396b",
+  "imageJob": "9e0d177d7d38422d9de43ad20e8cb221",
+  "downloadZip": "C:\\Users\\慧文\\Downloads\\results (3).zip",
+  "downloadMp4": "C:\\Users\\慧文\\Downloads\\annotated (1).mp4",
+  "copyFeedback": "EVT-3541d6daf65d411e88467b572590aaa3\n已复制",
+  "player": {
+    "currentTime": 19,
+    "duration": 19,
+    "ended": true,
+    "error": null,
+    "height": 720,
+    "width": 1280
+  },
+  "timeline": {
+    "left": "22.1053%",
+    "seek": 4.2,
+    "width": 32
+  },
+  "errors": []
+}

@@ -68,3 +68,11 @@ Persistent events: `artifacts/events/odplatform.sqlite3`; evidence is under `art
 ```
 
 Offline pytest isolates project-local provider configuration; real-provider validation is separate. Current gate and limitations are in the V1 completion report.
+# V1.2-F 本地前端补充
+
+Vue新增 `/offline` 图片/视频/历史工作台；先在front执行 `npm ci`、`npm test`、`npm run build`，再从项目根目录执行 `scripts/start_frontend_local.ps1 -ApiPort 8768`。确认旧实例没有活动任务后退出旧实例，正式离线root只能运行一个Worker。独立测试设置ODPLATFORM_OFFLINE_ROOT到仓库外专属目录，避免测试ZIP触发资产门禁；Vite开发代理由VITE_API_TARGET指向实际API。原Streamlit回退方式保留。详见[工作台运行、测试与限制](reports/v1.2/V12_F_FRONTEND_REPORT.md)。F等待人工审核，P9-C保持未决，不自动发布。
+
+
+## V1.2-G 部署与审核状态（2026-10-10）
+
+当前离线流程、PowerShell启动/Ctrl+C安全停止、默认上传限额、音轨移除、原尺寸/CRF18有损、FIFO与取消/中断恢复、类别语义、回退开关详见 [V1.2用户指南](V1_2_OFFLINE_USER_GUIDE.md)。G首次CFR准入异常仍为发布阻塞，不能宣称全规格或长稳完成；[验收报告](reports/v1.2/V12_G_FINAL_ACCEPTANCE_REPORT.md)。API版本字段1.2.0不表示已发布。正式8768本轮未重启；仓库外root的单实例8775仅用于审核。P9-C PARTIAL/FROZEN；未commit/push/tag。

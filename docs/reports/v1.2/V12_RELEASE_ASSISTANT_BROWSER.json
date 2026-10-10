@@ -1,0 +1,20 @@
+{
+  "measurement1366": {
+    "width": 1366,
+    "bodyWidth": 1366,
+    "headerY": 0,
+    "asideY": 0,
+    "loadedImages": 2
+  },
+  "measurement1920": {
+    "asideY": 0,
+    "bodyWidth": 1920,
+    "eventCards": 2,
+    "headerY": 0,
+    "loadedEvidence": true,
+    "modelVerified": true,
+    "width": 1920
+  },
+  "evidenceZoomOpened": true,
+  "providerResult": "verified contextual interpretation and 2 persisted event cards"
+}

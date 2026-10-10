@@ -77,7 +77,7 @@ def test_tts_alert_adapter_delivers_and_deduplicates() -> None:
     assert first.status is AlertStatus.DELIVERED
     assert second.status is AlertStatus.SKIPPED
     assert second.error_code == "ALERT_DUPLICATE"
-    assert spoken == [message.message]
+    assert spoken == ["未佩戴安全帽"]
 
 
 def test_english_api_alert_preserves_chinese_voice() -> None:
@@ -96,7 +96,7 @@ def test_english_api_alert_preserves_chinese_voice() -> None:
 
     assert message.message.isascii()
     assert adapter.send(message).status is AlertStatus.DELIVERED
-    assert spoken == ["track 7: 未穿反光背心 (0.91)"]
+    assert spoken == ["未穿反光背心"]
 
 
 def test_tts_alert_adapter_applies_track_type_cooldown() -> None:
@@ -115,7 +115,7 @@ def test_tts_alert_adapter_applies_track_type_cooldown() -> None:
     assert first.status is AlertStatus.DELIVERED
     assert second.status is AlertStatus.SKIPPED
     assert second.error_code == "TTS_COOLDOWN"
-    assert spoken == [_message().message]
+    assert spoken == ["未佩戴安全帽"]
 
 
 def test_tts_alert_adapter_isolates_backend_failure() -> None:

@@ -1,0 +1,8 @@
+# Separate V1.2 API lock. V1 final-demo and V1.1 API locks remain unchanged.
+fastapi==0.116.1
+starlette==0.47.3
+uvicorn==0.54.0
+httpx==0.28.1
+pytest==8.3.4
+python-multipart==0.0.32
+Pillow==12.3.0

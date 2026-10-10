@@ -11,17 +11,20 @@ import os
 import sys
 import re
 
+# The local API must never let a model library install optional packages at runtime.
+os.environ['YOLO_AUTOINSTALL'] = 'False'
+
 from fastapi import FastAPI, HTTPException, Query, Request
 from fastapi.responses import FileResponse, Response, StreamingResponse
 from fastapi.staticfiles import StaticFiles
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
 # The API environment owns FastAPI/Starlette; append the frozen V1 business
 # runtime after its own site-packages so both version sets remain isolated.
 ROOT = Path(__file__).resolve().parents[1]
 RUNTIME_PACKAGES = Path(os.environ.get('ODPLATFORM_RUNTIME_SITE_PACKAGES', ROOT / '.venv-final-demo' / 'Lib' / 'site-packages'))
-if RUNTIME_PACKAGES.is_dir():
-    sys.path.append(str(RUNTIME_PACKAGES))
+from api.runtime_support import append_business_runtime
+append_business_runtime(RUNTIME_PACKAGES)
 
 from core.schemas.events import EventQuery
 from core.video.video_source import SourceType
@@ -30,6 +33,13 @@ from services.monitoring_service import MonitoringSourceRequest, MonitoringError
 from web.dashboard_support import build_runtime, _validation_path
 from web.agent_support import ask_safety_question, generate_safety_report, get_agent_runtime, _display_agent_line
 from api.preview_telemetry import PreviewTelemetry
+from api.offline import OfflineUploadLimit, router as offline_router
+from offline.jobs import OfflineSettings, JobError, JobRepository, JobStorage, sha256_file
+from offline.media import clean_filename
+from offline.worker import InstanceLock, ResourceAdmission, SingleWorker
+from offline.image_processor import ImageProcessor
+from offline.video_processor import VideoProcessor
+from offline.event_collector import OfflineEventCollector
 
 class SourceInput(BaseModel):
     source_type: Literal['mp4', 'usb_camera', 'rtsp']
@@ -46,6 +56,10 @@ class PeriodInput(BaseModel):
 
 
 class AskInput(BaseModel):
+    model_config = ConfigDict(extra='forbid')
+    event_type: Literal['NO_HELMET', 'NO_VEST', 'PPE_UNKNOWN'] | None = None
+    status: Literal['open', 'resolved', 'acknowledged', 'dismissed'] | None = None
+    track_id: int | None = Field(default=None, ge=0)
     question: str = Field(min_length=1, max_length=2000)
     start_at: str | None = None
     end_at: str | None = None
@@ -102,6 +116,11 @@ def monitoring_status(app):
     if service is None:
         return {'state': 'idle', 'available': False, 'reason': app.state.monitoring_error, 'has_preview': False, 'recent_events': [], 'preview_fps': None, 'preview_age_ms': None}
     data = service.status().to_dict()
+    speech = getattr(app.state, 'queued_tts', None)
+    if speech is not None:
+        delivered, failed = speech.counts()
+        data['alerts_delivered'] += delivered
+        data['alerts_failed'] += failed
     data.pop('source_id', None)  # May contain an RTSP credential.
     recent = []
     for item in data['recent_events']:
@@ -165,10 +184,11 @@ def report_evidence_images(projection, query_service, start, end):
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     app.state.dashboard = build_runtime()
-    app.state.agent_state = SimpleNamespace(session_state={})
+    app.state.agent_state = SimpleNamespace(session_state={'_odplatform_dashboard_runtime': app.state.dashboard})
     app.state.agent_lock = Lock()
     app.state.monitor_lock = Lock()
     app.state.monitoring = None
+    app.state.queued_tts = None
     app.state.preview = None
     app.state.preview_telemetry = None
     app.state.monitoring_error = None
@@ -203,22 +223,92 @@ async def lifespan(app: FastAPI):
         app.state.preview = preview
         telemetry = PreviewTelemetry(preview.publish)
         app.state.preview_telemetry = telemetry
+        from api.queued_tts import QueuedTTSAdapter
+        from services.alert_service import AlertService
+        if os.name == 'nt':
+            from api.windows_speech import WindowsSpeech
+            from infra.tts.tts_service import TTSService
+            previous_service = app.state.dashboard.tts_alerts.service
+            app.state.dashboard.tts_alerts.service = TTSService(
+                speaker=WindowsSpeech(previous_service.rate, previous_service.volume),
+                rate=previous_service.rate, volume=previous_service.volume)
+        queued_tts = QueuedTTSAdapter(app.state.dashboard.tts_alerts)
+        app.state.queued_tts = queued_tts
+        alert_service = AlertService(queued_tts if adapter.name == 'tts' else adapter
+                                     for adapter in app.state.dashboard.alert_service.adapters)
         app.state.monitoring = MonitoringService(
             inference_service=InferenceService(config_path=inference_config, execution_enabled=bool(settings.get('execution_enabled', False))),
             tracker=ByteTrackPersonTrackingAdapter(), association_adapter=PPEPersonAssociationAdapter(),
             compliance_service=ComplianceService(), event_service=EventService(engine=EventEngine(), store=JSONEventStore(_validation_path('logs/events.jsonl'))),
             ingest_service=EventIngestService(repo), snapshot_service=SnapshotService(repo, snapshots, storage),
-            alert_service=app.state.dashboard.alert_service, event_loader=repo.get,
+            alert_service=alert_service, event_loader=repo.get,
             execution_enabled=bool(settings.get('execution_enabled', False)), stop_timeout_seconds=float(settings.get('stop_timeout_seconds', 5.0)),
             max_recent_events=int(settings.get('max_recent_events', 20)), preview_renderer=AnnotatedFrameRenderer(detection['class_names']), preview_sink=telemetry.publish)
     except Exception:
         app.state.monitoring_error = '监控服务初始化失败；请检查服务端配置与依赖。'
-    yield
-    if app.state.monitoring is not None:
-        app.state.monitoring.stop()
+    offline_root = Path(os.environ.get('ODPLATFORM_OFFLINE_ROOT', ROOT / 'artifacts' / 'offline')).resolve()
+    settings = OfflineSettings.load(offline_root, ROOT / 'configs' / 'offline_jobs.toml')
+    instance_lock = InstanceLock(offline_root / '.worker.lock')
+    instance_lock.acquire()
+    worker = None
+    try:
+        storage = JobStorage(offline_root)
+        repository = JobRepository(offline_root / 'jobs.sqlite3')
+        repository.recover()
+        # Remove only interrupted upload staging files owned by known jobs.
+        for row in repository.list(limit=100000)['items']:
+            if row['error_code'] == 'UPLOAD_INTERRUPTED':
+                storage.path(row['job_id'], 'staging', 'upload.part').unlink(missing_ok=True)
+            if row['status'] in {'INTERRUPTED', 'FAILED', 'CANCELLED'}:
+                from offline.jobs import cleanup_generated
+                cleanup_generated(storage, row['job_id'])
+        for row in repository.list(limit=100000, status='QUEUED')['items']:
+            try:
+                suffix, _, _ = clean_filename(row['original_filename'])
+                queued_input = storage.path(row['job_id'], 'input', 'source' + suffix)
+                intact = queued_input.is_file() and queued_input.stat().st_size == row['input_size_bytes'] and sha256_file(queued_input) == row['input_sha256']
+            except (JobError, OSError):
+                intact = False
+            if not intact:
+                repository.transition(row['job_id'], 'FAILED', updates={'error_code': 'INPUT_CORRUPT', 'error_message': '已排队输入文件缺失或完整性校验失败'})
+        admission = ResourceAdmission(lambda: monitoring_status(app)['state'])
+        image_enabled = settings.image_execution_enabled and os.environ.get('ODPLATFORM_OFFLINE_IMAGE_EXECUTION', '1') != '0'
+        image_processor = ImageProcessor(settings, config_path=ROOT / 'configs' / 'inference.yaml') if image_enabled else None
+        ready, reason = image_processor.preflight() if image_processor else (False, '离线图片推理已由应用配置禁用')
+        video_processor = VideoProcessor(image_processor, collector_factory=OfflineEventCollector if os.environ.get("ODPLATFORM_OFFLINE_EVENT_EXECUTION", "1") != "0" else None) if image_processor and os.environ.get('ODPLATFORM_OFFLINE_VIDEO_EXECUTION', '1') != '0' else None
+        video_ready, video_reason = video_processor.preflight() if video_processor else (False, '离线视频推理已由应用配置禁用')
+        processors = {'image': image_processor} if image_processor else {}
+        if video_ready:
+            processors['video'] = video_processor
+        worker = SingleWorker(repository, storage, admission, processors=processors)
+        app.state.offline_settings = settings
+        app.state.offline_storage = storage
+        app.state.offline_jobs = repository
+        app.state.offline_admission = admission
+        app.state.offline_worker = worker
+        app.state.offline_image_ready = ready
+        app.state.offline_image_reason = reason
+        app.state.offline_video_ready = video_ready
+        app.state.offline_video_reason = video_reason
+        worker.start()
+        yield
+    finally:
+        try:
+            if worker is not None:
+                worker.close()
+        finally:
+            try:
+                if app.state.monitoring is not None:
+                    app.state.monitoring.stop()
+            finally:
+                if app.state.queued_tts is not None:
+                    app.state.queued_tts.close()
+                instance_lock.release()
 
 
-app = FastAPI(title='ODPlatform-PPE API', lifespan=lifespan, docs_url='/api/docs', redoc_url=None)
+app = FastAPI(title='ODPlatform-PPE API', version='1.2.0', lifespan=lifespan, docs_url='/api/docs', redoc_url=None)
+app.add_middleware(OfflineUploadLimit, max_bytes=512 * 1024 * 1024 + 1024 * 1024)
+app.include_router(offline_router)
 
 
 @app.exception_handler(Exception)
@@ -228,13 +318,13 @@ async def safe_error(request: Request, exc: Exception):
 
 @app.get('/api/v1/health')
 def health():
-    return {'status': 'ok'}
+    return {'status': 'ok', 'api_version': app.version}
 
 
 @app.get('/api/v1/capabilities')
 def capabilities(request: Request):
     from services.configured_report_service import configured_report_client
-    return {'monitoring': monitoring_status(request.app)['available'], 'monitoring_reason': request.app.state.monitoring_error, 'single_session': True, 'provider_configured': configured_report_client() is not None, 'authentication': 'local_demo'}
+    return {'monitoring': monitoring_status(request.app)['available'], 'monitoring_reason': request.app.state.monitoring_error, 'single_session': True, 'provider_configured': configured_report_client() is not None, 'authentication': 'local_demo', 'assistant_read_tools': ['get_safety_summary', 'get_event_statistics', 'get_event_details', 'generate_safety_report'], 'assistant_mutations': False}
 
 
 @app.get('/api/v1/events')
@@ -248,13 +338,33 @@ def events(request: Request, start_at: str | None = None, end_at: str | None = N
     return data
 
 
+def event_alerts(app, event_id):
+    """Expose only retained real session receipts; SQLite has no delivery ledger."""
+    service = app.state.monitoring
+    records = service.status().to_dict().get('recent_events', []) if service else []
+    record = next((row for row in records if row.get('event_id') == event_id), None)
+    receipts = record.get('alerts', []) if record else []
+    speech = getattr(app.state, 'queued_tts', None)
+    receipts = [speech.result(event_id) or result if speech is not None and result.get('adapter') == 'tts' and result.get('error_code') == 'TTS_QUEUED' else result for result in receipts]
+    return {
+        'scope': 'current_session_recent_events',
+        'recorded': record is not None,
+        'items': [
+            {key: result.get(key) for key in ('adapter', 'status', 'timestamp', 'error_code')}
+            for result in receipts
+        ],
+    }
+
+
 @app.get('/api/v1/events/{event_id}')
 def event(request: Request, event_id: str):
     svc = request.app.state.dashboard.query_service
     found = svc.get_event(event_id)
     if found is None:
         raise HTTPException(404, '事件不存在')
-    return event_json(svc, found)
+    data = event_json(svc, found)
+    data['alert_deliveries'] = event_alerts(request.app, event_id)
+    return data
 
 
 @app.patch('/api/v1/events/{event_id}/handling')
@@ -263,7 +373,9 @@ def handling(request: Request, event_id: str, body: HandlingInput):
         found = request.app.state.dashboard.status_service.set_handled(event_id, handled=body.handled)
     except (EventNotFoundError, ValueError):
         raise HTTPException(404, '事件不存在') from None
-    return event_json(request.app.state.dashboard.query_service, found)
+    data = event_json(request.app.state.dashboard.query_service, found)
+    data['alert_deliveries'] = event_alerts(request.app, event_id)
+    return data
 
 
 @app.get('/api/v1/statistics')
@@ -326,7 +438,10 @@ def monitor_start(request: Request, body: SourceInput):
     try:
         source = MonitoringSourceRequest(SourceType(body.source_type), body.location)
         with request.app.state.monitor_lock:
-            service.start(source)
+            speech = getattr(request.app.state, 'queued_tts', None)
+            request.app.state.offline_admission.start_monitoring(lambda: speech.start_session(lambda: service.start(source)) if speech else service.start(source))
+    except JobError as exc:
+        raise HTTPException(exc.status_code, {'code': exc.code, 'message': str(exc)}) from None
     except MonitoringError as exc:
         raise HTTPException(409, '监控已运行或配置禁止启动' if exc.code != 'MONITORING_CONFIGURATION_INVALID' else '监控参数无效或执行已禁用') from None
     except (ValueError, TypeError):
@@ -372,6 +487,9 @@ def report(request: Request, body: PeriodInput):
 
 @app.post('/api/v1/assistant/ask')
 def assistant(request: Request, body: AskInput):
+    mutation = re.search(r'(?:标记|设为|改为|设置|修改|更新|删除|清空|恢复|撤销|写入).{0,80}(?:事件|EVT-|状态|已处理|待处理|数据库)|(?:事件|EVT-[A-Za-z0-9._:-]+).{0,80}(?:设为|修改|更新|删除)|\b(?:UPDATE|DELETE|INSERT|DROP|ALTER|TRUNCATE)\b', body.question, re.IGNORECASE)
+    if mutation:
+        return {'answer': '安全助手仅有读取权限，不能修改状态、删除事件或执行 SQL。', 'summary': [], 'evidence_references': [], 'recommendations': [], 'safe_status': 'refused / FORBIDDEN_REQUEST'}
     start, end = period_bounds(body.start_at, body.end_at)
     if bool(start) != bool(end):
         raise HTTPException(422, '请同时提供开始和结束日期')
@@ -384,6 +502,8 @@ def assistant(request: Request, body: AskInput):
             '统计最近的安全事件': 'Show event statistics',
             '有哪些未戴安全帽事件？': 'Show NO_HELMET event statistics',
             '总结当前安全风险': 'Summarize safety events',
+            '查看最近的事件明细': 'Show event details',
+            '查看待处理事件明细': 'Show event details',
         }.get(body.question.strip(), body.question)
         relative = re.fullmatch(r'最近\s*([1-9]\d{0,3})\s*(分钟|小时|天)(?:之内|内)?\s*(?:有(?:哪些|什么)|发生了哪些|有哪些)?\s*(?:PPE\s*违规|安全事件|违规事件)[？?]?', body.question.strip())
         if relative:
@@ -399,7 +519,10 @@ def assistant(request: Request, body: AskInput):
             stats = request.app.state.dashboard.query_service.statistics()
             start = stats.earliest_at or datetime.now(timezone.utc).date().isoformat() + 'T00:00:00Z'
             end = stats.latest_at or datetime.now(timezone.utc).date().isoformat() + 'T23:59:59Z'
-        projection = ask_safety_question(request.app.state.agent_state, question=question, requested_period={'start_at': start, 'end_at': end})
+        filters = {key: getattr(body, key) for key in ('event_type', 'status', 'track_id') if getattr(body, key) is not None}
+        if body.question.strip() == '查看待处理事件明细':
+            filters['status'] = 'open'
+        projection = ask_safety_question(request.app.state.agent_state, question=question, requested_period={'start_at': start, 'end_at': end}, filters=filters or None)
     return localized_projection(projection)
 
 
